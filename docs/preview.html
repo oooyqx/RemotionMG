@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>文字动效预览 · 100 法 + 场景</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #05060d; color: #e7ecff; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; }
+  header { padding: 28px 28px 8px; }
+  header h1 { margin: 0 0 6px; font-size: 24px; }
+  header p { margin: 4px 0; color: #8ea0d6; font-size: 14px; }
+  .filter { margin: 14px 0; }
+  .filter input { width: 280px; max-width: 60vw; padding: 8px 12px; border-radius: 8px; border: 1px solid #2a3454; background: #0c1022; color: #e7ecff; font-size: 14px; }
+  section { padding: 8px 28px 20px; }
+  section h2 { font-size: 17px; color: #4aa3ff; border-bottom: 1px solid #1c2540; padding-bottom: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .card { margin: 0; background: #0b0f1e; border: 1px solid #1c2540; border-radius: 10px; overflow: hidden; }
+  .card img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; background: #0a0e1c; }
+  figcaption { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
+  figcaption .id { color: #4aa3ff; font-weight: 800; font-size: 12px; }
+  figcaption .name { font-weight: 700; font-size: 15px; }
+  figcaption .en { color: #8ea0d6; font-size: 12px; }
+  figcaption code { color: #b6c2ea; font-size: 11px; background: #0e1430; padding: 2px 6px; border-radius: 5px; margin-top: 4px; word-break: break-all; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #1c2540; }
+  th { color: #8ea0d6; }
+  a { color: inherit; text-decoration: none; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>文字动效预览 · 100 法 + 场景模板</h1>
+  <p>点击缩略图查看大图。动态总览见 <code>docs/thumbnails-contact-sheet.png</code>；动起来的预览墙渲染合成 <code>SceneWall</code>。</p>
+  <p>交互式实时预览：<code>npm run dev</code> → 打开 <code>SceneThumb</code>，在右侧 schema 面板改 <code>effectId</code>(1–100)。</p>
+  <div class="filter"><input id="q" type="search" placeholder="按编号 / 名称 / 公式过滤，如 K95、螺旋、spring" /></div>
+</header>
+<section><h2>A · 透明度 · 多项式与指数曲线</h2><div class="grid">
+      <figure class="card" id="A01">
+        <a href="thumbnails/A01.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A01.png" alt="线性淡入" />
+        </a>
+        <figcaption>
+          <span class="id">A01</span>
+          <span class="name">线性淡入</span>
+          <span class="en">Linear Fade</span>
+          <code>opacity = t</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A02">
+        <a href="thumbnails/A02.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A02.png" alt="二次淡入" />
+        </a>
+        <figcaption>
+          <span class="id">A02</span>
+          <span class="name">二次淡入</span>
+          <span class="en">Quadratic Ease-In</span>
+          <code>opacity = t²</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A03">
+        <a href="thumbnails/A03.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A03.png" alt="三次缓出" />
+        </a>
+        <figcaption>
+          <span class="id">A03</span>
+          <span class="name">三次缓出</span>
+          <span class="en">Cubic Ease-Out</span>
+          <code>opacity = 1 − (1 − t)³</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A04">
+        <a href="thumbnails/A04.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A04.png" alt="指数冲入" />
+        </a>
+        <figcaption>
+          <span class="id">A04</span>
+          <span class="name">指数冲入</span>
+          <span class="en">Exponential Ease-Out</span>
+          <code>opacity = 1 − 2^(−10t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A05">
+        <a href="thumbnails/A05.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A05.png" alt="对数渐显" />
+        </a>
+        <figcaption>
+          <span class="id">A05</span>
+          <span class="name">对数渐显</span>
+          <span class="en">Logarithmic Reveal</span>
+          <code>opacity = ln(1 + (e−1)·t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A06">
+        <a href="thumbnails/A06.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A06.png" alt="Sigmoid 渐显" />
+        </a>
+        <figcaption>
+          <span class="id">A06</span>
+          <span class="name">Sigmoid 渐显</span>
+          <span class="en">Logistic S-Curve</span>
+          <code>opacity = 1 / (1 + e^(−k(t−0.5)))</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A07">
+        <a href="thumbnails/A07.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A07.png" alt="高斯闪现" />
+        </a>
+        <figcaption>
+          <span class="id">A07</span>
+          <span class="name">高斯闪现</span>
+          <span class="en">Gaussian Flash-In</span>
+          <code>b = 1 + A·e^(−(t−μ)²/2σ²)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A08">
+        <a href="thumbnails/A08.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A08.png" alt="伽马淡入" />
+        </a>
+        <figcaption>
+          <span class="id">A08</span>
+          <span class="name">伽马淡入</span>
+          <span class="en">Gamma Fade</span>
+          <code>opacity = t^(1/2.2)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A09">
+        <a href="thumbnails/A09.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A09.png" alt="双指数过冲" />
+        </a>
+        <figcaption>
+          <span class="id">A09</span>
+          <span class="name">双指数过冲</span>
+          <span class="en">Bi-Exponential Overshoot</span>
+          <code>v = (1−e^(−at))(1+b·e^(−ct))</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="A10">
+        <a href="thumbnails/A10.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/A10.png" alt="幂律阶梯" />
+        </a>
+        <figcaption>
+          <span class="id">A10</span>
+          <span class="name">幂律阶梯</span>
+          <span class="en">Power-Step Fade</span>
+          <code>opacity = ⌊t·k⌋/k (段内 t²)</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>B · 缓动与方向位移</h2><div class="grid">
+      <figure class="card" id="B11">
+        <a href="thumbnails/B11.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B11.png" alt="上移淡入" />
+        </a>
+        <figcaption>
+          <span class="id">B11</span>
+          <span class="name">上移淡入</span>
+          <span class="en">Slide-Up Fade</span>
+          <code>y=lerp(50,0,easeOut)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B12">
+        <a href="thumbnails/B12.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B12.png" alt="回退超调滑入" />
+        </a>
+        <figcaption>
+          <span class="id">B12</span>
+          <span class="name">回退超调滑入</span>
+          <span class="en">Back Ease</span>
+          <code>easeOutBack(t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B13">
+        <a href="thumbnails/B13.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B13.png" alt="弹性滑入" />
+        </a>
+        <figcaption>
+          <span class="id">B13</span>
+          <span class="name">弹性滑入</span>
+          <span class="en">Elastic Slide</span>
+          <code>2^(-10t)·sin(...)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B14">
+        <a href="thumbnails/B14.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B14.png" alt="重力下坠" />
+        </a>
+        <figcaption>
+          <span class="id">B14</span>
+          <span class="name">重力下坠</span>
+          <span class="en">Gravity Drop</span>
+          <code>y=½·g·t²</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B15">
+        <a href="thumbnails/B15.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B15.png" alt="抛物线抛入" />
+        </a>
+        <figcaption>
+          <span class="id">B15</span>
+          <span class="name">抛物线抛入</span>
+          <span class="en">Projectile Toss</span>
+          <code>y=h·4t(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B16">
+        <a href="thumbnails/B16.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B16.png" alt="阻尼回正" />
+        </a>
+        <figcaption>
+          <span class="id">B16</span>
+          <span class="name">阻尼回正</span>
+          <span class="en">Damped Settle</span>
+          <code>A·e^(-ζt)·cos(ωt)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B17">
+        <a href="thumbnails/B17.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B17.png" alt="速度模糊滑入" />
+        </a>
+        <figcaption>
+          <span class="id">B17</span>
+          <span class="name">速度模糊滑入</span>
+          <span class="en">Motion-Blur Slide</span>
+          <code>blur=k·|v|</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B18">
+        <a href="thumbnails/B18.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B18.png" alt="惯性甩入" />
+        </a>
+        <figcaption>
+          <span class="id">B18</span>
+          <span class="name">惯性甩入</span>
+          <span class="en">Inertia Whip</span>
+          <code>easeOutExpo + skew</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B19">
+        <a href="thumbnails/B19.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B19.png" alt="磁吸归位" />
+        </a>
+        <figcaption>
+          <span class="id">B19</span>
+          <span class="name">磁吸归位</span>
+          <span class="en">Magnetic Snap</span>
+          <code>pos+=(t-pos)·k</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="B20">
+        <a href="thumbnails/B20.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/B20.png" alt="折线入场" />
+        </a>
+        <figcaption>
+          <span class="id">B20</span>
+          <span class="name">折线入场</span>
+          <span class="en">Polyline Path-In</span>
+          <code>分段折线插值</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>C · 缩放 · 形变 · 3D</h2><div class="grid">
+      <figure class="card" id="C21">
+        <a href="thumbnails/C21.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C21.png" alt="弹簧弹出" />
+        </a>
+        <figcaption>
+          <span class="id">C21</span>
+          <span class="name">弹簧弹出</span>
+          <span class="en">Spring Pop</span>
+          <code>spring(scale 0→1)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C22">
+        <a href="thumbnails/C22.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C22.png" alt="挤压拉伸" />
+        </a>
+        <figcaption>
+          <span class="id">C22</span>
+          <span class="name">挤压拉伸</span>
+          <span class="en">Squash &amp; Stretch</span>
+          <code>sX·sY=const</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C23">
+        <a href="thumbnails/C23.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C23.png" alt="旋转缩放螺入" />
+        </a>
+        <figcaption>
+          <span class="id">C23</span>
+          <span class="name">旋转缩放螺入</span>
+          <span class="en">Rotate-Zoom Spiral</span>
+          <code>rot:180°→0°</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C24">
+        <a href="thumbnails/C24.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C24.png" alt="透视纵深推入" />
+        </a>
+        <figcaption>
+          <span class="id">C24</span>
+          <span class="name">透视纵深推入</span>
+          <span class="en">Z-Push Perspective</span>
+          <code>translateZ:-800→0</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C25">
+        <a href="thumbnails/C25.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C25.png" alt="焦点拉近" />
+        </a>
+        <figcaption>
+          <span class="id">C25</span>
+          <span class="name">焦点拉近</span>
+          <span class="en">Dolly Zoom</span>
+          <code>scale↑·persp↓</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C26">
+        <a href="thumbnails/C26.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C26.png" alt="翻牌立体" />
+        </a>
+        <figcaption>
+          <span class="id">C26</span>
+          <span class="name">翻牌立体</span>
+          <span class="en">3D Card Flip</span>
+          <code>rotateY:90°→0°</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C27">
+        <a href="thumbnails/C27.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C27.png" alt="折纸展开" />
+        </a>
+        <figcaption>
+          <span class="id">C27</span>
+          <span class="name">折纸展开</span>
+          <span class="en">Origami Unfold</span>
+          <code>rotateX 分段</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C28">
+        <a href="thumbnails/C28.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C28.png" alt="镜像对开" />
+        </a>
+        <figcaption>
+          <span class="id">C28</span>
+          <span class="name">镜像对开</span>
+          <span class="en">Mirror Split Open</span>
+          <code>上下半分</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C29">
+        <a href="thumbnails/C29.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C29.png" alt="厚度生长" />
+        </a>
+        <figcaption>
+          <span class="id">C29</span>
+          <span class="name">厚度生长</span>
+          <span class="en">Extrude Grow</span>
+          <code>K=round(maxK·t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="C30">
+        <a href="thumbnails/C30.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/C30.png" alt="弹性拉伸归位" />
+        </a>
+        <figcaption>
+          <span class="id">C30</span>
+          <span class="name">弹性拉伸归位</span>
+          <span class="en">Elastic Stretch</span>
+          <code>sY=1+(S-1)·elastic</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>D · 模糊 · 滤镜</h2><div class="grid">
+      <figure class="card" id="D31">
+        <a href="thumbnails/D31.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/D31.png" alt="模糊聚焦" />
+        </a>
+        <figcaption>
+          <span class="id">D31</span>
+          <span class="name">模糊聚焦</span>
+          <span class="en">Blur-to-Focus</span>
+          <code>blur:16→0</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="D32">
+        <a href="thumbnails/D32.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/D32.png" alt="失焦呼吸" />
+        </a>
+        <figcaption>
+          <span class="id">D32</span>
+          <span class="name">失焦呼吸</span>
+          <span class="en">Focus Breathing</span>
+          <code>blur=|sin(πtn)|A(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="D33">
+        <a href="thumbnails/D33.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/D33.png" alt="墨水晕染" />
+        </a>
+        <figcaption>
+          <span class="id">D33</span>
+          <span class="name">墨水晕染</span>
+          <span class="en">Ink Bleed</span>
+          <code>blur=20(1-t)²</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="D34">
+        <a href="thumbnails/D34.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/D34.png" alt="辉光绽放" />
+        </a>
+        <figcaption>
+          <span class="id">D34</span>
+          <span class="name">辉光绽放</span>
+          <span class="en">Glow Bloom</span>
+          <code>shadowBlur=A·e^(-kt)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="D35">
+        <a href="thumbnails/D35.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/D35.png" alt="色差散焦" />
+        </a>
+        <figcaption>
+          <span class="id">D35</span>
+          <span class="name">色差散焦</span>
+          <span class="en">Chromatic Aberration</span>
+          <code>Δ=D(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="D36">
+        <a href="thumbnails/D36.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/D36.png" alt="半调网点" />
+        </a>
+        <figcaption>
+          <span class="id">D36</span>
+          <span class="name">半调网点</span>
+          <span class="en">Halftone Develop</span>
+          <code>r=R(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="D37">
+        <a href="thumbnails/D37.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/D37.png" alt="像素化解析" />
+        </a>
+        <figcaption>
+          <span class="id">D37</span>
+          <span class="name">像素化解析</span>
+          <span class="en">Pixelate Resolve</span>
+          <code>b=round(B(1-t))+1</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="D38">
+        <a href="thumbnails/D38.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/D38.png" alt="热浪扭曲" />
+        </a>
+        <figcaption>
+          <span class="id">D38</span>
+          <span class="name">热浪扭曲</span>
+          <span class="en">Heat-Haze Reveal</span>
+          <code>d=noise(xf+t)A(1-t)</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>E · 三角函数 · 波动</h2><div class="grid">
+      <figure class="card" id="E39">
+        <a href="thumbnails/E39.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E39.png" alt="正弦行波" />
+        </a>
+        <figcaption>
+          <span class="id">E39</span>
+          <span class="name">正弦行波</span>
+          <span class="en">Traveling Sine</span>
+          <code>y=A·sin(2πfu-ωt)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E40">
+        <a href="thumbnails/E40.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E40.png" alt="余弦摆入" />
+        </a>
+        <figcaption>
+          <span class="id">E40</span>
+          <span class="name">余弦摆入</span>
+          <span class="en">Cosine Pendulum</span>
+          <code>θ₀·cos(ωt)·e^(-kt)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E41">
+        <a href="thumbnails/E41.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E41.png" alt="驻波涟漪" />
+        </a>
+        <figcaption>
+          <span class="id">E41</span>
+          <span class="name">驻波涟漪</span>
+          <span class="en">Standing Wave</span>
+          <code>A·sin(ku)cos(ωt)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E42">
+        <a href="thumbnails/E42.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E42.png" alt="心跳脉动" />
+        </a>
+        <figcaption>
+          <span class="id">E42</span>
+          <span class="name">心跳脉动</span>
+          <span class="en">Heartbeat Pulse</span>
+          <code>1+A(sinωt+½sin2ωt)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E43">
+        <a href="thumbnails/E43.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E43.png" alt="正切骤变" />
+        </a>
+        <figcaption>
+          <span class="id">E43</span>
+          <span class="name">正切骤变</span>
+          <span class="en">Tangent Snap</span>
+          <code>y=A·tan((t-.5)θ)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E44">
+        <a href="thumbnails/E44.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E44.png" alt="李萨如聚合" />
+        </a>
+        <figcaption>
+          <span class="id">E44</span>
+          <span class="name">李萨如聚合</span>
+          <span class="en">Lissajous Gather</span>
+          <code>sin(aφ+δ),sin(bφ)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E45">
+        <a href="thumbnails/E45.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E45.png" alt="阻尼正弦定格" />
+        </a>
+        <figcaption>
+          <span class="id">E45</span>
+          <span class="name">阻尼正弦定格</span>
+          <span class="en">Damped Sine</span>
+          <code>A·e^(-ζt)·sin(ωt+φ)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E46">
+        <a href="thumbnails/E46.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E46.png" alt="拍频闪烁" />
+        </a>
+        <figcaption>
+          <span class="id">E46</span>
+          <span class="name">拍频闪烁</span>
+          <span class="en">Beat Flicker</span>
+          <code>cos(2πf₁t)cos(2πf₂t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E47">
+        <a href="thumbnails/E47.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E47.png" alt="螺旋极坐标" />
+        </a>
+        <figcaption>
+          <span class="id">E47</span>
+          <span class="name">螺旋极坐标</span>
+          <span class="en">Polar Spiral-In</span>
+          <code>r=R(1-t),θ=θ₀+kt</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E48">
+        <a href="thumbnails/E48.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E48.png" alt="波纹扩散" />
+        </a>
+        <figcaption>
+          <span class="id">E48</span>
+          <span class="name">波纹扩散</span>
+          <span class="en">Ripple Expand</span>
+          <code>delay=dist·c</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E49">
+        <a href="thumbnails/E49.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E49.png" alt="旗帜飘动" />
+        </a>
+        <figcaption>
+          <span class="id">E49</span>
+          <span class="name">旗帜飘动</span>
+          <span class="en">Flag Wave</span>
+          <code>A·sin(ku-ωt)(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="E50">
+        <a href="thumbnails/E50.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/E50.png" alt="摆线滚入" />
+        </a>
+        <figcaption>
+          <span class="id">E50</span>
+          <span class="name">摆线滚入</span>
+          <span class="en">Cycloid Roll-In</span>
+          <code>x=R(φ-sinφ)</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>F · 逐字符 · 交错编排</h2><div class="grid">
+      <figure class="card" id="F51">
+        <a href="thumbnails/F51.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F51.png" alt="打字机" />
+        </a>
+        <figcaption>
+          <span class="id">F51</span>
+          <span class="name">打字机</span>
+          <span class="en">Typewriter</span>
+          <code>n=floor(t·N)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F52">
+        <a href="thumbnails/F52.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F52.png" alt="线性交错" />
+        </a>
+        <figcaption>
+          <span class="id">F52</span>
+          <span class="name">线性交错</span>
+          <span class="en">Linear Stagger</span>
+          <code>delay(i)=i·d</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F53">
+        <a href="thumbnails/F53.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F53.png" alt="居中开花" />
+        </a>
+        <figcaption>
+          <span class="id">F53</span>
+          <span class="name">居中开花</span>
+          <span class="en">Center-Out Bloom</span>
+          <code>delay=|i-N/2|·d</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F54">
+        <a href="thumbnails/F54.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F54.png" alt="随机浮现" />
+        </a>
+        <figcaption>
+          <span class="id">F54</span>
+          <span class="name">随机浮现</span>
+          <span class="en">Random Stagger</span>
+          <code>delay=rand(i)·D</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F55">
+        <a href="thumbnails/F55.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F55.png" alt="高斯交错" />
+        </a>
+        <figcaption>
+          <span class="id">F55</span>
+          <span class="name">高斯交错</span>
+          <span class="en">Gaussian Stagger</span>
+          <code>∝1-e^(-(u-.5)²/2σ²)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F56">
+        <a href="thumbnails/F56.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F56.png" alt="逐字波浪" />
+        </a>
+        <figcaption>
+          <span class="id">F56</span>
+          <span class="name">逐字波浪</span>
+          <span class="en">Per-Char Wave</span>
+          <code>y=A·sin(ωt-iΔφ)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F57">
+        <a href="thumbnails/F57.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F57.png" alt="多米诺翻倒" />
+        </a>
+        <figcaption>
+          <span class="id">F57</span>
+          <span class="name">多米诺翻倒</span>
+          <span class="en">Domino Topple</span>
+          <code>rot=90°(1-τ)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F58">
+        <a href="thumbnails/F58.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F58.png" alt="字距收拢" />
+        </a>
+        <figcaption>
+          <span class="id">F58</span>
+          <span class="name">字距收拢</span>
+          <span class="en">Spacing Collapse</span>
+          <code>spacing=lerp(W,0,t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F59">
+        <a href="thumbnails/F59.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F59.png" alt="逐行上推" />
+        </a>
+        <figcaption>
+          <span class="id">F59</span>
+          <span class="name">逐行上推</span>
+          <span class="en">Line Mask Up</span>
+          <code>y:100%→0</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F60">
+        <a href="thumbnails/F60.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F60.png" alt="词级弹入" />
+        </a>
+        <figcaption>
+          <span class="id">F60</span>
+          <span class="name">词级弹入</span>
+          <span class="en">Word Pop</span>
+          <code>delay(w)=w·d</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F61">
+        <a href="thumbnails/F61.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F61.png" alt="卷帘百叶" />
+        </a>
+        <figcaption>
+          <span class="id">F61</span>
+          <span class="name">卷帘百叶</span>
+          <span class="en">Vertical Blinds</span>
+          <code>scaleX:0→1</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="F62">
+        <a href="thumbnails/F62.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/F62.png" alt="蛇形进场" />
+        </a>
+        <figcaption>
+          <span class="id">F62</span>
+          <span class="name">蛇形进场</span>
+          <span class="en">Boustrophedon</span>
+          <code>蛇形重排 delay</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>G · 裁剪 · 遮罩</h2><div class="grid">
+      <figure class="card" id="G63">
+        <a href="thumbnails/G63.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/G63.png" alt="横向擦除" />
+        </a>
+        <figcaption>
+          <span class="id">G63</span>
+          <span class="name">横向擦除</span>
+          <span class="en">Horizontal Wipe</span>
+          <code>inset(0 (100(1-p))% 0 0)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="G64">
+        <a href="thumbnails/G64.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/G64.png" alt="对角揭示" />
+        </a>
+        <figcaption>
+          <span class="id">G64</span>
+          <span class="name">对角揭示</span>
+          <span class="en">Diagonal Reveal</span>
+          <code>polygon(...) 推进</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="G65">
+        <a href="thumbnails/G65.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/G65.png" alt="圆形光圈" />
+        </a>
+        <figcaption>
+          <span class="id">G65</span>
+          <span class="name">圆形光圈</span>
+          <span class="en">Circular Iris</span>
+          <code>circle(p·150%)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="G66">
+        <a href="thumbnails/G66.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/G66.png" alt="马赛克揭示" />
+        </a>
+        <figcaption>
+          <span class="id">G66</span>
+          <span class="name">马赛克揭示</span>
+          <span class="en">Mosaic Reveal</span>
+          <code>delay=rand(r,c)·D</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="G67">
+        <a href="thumbnails/G67.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/G67.png" alt="扫描线显影" />
+        </a>
+        <figcaption>
+          <span class="id">G67</span>
+          <span class="name">扫描线显影</span>
+          <span class="en">Scanline Develop</span>
+          <code>y&lt;lerp(0,H,t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="G68">
+        <a href="thumbnails/G68.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/G68.png" alt="形状蒙版" />
+        </a>
+        <figcaption>
+          <span class="id">G68</span>
+          <span class="name">形状蒙版</span>
+          <span class="en">SVG Mask Grow</span>
+          <code>mask scale=p</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="G69">
+        <a href="thumbnails/G69.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/G69.png" alt="笔画手写" />
+        </a>
+        <figcaption>
+          <span class="id">G69</span>
+          <span class="name">笔画手写</span>
+          <span class="en">Handwriting</span>
+          <code>dashoffset=L(1-p)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="G70">
+        <a href="thumbnails/G70.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/G70.png" alt="液面上涨" />
+        </a>
+        <figcaption>
+          <span class="id">G70</span>
+          <span class="name">液面上涨</span>
+          <span class="en">Liquid Fill Up</span>
+          <code>h=lerp(0,H,p)</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>H · 噪声 · 随机</h2><div class="grid">
+      <figure class="card" id="H71">
+        <a href="thumbnails/H71.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H71.png" alt="噪声抖动收敛" />
+        </a>
+        <figcaption>
+          <span class="id">H71</span>
+          <span class="name">噪声抖动收敛</span>
+          <span class="en">Noise Jitter Settle</span>
+          <code>noise(i,tf)·A(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H72">
+        <a href="thumbnails/H72.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H72.png" alt="乱码解码" />
+        </a>
+        <figcaption>
+          <span class="id">H72</span>
+          <span class="name">乱码解码</span>
+          <span class="en">Scramble / Decode</span>
+          <code>lock(i)=i·d</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H73">
+        <a href="thumbnails/H73.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H73.png" alt="沙化重组" />
+        </a>
+        <figcaption>
+          <span class="id">H73</span>
+          <span class="name">沙化重组</span>
+          <span class="en">Sand Reform</span>
+          <code>lerp(rand,target,t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H74">
+        <a href="thumbnails/H74.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H74.png" alt="概率点亮" />
+        </a>
+        <figcaption>
+          <span class="id">H74</span>
+          <span class="name">概率点亮</span>
+          <span class="en">Stochastic Light-Up</span>
+          <code>rand(i)&lt;t</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H75">
+        <a href="thumbnails/H75.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H75.png" alt="布朗漂入" />
+        </a>
+        <figcaption>
+          <span class="id">H75</span>
+          <span class="name">布朗漂入</span>
+          <span class="en">Brownian Drift-In</span>
+          <code>pos+=randn·σ(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H76">
+        <a href="thumbnails/H76.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H76.png" alt="泊松雨滴" />
+        </a>
+        <figcaption>
+          <span class="id">H76</span>
+          <span class="name">泊松雨滴</span>
+          <span class="en">Poisson Rain</span>
+          <code>间隔~Exp(λ)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H77">
+        <a href="thumbnails/H77.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H77.png" alt="噪声场流入" />
+        </a>
+        <figcaption>
+          <span class="id">H77</span>
+          <span class="name">噪声场流入</span>
+          <span class="en">Curl-Noise Flow</span>
+          <code>v=curl(noise)(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H78">
+        <a href="thumbnails/H78.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H78.png" alt="信噪比上升" />
+        </a>
+        <figcaption>
+          <span class="id">H78</span>
+          <span class="name">信噪比上升</span>
+          <span class="en">SNR Rise</span>
+          <code>lerp(noise,glyph,t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H79">
+        <a href="thumbnails/H79.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H79.png" alt="抖动溶解" />
+        </a>
+        <figcaption>
+          <span class="id">H79</span>
+          <span class="name">抖动溶解</span>
+          <span class="en">Dither Dissolve</span>
+          <code>bayer(x,y)&lt;t</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="H80">
+        <a href="thumbnails/H80.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/H80.png" alt="量子坍缩" />
+        </a>
+        <figcaption>
+          <span class="id">H80</span>
+          <span class="name">量子坍缩</span>
+          <span class="en">Quantum Collapse</span>
+          <code>softmax→target</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>I · 粒子 · 重组</h2><div class="grid">
+      <figure class="card" id="I81">
+        <a href="thumbnails/I81.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/I81.png" alt="粒子聚合" />
+        </a>
+        <figcaption>
+          <span class="id">I81</span>
+          <span class="name">粒子聚合</span>
+          <span class="en">Particle Assemble</span>
+          <code>lerp(spawn,glyph,t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="I82">
+        <a href="thumbnails/I82.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/I82.png" alt="破碎逆放" />
+        </a>
+        <figcaption>
+          <span class="id">I82</span>
+          <span class="name">破碎逆放</span>
+          <span class="en">Reverse Shatter</span>
+          <code>lerp(scatter,0,p)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="I83">
+        <a href="thumbnails/I83.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/I83.png" alt="冲击波成形" />
+        </a>
+        <figcaption>
+          <span class="id">I83</span>
+          <span class="name">冲击波成形</span>
+          <span class="en">Shockwave Form</span>
+          <code>dist&lt;R(t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="I84">
+        <a href="thumbnails/I84.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/I84.png" alt="烟雾凝结" />
+        </a>
+        <figcaption>
+          <span class="id">I84</span>
+          <span class="name">烟雾凝结</span>
+          <span class="en">Smoke Condense</span>
+          <code>扩散半径∝(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="I85">
+        <a href="thumbnails/I85.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/I85.png" alt="磁粉吸附" />
+        </a>
+        <figcaption>
+          <span class="id">I85</span>
+          <span class="name">磁粉吸附</span>
+          <span class="en">Ferrofluid Pull</span>
+          <code>沿法线·noise·p</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="I86">
+        <a href="thumbnails/I86.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/I86.png" alt="体素堆叠" />
+        </a>
+        <figcaption>
+          <span class="id">I86</span>
+          <span class="name">体素堆叠</span>
+          <span class="en">Voxel Stack-Up</span>
+          <code>delay=(y+rand)·d</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="I87">
+        <a href="thumbnails/I87.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/I87.png" alt="拉链合拢" />
+        </a>
+        <figcaption>
+          <span class="id">I87</span>
+          <span class="name">拉链合拢</span>
+          <span class="en">Zipper Merge</span>
+          <code>x=±X(1-easeInOut)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="I88">
+        <a href="thumbnails/I88.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/I88.png" alt="细胞增殖" />
+        </a>
+        <figcaption>
+          <span class="id">I88</span>
+          <span class="name">细胞增殖</span>
+          <span class="en">Mitosis Spawn</span>
+          <code>N=2^(floor(tk))</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>J · 颜色 · 光影</h2><div class="grid">
+      <figure class="card" id="J89">
+        <a href="thumbnails/J89.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/J89.png" alt="色相旋转" />
+        </a>
+        <figcaption>
+          <span class="id">J89</span>
+          <span class="name">色相旋转</span>
+          <span class="en">Hue-Rotate In</span>
+          <code>hue=lerp(360n,0,t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="J90">
+        <a href="thumbnails/J90.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/J90.png" alt="流光扫光" />
+        </a>
+        <figcaption>
+          <span class="id">J90</span>
+          <span class="name">流光扫光</span>
+          <span class="en">Gradient Sweep</span>
+          <code>bgPos:-100%→200%</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="J91">
+        <a href="thumbnails/J91.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/J91.png" alt="冷暖渐变" />
+        </a>
+        <figcaption>
+          <span class="id">J91</span>
+          <span class="name">冷暖渐变</span>
+          <span class="en">Blackbody Warm-Up</span>
+          <code>色温 T(t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="J92">
+        <a href="thumbnails/J92.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/J92.png" alt="投影成形" />
+        </a>
+        <figcaption>
+          <span class="id">J92</span>
+          <span class="name">投影成形</span>
+          <span class="en">Long-Shadow Cast</span>
+          <code>L=lerp(Lmax,L0,p)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="J93">
+        <a href="thumbnails/J93.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/J93.png" alt="光照浮雕" />
+        </a>
+        <figcaption>
+          <span class="id">J93</span>
+          <span class="name">光照浮雕</span>
+          <span class="en">Lighting Emboss</span>
+          <code>max(0,N·L(t))</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="J94">
+        <a href="thumbnails/J94.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/J94.png" alt="霓虹点亮" />
+        </a>
+        <figcaption>
+          <span class="id">J94</span>
+          <span class="name">霓虹点亮</span>
+          <span class="en">Neon Sequential</span>
+          <code>seg delay=k·d</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>K · 故障 · 数字信号</h2><div class="grid">
+      <figure class="card" id="K95">
+        <a href="thumbnails/K95.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/K95.png" alt="RGB撕裂故障" />
+        </a>
+        <figcaption>
+          <span class="id">K95</span>
+          <span class="name">RGB撕裂故障</span>
+          <span class="en">Glitch Tear</span>
+          <code>step(rand(y,t)-θ)·D</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="K96">
+        <a href="thumbnails/K96.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/K96.png" alt="数据流下落" />
+        </a>
+        <figcaption>
+          <span class="id">K96</span>
+          <span class="name">数据流下落</span>
+          <span class="en">Datamosh Cascade</span>
+          <code>y=lerp(-H,0,easeOut)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="K97">
+        <a href="thumbnails/K97.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/K97.png" alt="方波频闪" />
+        </a>
+        <figcaption>
+          <span class="id">K97</span>
+          <span class="name">方波频闪</span>
+          <span class="en">Square-Wave Strobe</span>
+          <code>sin(ωt)&gt;0?1:0</code>
+        </figcaption>
+      </figure></div></section>
+<section><h2>L · 分形 · 混沌 · 高阶</h2><div class="grid">
+      <figure class="card" id="L98">
+        <a href="thumbnails/L98.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/L98.png" alt="分形递归展开" />
+        </a>
+        <figcaption>
+          <span class="id">L98</span>
+          <span class="name">分形递归展开</span>
+          <span class="en">Fractal Unfold</span>
+          <code>L 层∈[L/Lmax,...]</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="L99">
+        <a href="thumbnails/L99.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/L99.png" alt="混沌吸引子归位" />
+        </a>
+        <figcaption>
+          <span class="id">L99</span>
+          <span class="name">混沌吸引子归位</span>
+          <span class="en">Attractor Settle</span>
+          <code>洛伦兹·(1-t)</code>
+        </figcaption>
+      </figure>
+      <figure class="card" id="L100">
+        <a href="thumbnails/L100.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="thumbnails/L100.png" alt="逻辑斯蒂分岔" />
+        </a>
+        <figcaption>
+          <span class="id">L100</span>
+          <span class="name">逻辑斯蒂分岔</span>
+          <span class="en">Logistic Bifurcation</span>
+          <code>x_{n+1}=r·x_n(1-x_n)</code>
+        </figcaption>
+      </figure></div></section>
+<section>
+  <h2>场景模板（9）</h2>
+  <table><thead><tr><th>合成 ID</th><th>名称</th><th>角色</th><th>堆叠</th><th>props</th></tr></thead><tbody><tr><td><code>SceneHero</code></td><td>主标题</td><td>单段超大居中、戏剧化进出</td><td>否</td><td><code>entries[]</code></td></tr><tr><td><code>SceneCaption</code></td><td>字幕</td><td>下三分之一、快速进出/原地替换</td><td>否</td><td><code>lines[]</code></td></tr><tr><td><code>SceneList</code></td><td>逐条列表</td><td>条目依次入场并持续累积</td><td>是</td><td><code>items[]</code></td></tr><tr><td><code>SceneLowerThird</code></td><td>角标/署名</td><td>左下品牌条、滑入停留滑出</td><td>否</td><td><code>entries[]</code></td></tr><tr><td><code>SceneEmphasis</code></td><td>行内强调</td><td>句中某词高亮登场</td><td>否</td><td><code>lines[]</code></td></tr><tr><td><code>SceneGallery</code></td><td>目录陈列</td><td>顺序陈列效果库 + 历史栈</td><td>是</td><td><code>effectIds[]</code></td></tr><tr><td><code>SceneReel</code></td><td>串联成片</td><td>多场景按顺序拼成完整成片</td><td>否</td><td><code>segments[]</code></td></tr><tr><td><code>SceneThumb</code></td><td>缩略图</td><td>单原子静态预览（生成选效果缩略图）</td><td>否</td><td><code>effectId</code></td></tr><tr><td><code>SceneWall</code></td><td>动态预览墙</td><td>全部效果网格同步循环（人类一眼选效果）</td><td>否</td><td><code>effectIds[]</code></td></tr></tbody></table>
+</section>
+<script>
+  const q = document.getElementById('q');
+  const cards = [...document.querySelectorAll('.card')];
+  q.addEventListener('input', () => {
+    const v = q.value.trim().toLowerCase();
+    for (const c of cards) {
+      const hit = !v || c.textContent.toLowerCase().includes(v);
+      c.classList.toggle('hidden', !hit);
+    }
+    for (const s of document.querySelectorAll('section')) {
+      const grid = s.querySelector('.grid');
+      if (!grid) continue;
+      const any = [...grid.querySelectorAll('.card')].some((c) => !c.classList.contains('hidden'));
+      s.classList.toggle('hidden', !any);
+    }
+  });
+</script>
+</body>
+</html>

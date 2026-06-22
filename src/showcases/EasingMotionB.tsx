@@ -51,7 +51,8 @@ const Item: React.FC<{
   // 滑轨槽位中心 = 右端 - 右侧所有更新条目的占位宽度之和 - 自身半宽
   const railCenterX = (): number => {
     let acc = 0;
-    for (let j = index + 1; j < active; j++) acc += estRailW(items[j]) + RAIL_GAP;
+    const end = Math.min(active, items.length);
+    for (let j = index + 1; j < end; j++) acc += estRailW(items[j]) + RAIL_GAP;
     return RAIL_RIGHT_X - acc - estRailW(item) / 2;
   };
 

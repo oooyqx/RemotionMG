@@ -739,4 +739,62 @@
 
 ---
 
+## 五、效果库 + 场景模板架构（解耦）
+
+> **背景**：第四节把"主角入场 + 历史堆栈"这一套编排**强行套到全部 100 法**上，导致 glitch / 粒子这类本该是炸裂标题的效果，被硬接了一个字幕式的历史栈——这就是"割裂感"的来源。
+> **结论**：把**两个维度拆开**——「**动效原子**」只描述*单段文字怎么进 / 怎么出*；「**场景模板**」负责*布局 / 角色 / 停留 / 是否堆叠*。任意一个原子都能插进任意场景。
+
+### 5.1 核心抽象
+
+```ts
+type Phase = 'in' | 'out';
+
+// 动效原子：给定阶段 + 进度 t∈[0,1]，只返回作用在「一段文字」上的视觉。
+// 不含任何布局 / 定位 / 堆栈 / 角色信息。
+type TextEffect = {
+  id; category; name; enName; formula;
+  visual(args: {text; phase; t; frame; seed}): {
+    wrapper?: CSSProperties;  // 整体 transform / filter / opacity / clip-path …
+    content?: ReactNode;      // 逐字 / 粒子等自定义渲染（缺省即纯文字）
+  };
+};
+```
+
+统一的「在场度」抽象让同一段数学同时驱动进与出：
+
+```
+presence(phase, t) = phase==='in' ? ease(t) : 1 - ease(t)
+```
+
+- `presence: 0` → 不可见 / 极小；`1` → 完全在场。入场是 `0→1`，出场是 `1→0`。
+- 场景只决定调用哪个原子、给什么字号 / 配色 / 位置 / 时机，**不关心效果内部数学**。
+
+代码落点：
+- `src/textfx/types.ts` — `Phase` / `TextEffect` 等类型
+- `src/textfx/shared.tsx` — `presence` / `PerChar`（逐字）/ `Scramble`（解码）等共享构件
+- `src/textfx/library.tsx` — 把全部 **100 法**实现为纯原子（A 复用原 `opacityCurves`，B–L 按各自数学重写为纯进 / 出）
+- `src/textfx/TextFx.tsx` — 渲染器：把「场景给的 baseStyle」与「效果给的 wrapper / content」组合
+
+### 5.2 场景模板（6 个）
+
+| 场景 | 角色 | 布局 / 停留 | 堆叠 | 适配效果 | 合成 ID |
+|------|------|------------|------|----------|---------|
+| **Hero 主标题** | 单段超大、居中 | 戏剧化进 → 停留 → 戏剧化出 | 否 | 弹簧 / 3D / 螺旋 / 粒子 / glitch | `SceneHero` |
+| **Caption 字幕** | 下三分之一、带底条 | 快速进出、原地替换、停留为主 | 否 | 淡入 / 上移 / 打字 / 模糊 | `SceneCaption` |
+| **List 逐条列表** | 左对齐竖排 | 条目依次入场并**持续累积** | 累积 | 交错 / 级联 / 上移 | `SceneList` |
+| **Lower-third 角标** | 左下、品牌竖条 | 滑入 → 停留 → 滑出 | 否 | 方向位移 / 遮罩擦除 | `SceneLowerThird` |
+| **Emphasis 行内强调** | 句中某词高亮 | 周边先淡入、强调词登场 | 否 | 弹簧 / 辉光 / 解码 / 计数 | `SceneEmphasis` |
+| **Gallery 目录陈列** | 主角 + 历史栈 | 顺序推上主角位 | 左上历史栈 | 任意（把库当内容陈列） | `SceneGallery` |
+
+要点：
+- **Hero / Caption / Lower-third / Emphasis** 用统一的顺序编排 `seqAt(frame, {inF, holdF, outF})`：每条占一个 *入场 + 停留 + 出场* 的时槽，同一时刻只有一条在台上，**不堆叠**。
+- **List** 用 `i·stepFrames` 错峰触发，每条入场后**保持不消失**，体现"逐条建立"。
+- **Gallery** 是一个**特定但合法**的场景：把"效果库"本身当成内容来逐个陈列（沿用第四节的主角 + 历史栈思想），适合 demo reel / 浏览整库——而非单条生产用法。它现在直接消费 `library.tsx`，可一次过完整 100 法。
+
+> 同一个原子（如 `72 乱码解码`）可同时出现在 Hero（炸裂标题）、Caption（柔和字幕）、Emphasis（高亮关键词）三个场景里——这正是解耦后的核心收益。
+
+代码落点：`src/textfx/scenes/*.tsx`（各场景）+ `src/textfx/scenes/sequence.ts`（顺序时序）+ `src/textfx/demos.tsx`（demo 数据与合成入口）。
+
+---
+
 *文档用途：Remotion 文字动画的设计灵感与数学参考。后续实现时，将上述 `t`、`p`、`d`、`m`、`delay(i)` 等映射到 `useCurrentFrame` / `interpolate` / `spring` / `Easing` 即可。*

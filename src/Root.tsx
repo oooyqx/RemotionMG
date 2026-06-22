@@ -12,7 +12,20 @@ import {ParticleI} from './showcases/ParticleI';
 import {ColorLightJ} from './showcases/ColorLightJ';
 import {GlitchK} from './showcases/GlitchK';
 import {FractalChaosL} from './showcases/FractalChaosL';
-import {HeroDemo, HeroDemoFrames, CaptionDemo, CaptionDemoFrames} from './textfx/demos';
+import {
+  HeroDemo,
+  HeroDemoFrames,
+  CaptionDemo,
+  CaptionDemoFrames,
+  ListDemo,
+  ListDemoFrames,
+  LowerThirdDemo,
+  LowerThirdDemoFrames,
+  EmphasisDemo,
+  EmphasisDemoFrames,
+  GalleryDemo,
+  GalleryDemoFrames,
+} from './textfx/demos';
 import {totalFrames} from './effects/showcaseKit';
 import {
   CATEGORY_B,
@@ -113,6 +126,10 @@ export const RemotionRoot: React.FC = () => {
       />
       <Composition id="SceneHero" component={HeroDemo} durationInFrames={HeroDemoFrames} {...COMMON} />
       <Composition id="SceneCaption" component={CaptionDemo} durationInFrames={CaptionDemoFrames} {...COMMON} />
+      <Composition id="SceneList" component={ListDemo} durationInFrames={ListDemoFrames} {...COMMON} />
+      <Composition id="SceneLowerThird" component={LowerThirdDemo} durationInFrames={LowerThirdDemoFrames} {...COMMON} />
+      <Composition id="SceneEmphasis" component={EmphasisDemo} durationInFrames={EmphasisDemoFrames} {...COMMON} />
+      <Composition id="SceneGallery" component={GalleryDemo} durationInFrames={GalleryDemoFrames} {...COMMON} />
     </>
   );
 };

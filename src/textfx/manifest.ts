@@ -1,5 +1,9 @@
 import {EFFECTS} from './library';
 
+/** effectId → 缩略图相对路径（相对 docs/）。 */
+export const thumbPath = (e: {category: string; id: number}): string =>
+  `thumbnails/${e.category}${String(e.id).padStart(2, '0')}.png`;
+
 /** 机读的效果清单条目（不含渲染函数）。 */
 export type EffectManifestEntry = {
   id: number;
@@ -7,15 +11,17 @@ export type EffectManifestEntry = {
   name: string;
   enName: string;
   formula: string;
+  thumbnail: string;
 };
 
-/** 全部 100 个动效原子的机读清单，供其他 AI 查询「有哪些效果可用」。 */
+/** 全部 100 个动效原子的机读清单，供其他 AI 查询「有哪些效果可用」+ 选效果缩略图。 */
 export const EFFECT_MANIFEST: EffectManifestEntry[] = EFFECTS.map((e) => ({
   id: e.id,
   category: e.category,
   name: e.name,
   enName: e.enName,
   formula: e.formula,
+  thumbnail: thumbPath(e),
 }));
 
 /** 各场景的机读说明（id 即 Remotion 合成 id）。 */
@@ -34,6 +40,8 @@ export const SCENE_MANIFEST: SceneManifestEntry[] = [
   {id: 'SceneLowerThird', name: '角标/署名', role: '左下品牌条、滑入停留滑出', stacks: false, propsKey: 'entries[]'},
   {id: 'SceneEmphasis', name: '行内强调', role: '句中某词高亮登场', stacks: false, propsKey: 'lines[]'},
   {id: 'SceneGallery', name: '目录陈列', role: '顺序陈列效果库 + 历史栈', stacks: true, propsKey: 'effectIds[]'},
+  {id: 'SceneReel', name: '串联成片', role: '多场景按顺序拼成完整成片', stacks: false, propsKey: 'segments[]'},
+  {id: 'SceneThumb', name: '缩略图', role: '单原子静态预览（生成选效果缩略图）', stacks: false, propsKey: 'effectId'},
 ];
 
 export const CATEGORIES: Record<string, string> = {

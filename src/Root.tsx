@@ -18,6 +18,8 @@ import {ListScene} from './textfx/scenes/ListScene';
 import {LowerThirdScene} from './textfx/scenes/LowerThirdScene';
 import {EmphasisScene} from './textfx/scenes/EmphasisScene';
 import {GalleryScene} from './textfx/scenes/GalleryScene';
+import {ReelScene} from './textfx/scenes/ReelScene';
+import {ThumbScene} from './textfx/scenes/ThumbScene';
 import {
   heroSchema,
   captionSchema,
@@ -25,12 +27,15 @@ import {
   lowerThirdSchema,
   emphasisSchema,
   gallerySchema,
+  reelSchema,
+  thumbSchema,
   heroFrames,
   captionFrames,
   listFrames,
   lowerThirdFrames,
   emphasisFrames,
   galleryFrames,
+  reelFrames,
 } from './textfx/schemas';
 import {
   HERO_DEFAULT,
@@ -39,6 +44,8 @@ import {
   LOWER_THIRD_DEFAULT,
   EMPHASIS_DEFAULT,
   GALLERY_DEFAULT,
+  REEL_DEFAULT,
+  THUMB_DEFAULT,
 } from './textfx/presets';
 import {totalFrames} from './effects/showcaseKit';
 import {
@@ -190,6 +197,23 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={GALLERY_DEFAULT}
         durationInFrames={galleryFrames(GALLERY_DEFAULT)}
         calculateMetadata={({props}) => ({durationInFrames: galleryFrames(props)})}
+        {...COMMON}
+      />
+      <Composition
+        id="SceneReel"
+        component={ReelScene}
+        schema={reelSchema}
+        defaultProps={REEL_DEFAULT}
+        durationInFrames={reelFrames(REEL_DEFAULT)}
+        calculateMetadata={({props}) => ({durationInFrames: reelFrames(props)})}
+        {...COMMON}
+      />
+      <Composition
+        id="SceneThumb"
+        component={ThumbScene}
+        schema={thumbSchema}
+        defaultProps={THUMB_DEFAULT}
+        durationInFrames={1}
         {...COMMON}
       />
     </>

@@ -8,6 +8,7 @@
     "build": "remotion render src/index.ts TextMotion out/video.mp4",
     "typecheck": "tsc --noEmit",
     "gen:manifest": "esbuild scripts/gen-manifest.ts --bundle --platform=node --format=cjs --outfile=node_modules/.cache/gen-manifest.cjs --loader:.tsx=tsx && node node_modules/.cache/gen-manifest.cjs",
+    "gen:thumbnails": "node scripts/gen-thumbnails.mjs",
     "upgrade": "remotion upgrade"
   },
   "dependencies": {

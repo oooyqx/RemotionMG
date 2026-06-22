@@ -81,6 +81,28 @@ export const gallerySchema = z.object({
 });
 export type GalleryProps = z.infer<typeof gallerySchema>;
 
+export const thumbSchema = z.object({
+  effectId: effectIdSchema,
+  background: z.string(),
+  color: z.string(),
+  fontSize: z.number().positive(),
+});
+export type ThumbProps = z.infer<typeof thumbSchema>;
+
+/** 多场景串联成片：每个片段 = {type, props}。 */
+export const segmentSchema = z.discriminatedUnion('type', [
+  z.object({type: z.literal('hero'), props: heroSchema}),
+  z.object({type: z.literal('caption'), props: captionSchema}),
+  z.object({type: z.literal('list'), props: listSchema}),
+  z.object({type: z.literal('lowerThird'), props: lowerThirdSchema}),
+  z.object({type: z.literal('emphasis'), props: emphasisSchema}),
+  z.object({type: z.literal('gallery'), props: gallerySchema}),
+]);
+export type ReelSegment = z.infer<typeof segmentSchema>;
+
+export const reelSchema = z.object({segments: z.array(segmentSchema)});
+export type ReelProps = z.infer<typeof reelSchema>;
+
 /** 时长计算（帧）。供 Remotion calculateMetadata 使用。 */
 const slot = (t: Timing): number => t.inF + t.holdF + t.outF;
 
@@ -95,3 +117,23 @@ export const emphasisFrames = (p: {lines: unknown[]; timing: Timing}): number =>
 export const listFrames = (p: {items: unknown[]; stepFrames: number; inFrames: number}): number =>
   Math.max(0, p.items.length - 1) * p.stepFrames + p.inFrames + 30;
 export const galleryFrames = (p: {effectIds: number[]}): number => (p.effectIds.length + 3) * 40;
+
+export const segmentFrames = (s: ReelSegment): number => {
+  switch (s.type) {
+    case 'hero':
+      return heroFrames(s.props);
+    case 'caption':
+      return captionFrames(s.props);
+    case 'list':
+      return listFrames(s.props);
+    case 'lowerThird':
+      return lowerThirdFrames(s.props);
+    case 'emphasis':
+      return emphasisFrames(s.props);
+    case 'gallery':
+      return galleryFrames(s.props);
+  }
+};
+
+export const reelFrames = (p: {segments: ReelSegment[]}): number =>
+  Math.max(1, p.segments.reduce((acc, s) => acc + segmentFrames(s), 0));

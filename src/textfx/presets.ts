@@ -6,6 +6,8 @@ import {
   LowerThirdProps,
   EmphasisProps,
   GalleryProps,
+  ReelProps,
+  ThumbProps,
 } from './schemas';
 import {EFFECTS} from './library';
 
@@ -88,4 +90,71 @@ export const GALLERY_DEFAULT: GalleryProps = {
   background: 'radial-gradient(circle at 50% 42%, #16213f 0%, #0a0e1c 60%, #05060d 100%)',
   color: '#ffffff',
   fontSize: 150,
+};
+
+export const THUMB_DEFAULT: ThumbProps = {
+  effectId: 1,
+  background: 'radial-gradient(circle at 50% 45%, #1b2140 0%, #0a0e1c 70%)',
+  color: '#ffffff',
+  fontSize: 120,
+};
+
+/** 默认成片：片头(Hero) → 列表(List) → 角标(LowerThird) → 字幕(Caption) → 强调(Emphasis) → 结尾(Hero)。 */
+export const REEL_DEFAULT: ReelProps = {
+  segments: [
+    {
+      type: 'hero',
+      props: {
+        entries: [{text: '效果库 + 场景模板', sub: 'Text FX · Scene Templates', effectId: 21}],
+        timing: {inF: 20, holdF: 34, outF: 16},
+        background: HERO_DEFAULT.background,
+        color: '#ffffff',
+        fontSize: 150,
+      },
+    },
+    {type: 'list', props: LIST_DEFAULT},
+    {
+      type: 'lowerThird',
+      props: {
+        entries: [{name: '林述白', role: '动态设计师 / Motion Designer', effectId: 12}],
+        timing: {inF: 16, holdF: 40, outF: 14},
+        background: LOWER_THIRD_DEFAULT.background,
+        accent: '#ff7a3c',
+      },
+    },
+    {
+      type: 'caption',
+      props: {
+        lines: [
+          {text: '同一个原子，可插进任意场景。', effectId: 51},
+          {text: '传 JSON 即可零改代码出片。', effectId: 31},
+        ],
+        timing: {inF: 10, holdF: 44, outF: 8},
+        background: CAPTION_DEFAULT.background,
+        barColor: CAPTION_DEFAULT.barColor,
+        color: '#f2f6ff',
+        fontSize: 60,
+      },
+    },
+    {
+      type: 'emphasis',
+      props: {
+        lines: [{pre: '场景模板共 ', token: '6', post: ' 个。', effectId: 21, accent: '#ffd23f'}],
+        timing: {inF: 16, holdF: 40, outF: 12},
+        background: EMPHASIS_DEFAULT.background,
+        color: '#e7ecff',
+        fontSize: 88,
+      },
+    },
+    {
+      type: 'hero',
+      props: {
+        entries: [{text: '谢谢观看', sub: 'github.com/claspskymarch/RemotionMG', effectId: 34}],
+        timing: {inF: 20, holdF: 36, outF: 18},
+        background: HERO_DEFAULT.background,
+        color: '#ffffff',
+        fontSize: 170,
+      },
+    },
+  ],
 };

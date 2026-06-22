@@ -3,7 +3,7 @@
 本项目把文字动效拆成两层，**其他 AI / 程序只需传 JSON props 即可渲染**，无需改动源码。
 
 - **动效原子**：100 个纯入场/出场效果，`id ∈ [1, 100]`（见下文清单）
-- **场景模板**：6 个布局/角色模板，每个对应一个 Remotion 合成（Composition），props 化 + 自动算时长
+- **场景模板**：6 个布局/角色模板 + Reel 串联成片 + Thumb 缩略图，每个对应一个 Remotion 合成（Composition），props 化 + 自动算时长
 
 ## 1. 先查"有哪些可用"
 
@@ -13,11 +13,14 @@
 {
   "categories": { "A": "透明度 · 多项式与指数曲线", ... },
   "effects": [ { "id": 1, "category": "A", "name": "线性淡入", "enName": "Linear Fade", "formula": "opacity = t" }, ... ],  // 共 100 条
-  "scenes":  [ { "id": "SceneHero", "name": "主标题", "role": "...", "stacks": false, "propsKey": "entries[]" }, ... ]      // 共 6 条
+  "scenes":  [ { "id": "SceneHero", "name": "主标题", "role": "...", "stacks": false, "propsKey": "entries[]" }, ... ]      // 共 8 条（含 Reel/Thumb）
 }
 ```
 
-重新生成（改了效果/场景后）：`npm run gen:manifest`
+`effects[].thumbnail` 指向该效果的预览缩略图（`docs/thumbnails/<类别><编号>.png`，如 `thumbnails/K95.png`），
+AI 可据此"看图选效果"。整库一览见 [`docs/thumbnails-contact-sheet.png`](./thumbnails-contact-sheet.png)。
+
+重新生成：`npm run gen:manifest`（清单）、`npm run gen:thumbnails`（100 张缩略图，需先 `npm i`）。
 
 ## 2. 渲染：传 `--props` 即可
 
@@ -81,6 +84,23 @@ npx remotion render src/index.ts SceneHero hero.mp4 --props='{
 **SceneGallery · 目录陈列**（顺序陈列效果库 + 历史栈；`effectIds` 留空数组=全部 100 法）
 ```bash
 --props='{"effectIds":[21,23,34,47,81,72,95,99],"background":"#0a0e1c","color":"#ffffff","fontSize":150}'
+```
+
+**SceneReel · 串联成片**（把多个场景片段顺序拼成完整成片；时长自动求和）
+```bash
+npx remotion render src/index.ts SceneReel reel.mp4 --props='{
+  "segments":[
+    {"type":"hero","props":{"entries":[{"text":"片头","effectId":21}],"timing":{"inF":20,"holdF":34,"outF":16},"background":"#0c0e1c","color":"#fff","fontSize":150}},
+    {"type":"caption","props":{"lines":[{"text":"一句解说","effectId":51}],"timing":{"inF":10,"holdF":44,"outF":8},"background":"#0a1020","barColor":"rgba(10,14,26,0.72)","color":"#f2f6ff","fontSize":60}},
+    {"type":"hero","props":{"entries":[{"text":"谢谢观看","effectId":34}],"timing":{"inF":20,"holdF":36,"outF":18},"background":"#0c0e1c","color":"#fff","fontSize":170}}
+  ]
+}'
+```
+`segments[].type` ∈ `hero|caption|list|lowerThird|emphasis|gallery`，`props` 即对应场景的 props。
+
+**SceneThumb · 缩略图**（单原子静态预览，用于批量生成选效果缩略图）
+```bash
+npx remotion still src/index.ts SceneThumb thumb.png --frame=0 --props='{"effectId":72,"background":"#0a0e1c","color":"#fff","fontSize":56}'
 ```
 
 > 提示：Windows / 部分 shell 对单引号支持差，可把 JSON 写到文件再用 `--props=./props.json`。

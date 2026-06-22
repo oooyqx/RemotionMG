@@ -20,700 +20,800 @@
       "category": "A",
       "name": "线性淡入",
       "enName": "Linear Fade",
-      "formula": "opacity = t"
+      "formula": "opacity = t",
+      "thumbnail": "thumbnails/A01.png"
     },
     {
       "id": 2,
       "category": "A",
       "name": "二次淡入",
       "enName": "Quadratic Ease-In",
-      "formula": "opacity = t²"
+      "formula": "opacity = t²",
+      "thumbnail": "thumbnails/A02.png"
     },
     {
       "id": 3,
       "category": "A",
       "name": "三次缓出",
       "enName": "Cubic Ease-Out",
-      "formula": "opacity = 1 − (1 − t)³"
+      "formula": "opacity = 1 − (1 − t)³",
+      "thumbnail": "thumbnails/A03.png"
     },
     {
       "id": 4,
       "category": "A",
       "name": "指数冲入",
       "enName": "Exponential Ease-Out",
-      "formula": "opacity = 1 − 2^(−10t)"
+      "formula": "opacity = 1 − 2^(−10t)",
+      "thumbnail": "thumbnails/A04.png"
     },
     {
       "id": 5,
       "category": "A",
       "name": "对数渐显",
       "enName": "Logarithmic Reveal",
-      "formula": "opacity = ln(1 + (e−1)·t)"
+      "formula": "opacity = ln(1 + (e−1)·t)",
+      "thumbnail": "thumbnails/A05.png"
     },
     {
       "id": 6,
       "category": "A",
       "name": "Sigmoid 渐显",
       "enName": "Logistic S-Curve",
-      "formula": "opacity = 1 / (1 + e^(−k(t−0.5)))"
+      "formula": "opacity = 1 / (1 + e^(−k(t−0.5)))",
+      "thumbnail": "thumbnails/A06.png"
     },
     {
       "id": 7,
       "category": "A",
       "name": "高斯闪现",
       "enName": "Gaussian Flash-In",
-      "formula": "b = 1 + A·e^(−(t−μ)²/2σ²)"
+      "formula": "b = 1 + A·e^(−(t−μ)²/2σ²)",
+      "thumbnail": "thumbnails/A07.png"
     },
     {
       "id": 8,
       "category": "A",
       "name": "伽马淡入",
       "enName": "Gamma Fade",
-      "formula": "opacity = t^(1/2.2)"
+      "formula": "opacity = t^(1/2.2)",
+      "thumbnail": "thumbnails/A08.png"
     },
     {
       "id": 9,
       "category": "A",
       "name": "双指数过冲",
       "enName": "Bi-Exponential Overshoot",
-      "formula": "v = (1−e^(−at))(1+b·e^(−ct))"
+      "formula": "v = (1−e^(−at))(1+b·e^(−ct))",
+      "thumbnail": "thumbnails/A09.png"
     },
     {
       "id": 10,
       "category": "A",
       "name": "幂律阶梯",
       "enName": "Power-Step Fade",
-      "formula": "opacity = ⌊t·k⌋/k (段内 t²)"
+      "formula": "opacity = ⌊t·k⌋/k (段内 t²)",
+      "thumbnail": "thumbnails/A10.png"
     },
     {
       "id": 11,
       "category": "B",
       "name": "上移淡入",
       "enName": "Slide-Up Fade",
-      "formula": "y=lerp(50,0,easeOut)"
+      "formula": "y=lerp(50,0,easeOut)",
+      "thumbnail": "thumbnails/B11.png"
     },
     {
       "id": 12,
       "category": "B",
       "name": "回退超调滑入",
       "enName": "Back Ease",
-      "formula": "easeOutBack(t)"
+      "formula": "easeOutBack(t)",
+      "thumbnail": "thumbnails/B12.png"
     },
     {
       "id": 13,
       "category": "B",
       "name": "弹性滑入",
       "enName": "Elastic Slide",
-      "formula": "2^(-10t)·sin(...)"
+      "formula": "2^(-10t)·sin(...)",
+      "thumbnail": "thumbnails/B13.png"
     },
     {
       "id": 14,
       "category": "B",
       "name": "重力下坠",
       "enName": "Gravity Drop",
-      "formula": "y=½·g·t²"
+      "formula": "y=½·g·t²",
+      "thumbnail": "thumbnails/B14.png"
     },
     {
       "id": 15,
       "category": "B",
       "name": "抛物线抛入",
       "enName": "Projectile Toss",
-      "formula": "y=h·4t(1-t)"
+      "formula": "y=h·4t(1-t)",
+      "thumbnail": "thumbnails/B15.png"
     },
     {
       "id": 16,
       "category": "B",
       "name": "阻尼回正",
       "enName": "Damped Settle",
-      "formula": "A·e^(-ζt)·cos(ωt)"
+      "formula": "A·e^(-ζt)·cos(ωt)",
+      "thumbnail": "thumbnails/B16.png"
     },
     {
       "id": 17,
       "category": "B",
       "name": "速度模糊滑入",
       "enName": "Motion-Blur Slide",
-      "formula": "blur=k·|v|"
+      "formula": "blur=k·|v|",
+      "thumbnail": "thumbnails/B17.png"
     },
     {
       "id": 18,
       "category": "B",
       "name": "惯性甩入",
       "enName": "Inertia Whip",
-      "formula": "easeOutExpo + skew"
+      "formula": "easeOutExpo + skew",
+      "thumbnail": "thumbnails/B18.png"
     },
     {
       "id": 19,
       "category": "B",
       "name": "磁吸归位",
       "enName": "Magnetic Snap",
-      "formula": "pos+=(t-pos)·k"
+      "formula": "pos+=(t-pos)·k",
+      "thumbnail": "thumbnails/B19.png"
     },
     {
       "id": 20,
       "category": "B",
       "name": "折线入场",
       "enName": "Polyline Path-In",
-      "formula": "分段折线插值"
+      "formula": "分段折线插值",
+      "thumbnail": "thumbnails/B20.png"
     },
     {
       "id": 21,
       "category": "C",
       "name": "弹簧弹出",
       "enName": "Spring Pop",
-      "formula": "spring(scale 0→1)"
+      "formula": "spring(scale 0→1)",
+      "thumbnail": "thumbnails/C21.png"
     },
     {
       "id": 22,
       "category": "C",
       "name": "挤压拉伸",
       "enName": "Squash & Stretch",
-      "formula": "sX·sY=const"
+      "formula": "sX·sY=const",
+      "thumbnail": "thumbnails/C22.png"
     },
     {
       "id": 23,
       "category": "C",
       "name": "旋转缩放螺入",
       "enName": "Rotate-Zoom Spiral",
-      "formula": "rot:180°→0°"
+      "formula": "rot:180°→0°",
+      "thumbnail": "thumbnails/C23.png"
     },
     {
       "id": 24,
       "category": "C",
       "name": "透视纵深推入",
       "enName": "Z-Push Perspective",
-      "formula": "translateZ:-800→0"
+      "formula": "translateZ:-800→0",
+      "thumbnail": "thumbnails/C24.png"
     },
     {
       "id": 25,
       "category": "C",
       "name": "焦点拉近",
       "enName": "Dolly Zoom",
-      "formula": "scale↑·persp↓"
+      "formula": "scale↑·persp↓",
+      "thumbnail": "thumbnails/C25.png"
     },
     {
       "id": 26,
       "category": "C",
       "name": "翻牌立体",
       "enName": "3D Card Flip",
-      "formula": "rotateY:90°→0°"
+      "formula": "rotateY:90°→0°",
+      "thumbnail": "thumbnails/C26.png"
     },
     {
       "id": 27,
       "category": "C",
       "name": "折纸展开",
       "enName": "Origami Unfold",
-      "formula": "rotateX 分段"
+      "formula": "rotateX 分段",
+      "thumbnail": "thumbnails/C27.png"
     },
     {
       "id": 28,
       "category": "C",
       "name": "镜像对开",
       "enName": "Mirror Split Open",
-      "formula": "上下半分"
+      "formula": "上下半分",
+      "thumbnail": "thumbnails/C28.png"
     },
     {
       "id": 29,
       "category": "C",
       "name": "厚度生长",
       "enName": "Extrude Grow",
-      "formula": "K=round(maxK·t)"
+      "formula": "K=round(maxK·t)",
+      "thumbnail": "thumbnails/C29.png"
     },
     {
       "id": 30,
       "category": "C",
       "name": "弹性拉伸归位",
       "enName": "Elastic Stretch",
-      "formula": "sY=1+(S-1)·elastic"
+      "formula": "sY=1+(S-1)·elastic",
+      "thumbnail": "thumbnails/C30.png"
     },
     {
       "id": 31,
       "category": "D",
       "name": "模糊聚焦",
       "enName": "Blur-to-Focus",
-      "formula": "blur:16→0"
+      "formula": "blur:16→0",
+      "thumbnail": "thumbnails/D31.png"
     },
     {
       "id": 32,
       "category": "D",
       "name": "失焦呼吸",
       "enName": "Focus Breathing",
-      "formula": "blur=|sin(πtn)|A(1-t)"
+      "formula": "blur=|sin(πtn)|A(1-t)",
+      "thumbnail": "thumbnails/D32.png"
     },
     {
       "id": 33,
       "category": "D",
       "name": "墨水晕染",
       "enName": "Ink Bleed",
-      "formula": "blur=20(1-t)²"
+      "formula": "blur=20(1-t)²",
+      "thumbnail": "thumbnails/D33.png"
     },
     {
       "id": 34,
       "category": "D",
       "name": "辉光绽放",
       "enName": "Glow Bloom",
-      "formula": "shadowBlur=A·e^(-kt)"
+      "formula": "shadowBlur=A·e^(-kt)",
+      "thumbnail": "thumbnails/D34.png"
     },
     {
       "id": 35,
       "category": "D",
       "name": "色差散焦",
       "enName": "Chromatic Aberration",
-      "formula": "Δ=D(1-t)"
+      "formula": "Δ=D(1-t)",
+      "thumbnail": "thumbnails/D35.png"
     },
     {
       "id": 36,
       "category": "D",
       "name": "半调网点",
       "enName": "Halftone Develop",
-      "formula": "r=R(1-t)"
+      "formula": "r=R(1-t)",
+      "thumbnail": "thumbnails/D36.png"
     },
     {
       "id": 37,
       "category": "D",
       "name": "像素化解析",
       "enName": "Pixelate Resolve",
-      "formula": "b=round(B(1-t))+1"
+      "formula": "b=round(B(1-t))+1",
+      "thumbnail": "thumbnails/D37.png"
     },
     {
       "id": 38,
       "category": "D",
       "name": "热浪扭曲",
       "enName": "Heat-Haze Reveal",
-      "formula": "d=noise(xf+t)A(1-t)"
+      "formula": "d=noise(xf+t)A(1-t)",
+      "thumbnail": "thumbnails/D38.png"
     },
     {
       "id": 39,
       "category": "E",
       "name": "正弦行波",
       "enName": "Traveling Sine",
-      "formula": "y=A·sin(2πfu-ωt)"
+      "formula": "y=A·sin(2πfu-ωt)",
+      "thumbnail": "thumbnails/E39.png"
     },
     {
       "id": 40,
       "category": "E",
       "name": "余弦摆入",
       "enName": "Cosine Pendulum",
-      "formula": "θ₀·cos(ωt)·e^(-kt)"
+      "formula": "θ₀·cos(ωt)·e^(-kt)",
+      "thumbnail": "thumbnails/E40.png"
     },
     {
       "id": 41,
       "category": "E",
       "name": "驻波涟漪",
       "enName": "Standing Wave",
-      "formula": "A·sin(ku)cos(ωt)"
+      "formula": "A·sin(ku)cos(ωt)",
+      "thumbnail": "thumbnails/E41.png"
     },
     {
       "id": 42,
       "category": "E",
       "name": "心跳脉动",
       "enName": "Heartbeat Pulse",
-      "formula": "1+A(sinωt+½sin2ωt)"
+      "formula": "1+A(sinωt+½sin2ωt)",
+      "thumbnail": "thumbnails/E42.png"
     },
     {
       "id": 43,
       "category": "E",
       "name": "正切骤变",
       "enName": "Tangent Snap",
-      "formula": "y=A·tan((t-.5)θ)"
+      "formula": "y=A·tan((t-.5)θ)",
+      "thumbnail": "thumbnails/E43.png"
     },
     {
       "id": 44,
       "category": "E",
       "name": "李萨如聚合",
       "enName": "Lissajous Gather",
-      "formula": "sin(aφ+δ),sin(bφ)"
+      "formula": "sin(aφ+δ),sin(bφ)",
+      "thumbnail": "thumbnails/E44.png"
     },
     {
       "id": 45,
       "category": "E",
       "name": "阻尼正弦定格",
       "enName": "Damped Sine",
-      "formula": "A·e^(-ζt)·sin(ωt+φ)"
+      "formula": "A·e^(-ζt)·sin(ωt+φ)",
+      "thumbnail": "thumbnails/E45.png"
     },
     {
       "id": 46,
       "category": "E",
       "name": "拍频闪烁",
       "enName": "Beat Flicker",
-      "formula": "cos(2πf₁t)cos(2πf₂t)"
+      "formula": "cos(2πf₁t)cos(2πf₂t)",
+      "thumbnail": "thumbnails/E46.png"
     },
     {
       "id": 47,
       "category": "E",
       "name": "螺旋极坐标",
       "enName": "Polar Spiral-In",
-      "formula": "r=R(1-t),θ=θ₀+kt"
+      "formula": "r=R(1-t),θ=θ₀+kt",
+      "thumbnail": "thumbnails/E47.png"
     },
     {
       "id": 48,
       "category": "E",
       "name": "波纹扩散",
       "enName": "Ripple Expand",
-      "formula": "delay=dist·c"
+      "formula": "delay=dist·c",
+      "thumbnail": "thumbnails/E48.png"
     },
     {
       "id": 49,
       "category": "E",
       "name": "旗帜飘动",
       "enName": "Flag Wave",
-      "formula": "A·sin(ku-ωt)(1-t)"
+      "formula": "A·sin(ku-ωt)(1-t)",
+      "thumbnail": "thumbnails/E49.png"
     },
     {
       "id": 50,
       "category": "E",
       "name": "摆线滚入",
       "enName": "Cycloid Roll-In",
-      "formula": "x=R(φ-sinφ)"
+      "formula": "x=R(φ-sinφ)",
+      "thumbnail": "thumbnails/E50.png"
     },
     {
       "id": 51,
       "category": "F",
       "name": "打字机",
       "enName": "Typewriter",
-      "formula": "n=floor(t·N)"
+      "formula": "n=floor(t·N)",
+      "thumbnail": "thumbnails/F51.png"
     },
     {
       "id": 52,
       "category": "F",
       "name": "线性交错",
       "enName": "Linear Stagger",
-      "formula": "delay(i)=i·d"
+      "formula": "delay(i)=i·d",
+      "thumbnail": "thumbnails/F52.png"
     },
     {
       "id": 53,
       "category": "F",
       "name": "居中开花",
       "enName": "Center-Out Bloom",
-      "formula": "delay=|i-N/2|·d"
+      "formula": "delay=|i-N/2|·d",
+      "thumbnail": "thumbnails/F53.png"
     },
     {
       "id": 54,
       "category": "F",
       "name": "随机浮现",
       "enName": "Random Stagger",
-      "formula": "delay=rand(i)·D"
+      "formula": "delay=rand(i)·D",
+      "thumbnail": "thumbnails/F54.png"
     },
     {
       "id": 55,
       "category": "F",
       "name": "高斯交错",
       "enName": "Gaussian Stagger",
-      "formula": "∝1-e^(-(u-.5)²/2σ²)"
+      "formula": "∝1-e^(-(u-.5)²/2σ²)",
+      "thumbnail": "thumbnails/F55.png"
     },
     {
       "id": 56,
       "category": "F",
       "name": "逐字波浪",
       "enName": "Per-Char Wave",
-      "formula": "y=A·sin(ωt-iΔφ)"
+      "formula": "y=A·sin(ωt-iΔφ)",
+      "thumbnail": "thumbnails/F56.png"
     },
     {
       "id": 57,
       "category": "F",
       "name": "多米诺翻倒",
       "enName": "Domino Topple",
-      "formula": "rot=90°(1-τ)"
+      "formula": "rot=90°(1-τ)",
+      "thumbnail": "thumbnails/F57.png"
     },
     {
       "id": 58,
       "category": "F",
       "name": "字距收拢",
       "enName": "Spacing Collapse",
-      "formula": "spacing=lerp(W,0,t)"
+      "formula": "spacing=lerp(W,0,t)",
+      "thumbnail": "thumbnails/F58.png"
     },
     {
       "id": 59,
       "category": "F",
       "name": "逐行上推",
       "enName": "Line Mask Up",
-      "formula": "y:100%→0"
+      "formula": "y:100%→0",
+      "thumbnail": "thumbnails/F59.png"
     },
     {
       "id": 60,
       "category": "F",
       "name": "词级弹入",
       "enName": "Word Pop",
-      "formula": "delay(w)=w·d"
+      "formula": "delay(w)=w·d",
+      "thumbnail": "thumbnails/F60.png"
     },
     {
       "id": 61,
       "category": "F",
       "name": "卷帘百叶",
       "enName": "Vertical Blinds",
-      "formula": "scaleX:0→1"
+      "formula": "scaleX:0→1",
+      "thumbnail": "thumbnails/F61.png"
     },
     {
       "id": 62,
       "category": "F",
       "name": "蛇形进场",
       "enName": "Boustrophedon",
-      "formula": "蛇形重排 delay"
+      "formula": "蛇形重排 delay",
+      "thumbnail": "thumbnails/F62.png"
     },
     {
       "id": 63,
       "category": "G",
       "name": "横向擦除",
       "enName": "Horizontal Wipe",
-      "formula": "inset(0 (100(1-p))% 0 0)"
+      "formula": "inset(0 (100(1-p))% 0 0)",
+      "thumbnail": "thumbnails/G63.png"
     },
     {
       "id": 64,
       "category": "G",
       "name": "对角揭示",
       "enName": "Diagonal Reveal",
-      "formula": "polygon(...) 推进"
+      "formula": "polygon(...) 推进",
+      "thumbnail": "thumbnails/G64.png"
     },
     {
       "id": 65,
       "category": "G",
       "name": "圆形光圈",
       "enName": "Circular Iris",
-      "formula": "circle(p·150%)"
+      "formula": "circle(p·150%)",
+      "thumbnail": "thumbnails/G65.png"
     },
     {
       "id": 66,
       "category": "G",
       "name": "马赛克揭示",
       "enName": "Mosaic Reveal",
-      "formula": "delay=rand(r,c)·D"
+      "formula": "delay=rand(r,c)·D",
+      "thumbnail": "thumbnails/G66.png"
     },
     {
       "id": 67,
       "category": "G",
       "name": "扫描线显影",
       "enName": "Scanline Develop",
-      "formula": "y<lerp(0,H,t)"
+      "formula": "y<lerp(0,H,t)",
+      "thumbnail": "thumbnails/G67.png"
     },
     {
       "id": 68,
       "category": "G",
       "name": "形状蒙版",
       "enName": "SVG Mask Grow",
-      "formula": "mask scale=p"
+      "formula": "mask scale=p",
+      "thumbnail": "thumbnails/G68.png"
     },
     {
       "id": 69,
       "category": "G",
       "name": "笔画手写",
       "enName": "Handwriting",
-      "formula": "dashoffset=L(1-p)"
+      "formula": "dashoffset=L(1-p)",
+      "thumbnail": "thumbnails/G69.png"
     },
     {
       "id": 70,
       "category": "G",
       "name": "液面上涨",
       "enName": "Liquid Fill Up",
-      "formula": "h=lerp(0,H,p)"
+      "formula": "h=lerp(0,H,p)",
+      "thumbnail": "thumbnails/G70.png"
     },
     {
       "id": 71,
       "category": "H",
       "name": "噪声抖动收敛",
       "enName": "Noise Jitter Settle",
-      "formula": "noise(i,tf)·A(1-t)"
+      "formula": "noise(i,tf)·A(1-t)",
+      "thumbnail": "thumbnails/H71.png"
     },
     {
       "id": 72,
       "category": "H",
       "name": "乱码解码",
       "enName": "Scramble / Decode",
-      "formula": "lock(i)=i·d"
+      "formula": "lock(i)=i·d",
+      "thumbnail": "thumbnails/H72.png"
     },
     {
       "id": 73,
       "category": "H",
       "name": "沙化重组",
       "enName": "Sand Reform",
-      "formula": "lerp(rand,target,t)"
+      "formula": "lerp(rand,target,t)",
+      "thumbnail": "thumbnails/H73.png"
     },
     {
       "id": 74,
       "category": "H",
       "name": "概率点亮",
       "enName": "Stochastic Light-Up",
-      "formula": "rand(i)<t"
+      "formula": "rand(i)<t",
+      "thumbnail": "thumbnails/H74.png"
     },
     {
       "id": 75,
       "category": "H",
       "name": "布朗漂入",
       "enName": "Brownian Drift-In",
-      "formula": "pos+=randn·σ(1-t)"
+      "formula": "pos+=randn·σ(1-t)",
+      "thumbnail": "thumbnails/H75.png"
     },
     {
       "id": 76,
       "category": "H",
       "name": "泊松雨滴",
       "enName": "Poisson Rain",
-      "formula": "间隔~Exp(λ)"
+      "formula": "间隔~Exp(λ)",
+      "thumbnail": "thumbnails/H76.png"
     },
     {
       "id": 77,
       "category": "H",
       "name": "噪声场流入",
       "enName": "Curl-Noise Flow",
-      "formula": "v=curl(noise)(1-t)"
+      "formula": "v=curl(noise)(1-t)",
+      "thumbnail": "thumbnails/H77.png"
     },
     {
       "id": 78,
       "category": "H",
       "name": "信噪比上升",
       "enName": "SNR Rise",
-      "formula": "lerp(noise,glyph,t)"
+      "formula": "lerp(noise,glyph,t)",
+      "thumbnail": "thumbnails/H78.png"
     },
     {
       "id": 79,
       "category": "H",
       "name": "抖动溶解",
       "enName": "Dither Dissolve",
-      "formula": "bayer(x,y)<t"
+      "formula": "bayer(x,y)<t",
+      "thumbnail": "thumbnails/H79.png"
     },
     {
       "id": 80,
       "category": "H",
       "name": "量子坍缩",
       "enName": "Quantum Collapse",
-      "formula": "softmax→target"
+      "formula": "softmax→target",
+      "thumbnail": "thumbnails/H80.png"
     },
     {
       "id": 81,
       "category": "I",
       "name": "粒子聚合",
       "enName": "Particle Assemble",
-      "formula": "lerp(spawn,glyph,t)"
+      "formula": "lerp(spawn,glyph,t)",
+      "thumbnail": "thumbnails/I81.png"
     },
     {
       "id": 82,
       "category": "I",
       "name": "破碎逆放",
       "enName": "Reverse Shatter",
-      "formula": "lerp(scatter,0,p)"
+      "formula": "lerp(scatter,0,p)",
+      "thumbnail": "thumbnails/I82.png"
     },
     {
       "id": 83,
       "category": "I",
       "name": "冲击波成形",
       "enName": "Shockwave Form",
-      "formula": "dist<R(t)"
+      "formula": "dist<R(t)",
+      "thumbnail": "thumbnails/I83.png"
     },
     {
       "id": 84,
       "category": "I",
       "name": "烟雾凝结",
       "enName": "Smoke Condense",
-      "formula": "扩散半径∝(1-t)"
+      "formula": "扩散半径∝(1-t)",
+      "thumbnail": "thumbnails/I84.png"
     },
     {
       "id": 85,
       "category": "I",
       "name": "磁粉吸附",
       "enName": "Ferrofluid Pull",
-      "formula": "沿法线·noise·p"
+      "formula": "沿法线·noise·p",
+      "thumbnail": "thumbnails/I85.png"
     },
     {
       "id": 86,
       "category": "I",
       "name": "体素堆叠",
       "enName": "Voxel Stack-Up",
-      "formula": "delay=(y+rand)·d"
+      "formula": "delay=(y+rand)·d",
+      "thumbnail": "thumbnails/I86.png"
     },
     {
       "id": 87,
       "category": "I",
       "name": "拉链合拢",
       "enName": "Zipper Merge",
-      "formula": "x=±X(1-easeInOut)"
+      "formula": "x=±X(1-easeInOut)",
+      "thumbnail": "thumbnails/I87.png"
     },
     {
       "id": 88,
       "category": "I",
       "name": "细胞增殖",
       "enName": "Mitosis Spawn",
-      "formula": "N=2^(floor(tk))"
+      "formula": "N=2^(floor(tk))",
+      "thumbnail": "thumbnails/I88.png"
     },
     {
       "id": 89,
       "category": "J",
       "name": "色相旋转",
       "enName": "Hue-Rotate In",
-      "formula": "hue=lerp(360n,0,t)"
+      "formula": "hue=lerp(360n,0,t)",
+      "thumbnail": "thumbnails/J89.png"
     },
     {
       "id": 90,
       "category": "J",
       "name": "流光扫光",
       "enName": "Gradient Sweep",
-      "formula": "bgPos:-100%→200%"
+      "formula": "bgPos:-100%→200%",
+      "thumbnail": "thumbnails/J90.png"
     },
     {
       "id": 91,
       "category": "J",
       "name": "冷暖渐变",
       "enName": "Blackbody Warm-Up",
-      "formula": "色温 T(t)"
+      "formula": "色温 T(t)",
+      "thumbnail": "thumbnails/J91.png"
     },
     {
       "id": 92,
       "category": "J",
       "name": "投影成形",
       "enName": "Long-Shadow Cast",
-      "formula": "L=lerp(Lmax,L0,p)"
+      "formula": "L=lerp(Lmax,L0,p)",
+      "thumbnail": "thumbnails/J92.png"
     },
     {
       "id": 93,
       "category": "J",
       "name": "光照浮雕",
       "enName": "Lighting Emboss",
-      "formula": "max(0,N·L(t))"
+      "formula": "max(0,N·L(t))",
+      "thumbnail": "thumbnails/J93.png"
     },
     {
       "id": 94,
       "category": "J",
       "name": "霓虹点亮",
       "enName": "Neon Sequential",
-      "formula": "seg delay=k·d"
+      "formula": "seg delay=k·d",
+      "thumbnail": "thumbnails/J94.png"
     },
     {
       "id": 95,
       "category": "K",
       "name": "RGB撕裂故障",
       "enName": "Glitch Tear",
-      "formula": "step(rand(y,t)-θ)·D"
+      "formula": "step(rand(y,t)-θ)·D",
+      "thumbnail": "thumbnails/K95.png"
     },
     {
       "id": 96,
       "category": "K",
       "name": "数据流下落",
       "enName": "Datamosh Cascade",
-      "formula": "y=lerp(-H,0,easeOut)"
+      "formula": "y=lerp(-H,0,easeOut)",
+      "thumbnail": "thumbnails/K96.png"
     },
     {
       "id": 97,
       "category": "K",
       "name": "方波频闪",
       "enName": "Square-Wave Strobe",
-      "formula": "sin(ωt)>0?1:0"
+      "formula": "sin(ωt)>0?1:0",
+      "thumbnail": "thumbnails/K97.png"
     },
     {
       "id": 98,
       "category": "L",
       "name": "分形递归展开",
       "enName": "Fractal Unfold",
-      "formula": "L 层∈[L/Lmax,...]"
+      "formula": "L 层∈[L/Lmax,...]",
+      "thumbnail": "thumbnails/L98.png"
     },
     {
       "id": 99,
       "category": "L",
       "name": "混沌吸引子归位",
       "enName": "Attractor Settle",
-      "formula": "洛伦兹·(1-t)"
+      "formula": "洛伦兹·(1-t)",
+      "thumbnail": "thumbnails/L99.png"
     },
     {
       "id": 100,
       "category": "L",
       "name": "逻辑斯蒂分岔",
       "enName": "Logistic Bifurcation",
-      "formula": "x_{n+1}=r·x_n(1-x_n)"
+      "formula": "x_{n+1}=r·x_n(1-x_n)",
+      "thumbnail": "thumbnails/L100.png"
     }
   ],
   "scenes": [
@@ -758,6 +858,20 @@
       "role": "顺序陈列效果库 + 历史栈",
       "stacks": true,
       "propsKey": "effectIds[]"
+    },
+    {
+      "id": "SceneReel",
+      "name": "串联成片",
+      "role": "多场景按顺序拼成完整成片",
+      "stacks": false,
+      "propsKey": "segments[]"
+    },
+    {
+      "id": "SceneThumb",
+      "name": "缩略图",
+      "role": "单原子静态预览（生成选效果缩略图）",
+      "stacks": false,
+      "propsKey": "effectId"
     }
   ]
 }

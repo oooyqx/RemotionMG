@@ -50,10 +50,11 @@ const Item: React.FC<{item: ShowItem; index: number; frame: number; fps: number}
     tz = lerp(0, -360, t1) - depth * 260;
     rotateY = lerp(0, 14, t1);
     scale = 1; // 缩小完全交给 translateZ + 透视
+    // 越旧的卡牌文本逐渐透明
     opacity =
       m > MAX_HIST - 1
         ? clamp01(MAX_HIST - m)
-        : lerp(1, 0.5, clamp01(depth / 2.5));
+        : lerp(0.95, 0.12, clamp01(depth / 3));
   }
 
   // 历史卡牌整体上移并轻微左偏，露出层叠的卡顶，避免压住主角

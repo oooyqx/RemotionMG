@@ -76,7 +76,8 @@ const Item: React.FC<{item: ShowItem; index: number; frame: number}> = ({item, i
   const py = 170 + rand2(index, 2) * 260;
   const jx = noise1(frame * 0.08 + index * 10) * 14;
   const jy = noise1(frame * 0.08 + index * 10 + 50) * 14;
-  const opacity = (m > MAX_HIST - 1 ? clamp01(MAX_HIST - m) : 1) * 0.85;
+  // 背景队列中的碎片按龄逐渐透明
+  const opacity = clamp01(1 - (m - 1) / (MAX_HIST - 1)) * 0.85;
   const flick = rand2(Math.floor(frame / 3), index) > 0.12 ? 1 : 0.35;
   return (
     <div

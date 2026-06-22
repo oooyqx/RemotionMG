@@ -7,15 +7,11 @@ import {clamp01, itemTiming, lerp, easeOutCubic, SEG, ShowItem} from '../effects
 /**
  * D 类 · 模糊 · 滤镜 — 焦点切换
  *  入场：blur 16→0 对焦登场 + scale 1.06→1
- *  出场：失焦（blur→16）+ 缩成"虚化缩略图"
- *  堆栈：顶部一排始终保持虚化的小缩略图，过旧淡出
+ *  出场：失焦后边缩小边淡出，朝右上角飘走（不做横向滑移）
  */
 
-const THUMB_Y = 200;
-const THUMB_RIGHT_X = 1640;
-const THUMB_STEP = 360;
-const THUMB_SCALE = 0.4;
-const MAX_HIST = 4;
+const CORNER_X = 1780;
+const CORNER_Y = 120;
 
 const Item: React.FC<{item: ShowItem; index: number; frame: number}> = ({item, index, frame}) => {
   const {d, m, isFeatured, revealT, move} = itemTiming(frame, index);
@@ -36,14 +32,14 @@ const Item: React.FC<{item: ShowItem; index: number; frame: number}> = ({item, i
     blur = lerp(18, 0, e);
     opacity = clamp01(revealT * 2);
   } else {
-    const t1 = move;
-    const thumbX = THUMB_RIGHT_X - Math.max(0, m - 1) * THUMB_STEP;
-    x = lerp(FOCAL.x, thumbX, easeOutCubic(t1));
-    y = lerp(FOCAL.y, THUMB_Y, easeOutCubic(t1));
-    scale = lerp(1, THUMB_SCALE, t1);
-    blur = lerp(0, 9, t1); // 退场后保持虚化
-    brightness = lerp(1, 0.7, t1);
-    opacity = m > MAX_HIST - 1 ? clamp01(MAX_HIST - m) : 1;
+    // 失焦缩小并朝右上角飘走，同时渐渐透明消失
+    const prog = easeOutCubic(clamp01(m / 1.3));
+    x = lerp(FOCAL.x, CORNER_X, prog);
+    y = lerp(FOCAL.y, CORNER_Y, prog);
+    scale = lerp(1, 0.2, prog);
+    blur = lerp(0, 16, easeOutCubic(clamp01(move)));
+    brightness = lerp(1, 0.7, move);
+    opacity = clamp01(1.4 - m);
   }
 
   return (

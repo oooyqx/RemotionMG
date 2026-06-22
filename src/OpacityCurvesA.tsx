@@ -1,91 +1,121 @@
-import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {OPACITY_CURVES_A, OpacityCurve} from './effects/opacityCurves';
 
 /**
- * A 类：透明度 · 多项式与指数曲线（方法 1–10）的预览合成。
+ * A 类：透明度 · 多项式与指数曲线（1–10）的「全屏突出展示」合成。
  *
- * 10 个单元格同步播放，便于横向对比不同曲线的"出现节奏"。
- * 每个循环：前 REVEAL 帧做淡入，HOLD 帧停留，再整体复位循环。
+ * 不是字幕式网格对比，而是顺序播放的舞台动画：
+ *  - 当前方式以超大字号在画面中下方登场，使用它自己的数学曲线"出现"；
+ *  - 当下一段登场时，上一段缩小 + 旋转 + 滑到左侧，堆叠成历史栈；
+ *  - 历史栈随新内容不断向下滚动，过旧的逐渐淡出。
  */
 
-const REVEAL = 45; // 淡入所占帧数
-const HOLD = 30; // 完全显示后的停留帧数
-const CYCLE = REVEAL + HOLD + 15; // 一个完整循环的帧数（末段为复位间隔）
+const SEG = 48; // 每个方式占据"主角"的帧数
+const REVEAL_FRAC = 0.5; // 主角阶段中用于"出现"的比例（前一半做淡入）
+const MAX_HIST = 5; // 左侧历史栈最多保留多少条
 
-const SAMPLE_TEXT = 'Aa 字体';
+// 主角焦点位置（画面中下方，超大字）
+const FOCAL_X = 960;
+const FOCAL_Y = 600;
+const FOCAL_SCALE = 1;
 
-const Cell: React.FC<{curve: OpacityCurve; t: number}> = ({curve, t}) => {
-  const style = curve.apply(t);
+// 左侧历史栈
+const STACK_X = 330;
+const STACK_Y0 = 150;
+const STACK_ROW = 92;
+const STACK_SCALE = 0.32;
+const STACK_ROT = -9; // 度
+
+const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+const lerp = (a: number, b: number, p: number) => a + (b - a) * p;
+
+const ShowcaseItem: React.FC<{curve: OpacityCurve; frame: number; index: number}> = ({
+  curve,
+  frame,
+  index,
+}) => {
+  // d = 连续"出场序数"：d∈[0,1) 表示当前为主角，d≥1 表示已成为历史。
+  const d = (frame - index * SEG) / SEG;
+  if (d < 0) return null;
+
+  const isFeatured = d < 1;
+  // m：离开主角后的位移/堆叠量。主角阶段 m=0（保持不动），其后逐段增大。
+  const m = Math.max(0, d - 1);
+  const move = clamp01(m); // 0→1：从焦点滑向栈顶
+
+  // 主角阶段用该曲线做"出现"；之后由历史淡出控制。
+  const revealT = clamp01(d / REVEAL_FRAC);
+  const revealStyle = curve.apply(revealT);
+
+  // 历史过旧时淡出
+  const pastFade = interpolate(m, [MAX_HIST - 1, MAX_HIST], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  const opacity = isFeatured ? revealStyle.opacity : pastFade;
+
+  // 位置 / 缩放 / 旋转：主角 → 左侧栈的连续过渡，过旧继续向下滚动。
+  const x = lerp(FOCAL_X, STACK_X, move);
+  const y = lerp(FOCAL_Y, STACK_Y0, move) + Math.max(0, m - 1) * STACK_ROW;
+  const baseScale = lerp(FOCAL_SCALE, STACK_SCALE, move);
+  const rot = lerp(0, STACK_ROT, move);
+
+  // 主角出现时叠加该曲线自带的 transform（如双指数过冲的 scale）与 filter（如高斯闪现的 brightness）。
+  const featuredScale =
+    isFeatured && revealStyle.transform
+      ? `${revealStyle.transform}`
+      : '';
+  const filter = isFeatured && revealStyle.filter ? revealStyle.filter : 'none';
+
   return (
     <div
       style={{
-        position: 'relative',
-        flex: '0 0 18%',
-        height: 380,
-        margin: '0 1% 24px',
-        borderRadius: 18,
-        background: 'linear-gradient(160deg, #16213e 0%, #0f1626 100%)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '20px 18px',
-        boxSizing: 'border-box',
-        overflow: 'hidden',
+        position: 'absolute',
+        left: x,
+        top: y,
+        zIndex: index, // 越新越靠上层
+        transform: `translate(-50%, -50%) rotate(${rot}deg) scale(${baseScale}) ${featuredScale}`,
+        transformOrigin: 'center center',
+        opacity,
+        filter,
+        textAlign: 'center',
+        whiteSpace: 'nowrap',
+        color: isFeatured ? '#ffffff' : '#9aa7c7',
       }}
     >
-      <div style={{color: '#9aa7c7', fontFamily: 'monospace', fontSize: 18}}>
-        <span style={{color: '#e94560', fontWeight: 700}}>{String(curve.id).padStart(2, '0')}</span>{' '}
-        {curve.name}
-        <div style={{fontSize: 13, color: '#5f6b8a', marginTop: 2}}>{curve.enName}</div>
-      </div>
-
       <div
         style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          fontSize: 150,
+          fontWeight: 900,
+          letterSpacing: 2,
+          fontFamily: 'Arial, "PingFang SC", "Noto Sans CJK SC", sans-serif',
+          lineHeight: 1,
+          textShadow: isFeatured ? '0 12px 60px rgba(233,69,96,0.35)' : 'none',
+        }}
+      >
+        <span style={{color: '#e94560'}}>{String(curve.id).padStart(2, '0')}</span>{' '}
+        {curve.name}
+      </div>
+      {/* 主角阶段才显示英文名与公式，进入历史栈后隐去以保持简洁 */}
+      <div
+        style={{
+          opacity: isFeatured ? clamp01((revealT - 0.4) / 0.4) : 0,
+          marginTop: 18,
         }}
       >
         <div
           style={{
-            fontSize: 64,
-            fontWeight: 800,
-            color: '#f5f7ff',
-            fontFamily: 'Arial, "PingFang SC", "Noto Sans CJK SC", sans-serif',
-            opacity: style.opacity,
-            transform: style.transform ?? 'none',
-            filter: style.filter ?? 'none',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {SAMPLE_TEXT}
-        </div>
-      </div>
-
-      <div>
-        <div
-          style={{
-            fontFamily: 'monospace',
-            fontSize: 14,
+            fontSize: 30,
             color: '#7fd1c0',
-            marginBottom: 8,
-            minHeight: 18,
+            fontFamily: 'monospace',
+            letterSpacing: 1,
           }}
         >
-          {curve.formula}
+          {curve.enName}
         </div>
-        {/* 进度条：直观显示该曲线在当前 t 的输出 opacity */}
-        <div style={{height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.08)'}}>
-          <div
-            style={{
-              height: '100%',
-              width: `${style.opacity * 100}%`,
-              borderRadius: 3,
-              background: 'linear-gradient(90deg,#e94560,#f7b733)',
-            }}
-          />
+        <div style={{fontSize: 34, color: '#f7b733', fontFamily: 'monospace', marginTop: 10}}>
+          {curve.formula}
         </div>
       </div>
     </div>
@@ -95,48 +125,45 @@ const Cell: React.FC<{curve: OpacityCurve; t: number}> = ({curve, t}) => {
 export const OpacityCurvesA: React.FC = () => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
-
-  // 在整段时长内循环播放淡入过程，便于在 Studio 中直接观察。
-  const local = frame % CYCLE;
-  const t = Math.max(0, Math.min(1, local / REVEAL));
+  const activeIndex = Math.min(OPACITY_CURVES_A.length - 1, Math.floor(frame / SEG));
 
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: '#0b1020',
-        flexDirection: 'column',
-        padding: '48px 40px',
-        boxSizing: 'border-box',
+        background: 'radial-gradient(circle at 50% 35%, #1a2348 0%, #0b1020 60%, #070b16 100%)',
       }}
     >
-      <div style={{marginBottom: 28}}>
-        <div
-          style={{
-            color: '#f5f7ff',
-            fontSize: 40,
-            fontWeight: 800,
-            fontFamily: 'Arial, "PingFang SC", sans-serif',
-          }}
-        >
-          A 类 · 透明度 — 多项式与指数曲线（1–10）
-        </div>
-        <div style={{color: '#6b779b', fontSize: 18, marginTop: 6, fontFamily: 'monospace'}}>
-          归一化进度 t = {t.toFixed(2)} ｜ 循环 {CYCLE} 帧 ｜ 总时长 {durationInFrames} 帧
-        </div>
-      </div>
-
+      {/* 左上角极简标识，避免抢主角文字 */}
       <div
         style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignContent: 'flex-start',
-          justifyContent: 'center',
+          position: 'absolute',
+          top: 48,
+          left: 60,
+          color: '#3c466b',
+          fontFamily: 'monospace',
+          fontSize: 20,
+          letterSpacing: 2,
+          opacity: 0.6,
         }}
       >
-        {OPACITY_CURVES_A.map((curve) => (
-          <Cell key={curve.id} curve={curve} t={t} />
-        ))}
+        A · 透明度曲线 {String(activeIndex + 1).padStart(2, '0')} / {OPACITY_CURVES_A.length}
       </div>
+
+      {OPACITY_CURVES_A.map((curve, i) => (
+        <ShowcaseItem key={curve.id} curve={curve} frame={frame} index={i} />
+      ))}
+
+      {/* 底部进度条 */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          bottom: 0,
+          height: 5,
+          width: `${(frame / durationInFrames) * 100}%`,
+          background: 'linear-gradient(90deg,#e94560,#f7b733)',
+        }}
+      />
     </AbsoluteFill>
   );
 };

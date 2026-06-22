@@ -1,0 +1,113 @@
+# AI 调用指南（零改代码出片）
+
+本项目把文字动效拆成两层，**其他 AI / 程序只需传 JSON props 即可渲染**，无需改动源码。
+
+- **动效原子**：100 个纯入场/出场效果，`id ∈ [1, 100]`（见下文清单）
+- **场景模板**：6 个布局/角色模板，每个对应一个 Remotion 合成（Composition），props 化 + 自动算时长
+
+## 1. 先查"有哪些可用"
+
+机读清单：[`docs/effects.json`](./effects.json)
+
+```jsonc
+{
+  "categories": { "A": "透明度 · 多项式与指数曲线", ... },
+  "effects": [ { "id": 1, "category": "A", "name": "线性淡入", "enName": "Linear Fade", "formula": "opacity = t" }, ... ],  // 共 100 条
+  "scenes":  [ { "id": "SceneHero", "name": "主标题", "role": "...", "stacks": false, "propsKey": "entries[]" }, ... ]      // 共 6 条
+}
+```
+
+重新生成（改了效果/场景后）：`npm run gen:manifest`
+
+## 2. 渲染：传 `--props` 即可
+
+通用命令（`<SceneId>` 取自 `scenes[].id`）：
+
+```bash
+npx remotion render src/index.ts <SceneId> out.mp4 --props='<JSON>'
+# 出单帧预览：
+npx remotion still  src/index.ts <SceneId> out.png --frame=40 --props='<JSON>'
+```
+
+**时长无需指定**：每个场景用 `calculateMetadata` 按 props 自动计算 `durationInFrames`。
+
+### 各场景 props 示例
+
+**SceneHero · 主标题**（单段超大居中、戏剧化进出、不堆叠）
+```bash
+npx remotion render src/index.ts SceneHero hero.mp4 --props='{
+  "entries":[{"text":"年度发布会","effectId":21},{"text":"2025","effectId":95}],
+  "timing":{"inF":22,"holdF":40,"outF":18},
+  "background":"#0c0e1c","color":"#ffffff","fontSize":200
+}'
+```
+
+**SceneCaption · 字幕**（下三分之一、快速进出/原地替换）
+```bash
+--props='{
+  "lines":[{"text":"第一句解说","effectId":51},{"text":"第二句解说","effectId":31}],
+  "timing":{"inF":10,"holdF":44,"outF":8},
+  "background":"#0a1020","barColor":"rgba(10,14,26,0.72)","color":"#f2f6ff","fontSize":64
+}'
+```
+
+**SceneList · 逐条列表**（依次入场并持续累积）
+```bash
+--props='{
+  "title":"核心要点","items":[{"text":"要点一","effectId":11},{"text":"要点二","effectId":52}],
+  "stepFrames":22,"inFrames":18,
+  "background":"#0a1020","color":"#eaf0ff","fontSize":70
+}'
+```
+
+**SceneLowerThird · 角标/署名**（左下品牌条、滑入停留滑出）
+```bash
+--props='{
+  "entries":[{"name":"张三","role":"主讲人","effectId":12}],
+  "timing":{"inF":16,"holdF":40,"outF":14},
+  "background":"#0b1530","accent":"#ff7a3c"
+}'
+```
+
+**SceneEmphasis · 行内强调**（句中某词高亮登场）
+```bash
+--props='{
+  "lines":[{"pre":"增长了 ","token":"300%","post":"。","effectId":21,"accent":"#ffd23f"}],
+  "timing":{"inF":16,"holdF":42,"outF":12},
+  "background":"#0a0c16","color":"#e7ecff","fontSize":88
+}'
+```
+
+**SceneGallery · 目录陈列**（顺序陈列效果库 + 历史栈；`effectIds` 留空数组=全部 100 法）
+```bash
+--props='{"effectIds":[21,23,34,47,81,72,95,99],"background":"#0a0e1c","color":"#ffffff","fontSize":150}'
+```
+
+> 提示：Windows / 部分 shell 对单引号支持差，可把 JSON 写到文件再用 `--props=./props.json`。
+
+## 3. 编程式调用（在 React/Remotion 里组合）
+
+所有公共 API 从单一出口导入：
+
+```ts
+import {
+  EFFECTS, effectById, TextFx,                       // 效果库 + 渲染器
+  HeroScene, CaptionScene, ListScene,                // 场景模板
+  LowerThirdScene, EmphasisScene, GalleryScene,
+  heroSchema, HERO_DEFAULT,                           // schema + 默认 props
+  EFFECT_MANIFEST, SCENE_MANIFEST, CATEGORIES,        // 机读清单
+} from './src/textfx';
+
+// 把任意原子作用到一段文字（场景只给 baseStyle，效果给 transform/filter/content）
+<TextFx effect={effectById(72)} text="解码" phase="in" t={0.5} frame={frame} />
+```
+
+把一个原子插进自定义场景：调用 `effectById(id).visual({text, phase, t, frame, seed})`，
+返回 `{wrapper?: CSSProperties, content?: ReactNode}`，自行渲染即可。
+
+## 4. 约定
+
+- `effectId` 必须在 `[1, 100]`，否则回退到 1。
+- `phase`：`'in'` 入场（0→1 出现），`'out'` 出场（0→1 消失）。
+- 画布固定 `1920×1080 @ 30fps`（见 `src/Root.tsx` 的 `COMMON`）。
+- Hero/Caption/LowerThird/Emphasis：同一时刻只有一条在台上；List/Gallery 才累积/堆叠。

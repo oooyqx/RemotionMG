@@ -12,20 +12,34 @@ import {ParticleI} from './showcases/ParticleI';
 import {ColorLightJ} from './showcases/ColorLightJ';
 import {GlitchK} from './showcases/GlitchK';
 import {FractalChaosL} from './showcases/FractalChaosL';
+import {HeroScene} from './textfx/scenes/HeroScene';
+import {CaptionScene} from './textfx/scenes/CaptionScene';
+import {ListScene} from './textfx/scenes/ListScene';
+import {LowerThirdScene} from './textfx/scenes/LowerThirdScene';
+import {EmphasisScene} from './textfx/scenes/EmphasisScene';
+import {GalleryScene} from './textfx/scenes/GalleryScene';
 import {
-  HeroDemo,
-  HeroDemoFrames,
-  CaptionDemo,
-  CaptionDemoFrames,
-  ListDemo,
-  ListDemoFrames,
-  LowerThirdDemo,
-  LowerThirdDemoFrames,
-  EmphasisDemo,
-  EmphasisDemoFrames,
-  GalleryDemo,
-  GalleryDemoFrames,
-} from './textfx/demos';
+  heroSchema,
+  captionSchema,
+  listSchema,
+  lowerThirdSchema,
+  emphasisSchema,
+  gallerySchema,
+  heroFrames,
+  captionFrames,
+  listFrames,
+  lowerThirdFrames,
+  emphasisFrames,
+  galleryFrames,
+} from './textfx/schemas';
+import {
+  HERO_DEFAULT,
+  CAPTION_DEFAULT,
+  LIST_DEFAULT,
+  LOWER_THIRD_DEFAULT,
+  EMPHASIS_DEFAULT,
+  GALLERY_DEFAULT,
+} from './textfx/presets';
 import {totalFrames} from './effects/showcaseKit';
 import {
   CATEGORY_B,
@@ -124,12 +138,60 @@ export const RemotionRoot: React.FC = () => {
         durationInFrames={totalFrames(CATEGORY_L.length)}
         {...COMMON}
       />
-      <Composition id="SceneHero" component={HeroDemo} durationInFrames={HeroDemoFrames} {...COMMON} />
-      <Composition id="SceneCaption" component={CaptionDemo} durationInFrames={CaptionDemoFrames} {...COMMON} />
-      <Composition id="SceneList" component={ListDemo} durationInFrames={ListDemoFrames} {...COMMON} />
-      <Composition id="SceneLowerThird" component={LowerThirdDemo} durationInFrames={LowerThirdDemoFrames} {...COMMON} />
-      <Composition id="SceneEmphasis" component={EmphasisDemo} durationInFrames={EmphasisDemoFrames} {...COMMON} />
-      <Composition id="SceneGallery" component={GalleryDemo} durationInFrames={GalleryDemoFrames} {...COMMON} />
+      <Composition
+        id="SceneHero"
+        component={HeroScene}
+        schema={heroSchema}
+        defaultProps={HERO_DEFAULT}
+        durationInFrames={heroFrames(HERO_DEFAULT)}
+        calculateMetadata={({props}) => ({durationInFrames: heroFrames(props)})}
+        {...COMMON}
+      />
+      <Composition
+        id="SceneCaption"
+        component={CaptionScene}
+        schema={captionSchema}
+        defaultProps={CAPTION_DEFAULT}
+        durationInFrames={captionFrames(CAPTION_DEFAULT)}
+        calculateMetadata={({props}) => ({durationInFrames: captionFrames(props)})}
+        {...COMMON}
+      />
+      <Composition
+        id="SceneList"
+        component={ListScene}
+        schema={listSchema}
+        defaultProps={LIST_DEFAULT}
+        durationInFrames={listFrames(LIST_DEFAULT)}
+        calculateMetadata={({props}) => ({durationInFrames: listFrames(props)})}
+        {...COMMON}
+      />
+      <Composition
+        id="SceneLowerThird"
+        component={LowerThirdScene}
+        schema={lowerThirdSchema}
+        defaultProps={LOWER_THIRD_DEFAULT}
+        durationInFrames={lowerThirdFrames(LOWER_THIRD_DEFAULT)}
+        calculateMetadata={({props}) => ({durationInFrames: lowerThirdFrames(props)})}
+        {...COMMON}
+      />
+      <Composition
+        id="SceneEmphasis"
+        component={EmphasisScene}
+        schema={emphasisSchema}
+        defaultProps={EMPHASIS_DEFAULT}
+        durationInFrames={emphasisFrames(EMPHASIS_DEFAULT)}
+        calculateMetadata={({props}) => ({durationInFrames: emphasisFrames(props)})}
+        {...COMMON}
+      />
+      <Composition
+        id="SceneGallery"
+        component={GalleryScene}
+        schema={gallerySchema}
+        defaultProps={GALLERY_DEFAULT}
+        durationInFrames={galleryFrames(GALLERY_DEFAULT)}
+        calculateMetadata={({props}) => ({durationInFrames: galleryFrames(props)})}
+        {...COMMON}
+      />
     </>
   );
 };

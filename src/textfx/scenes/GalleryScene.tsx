@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {TextFx} from '../TextFx';
-import {TextEffect} from '../types';
+import {EFFECTS, effectById} from '../library';
 import {clamp01, lerp, easeOutCubic} from '../shared';
 
 /**
@@ -13,17 +13,18 @@ import {clamp01, lerp, easeOutCubic} from '../shared';
 export const GallerySEG = 40;
 
 export const GalleryScene: React.FC<{
-  effects: TextEffect[];
+  effectIds?: number[];
   background?: string;
   color?: string;
   fontSize?: number;
 }> = ({
-  effects,
+  effectIds,
   background = 'radial-gradient(circle at 50% 42%, #16213f 0%, #0a0e1c 60%, #05060d 100%)',
   color = '#ffffff',
   fontSize = 150,
 }) => {
   const frame = useCurrentFrame();
+  const effects = effectIds && effectIds.length > 0 ? effectIds.map(effectById) : EFFECTS;
   const active = Math.floor(frame / GallerySEG);
 
   return (

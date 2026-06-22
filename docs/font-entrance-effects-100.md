@@ -793,7 +793,19 @@ presence(phase, t) = phase==='in' ? ease(t) : 1 - ease(t)
 
 > 同一个原子（如 `72 乱码解码`）可同时出现在 Hero（炸裂标题）、Caption（柔和字幕）、Emphasis（高亮关键词）三个场景里——这正是解耦后的核心收益。
 
-代码落点：`src/textfx/scenes/*.tsx`（各场景）+ `src/textfx/scenes/sequence.ts`（顺序时序）+ `src/textfx/demos.tsx`（demo 数据与合成入口）。
+代码落点：`src/textfx/scenes/*.tsx`（各场景）+ `src/textfx/scenes/sequence.ts`（顺序时序）+ `src/textfx/presets.ts`（默认 props / 合成入口）。
+
+### 5.3 面向其他 AI 的调用约定
+
+为便于其他 AI / 程序"零改代码出片"，所有场景已 **props 化**（Zod schema + `calculateMetadata` 自动算时长）：
+
+```bash
+npx remotion render src/index.ts SceneHero out.mp4 --props='{"entries":[{"text":"标题","effectId":21}], ...}'
+```
+
+- 统一出口：`src/textfx/index.ts`（`EFFECTS` / 场景 / `TextFx` / schema / 清单 一处导入）
+- 机读清单：`docs/effects.json`（100 法 + 6 场景，`npm run gen:manifest` 重新生成）
+- 详细用法与各场景 props 示例：见 **`docs/ai-usage.md`**
 
 ---
 

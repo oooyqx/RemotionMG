@@ -1,0 +1,763 @@
+{
+  "$comment": "Auto-generated. 100 个文字动效原子 + 6 个场景模板的机读清单。渲染：npx remotion render <scene.id> out.mp4 --props=<json>",
+  "categories": {
+    "A": "透明度 · 多项式与指数曲线",
+    "B": "缓动与方向位移",
+    "C": "缩放 · 形变 · 3D",
+    "D": "模糊 · 滤镜",
+    "E": "三角函数 · 波动",
+    "F": "逐字符 · 交错编排",
+    "G": "裁剪 · 遮罩",
+    "H": "噪声 · 随机",
+    "I": "粒子 · 重组",
+    "J": "颜色 · 光影",
+    "K": "故障 · 数字信号",
+    "L": "分形 · 混沌 · 高阶"
+  },
+  "effects": [
+    {
+      "id": 1,
+      "category": "A",
+      "name": "线性淡入",
+      "enName": "Linear Fade",
+      "formula": "opacity = t"
+    },
+    {
+      "id": 2,
+      "category": "A",
+      "name": "二次淡入",
+      "enName": "Quadratic Ease-In",
+      "formula": "opacity = t²"
+    },
+    {
+      "id": 3,
+      "category": "A",
+      "name": "三次缓出",
+      "enName": "Cubic Ease-Out",
+      "formula": "opacity = 1 − (1 − t)³"
+    },
+    {
+      "id": 4,
+      "category": "A",
+      "name": "指数冲入",
+      "enName": "Exponential Ease-Out",
+      "formula": "opacity = 1 − 2^(−10t)"
+    },
+    {
+      "id": 5,
+      "category": "A",
+      "name": "对数渐显",
+      "enName": "Logarithmic Reveal",
+      "formula": "opacity = ln(1 + (e−1)·t)"
+    },
+    {
+      "id": 6,
+      "category": "A",
+      "name": "Sigmoid 渐显",
+      "enName": "Logistic S-Curve",
+      "formula": "opacity = 1 / (1 + e^(−k(t−0.5)))"
+    },
+    {
+      "id": 7,
+      "category": "A",
+      "name": "高斯闪现",
+      "enName": "Gaussian Flash-In",
+      "formula": "b = 1 + A·e^(−(t−μ)²/2σ²)"
+    },
+    {
+      "id": 8,
+      "category": "A",
+      "name": "伽马淡入",
+      "enName": "Gamma Fade",
+      "formula": "opacity = t^(1/2.2)"
+    },
+    {
+      "id": 9,
+      "category": "A",
+      "name": "双指数过冲",
+      "enName": "Bi-Exponential Overshoot",
+      "formula": "v = (1−e^(−at))(1+b·e^(−ct))"
+    },
+    {
+      "id": 10,
+      "category": "A",
+      "name": "幂律阶梯",
+      "enName": "Power-Step Fade",
+      "formula": "opacity = ⌊t·k⌋/k (段内 t²)"
+    },
+    {
+      "id": 11,
+      "category": "B",
+      "name": "上移淡入",
+      "enName": "Slide-Up Fade",
+      "formula": "y=lerp(50,0,easeOut)"
+    },
+    {
+      "id": 12,
+      "category": "B",
+      "name": "回退超调滑入",
+      "enName": "Back Ease",
+      "formula": "easeOutBack(t)"
+    },
+    {
+      "id": 13,
+      "category": "B",
+      "name": "弹性滑入",
+      "enName": "Elastic Slide",
+      "formula": "2^(-10t)·sin(...)"
+    },
+    {
+      "id": 14,
+      "category": "B",
+      "name": "重力下坠",
+      "enName": "Gravity Drop",
+      "formula": "y=½·g·t²"
+    },
+    {
+      "id": 15,
+      "category": "B",
+      "name": "抛物线抛入",
+      "enName": "Projectile Toss",
+      "formula": "y=h·4t(1-t)"
+    },
+    {
+      "id": 16,
+      "category": "B",
+      "name": "阻尼回正",
+      "enName": "Damped Settle",
+      "formula": "A·e^(-ζt)·cos(ωt)"
+    },
+    {
+      "id": 17,
+      "category": "B",
+      "name": "速度模糊滑入",
+      "enName": "Motion-Blur Slide",
+      "formula": "blur=k·|v|"
+    },
+    {
+      "id": 18,
+      "category": "B",
+      "name": "惯性甩入",
+      "enName": "Inertia Whip",
+      "formula": "easeOutExpo + skew"
+    },
+    {
+      "id": 19,
+      "category": "B",
+      "name": "磁吸归位",
+      "enName": "Magnetic Snap",
+      "formula": "pos+=(t-pos)·k"
+    },
+    {
+      "id": 20,
+      "category": "B",
+      "name": "折线入场",
+      "enName": "Polyline Path-In",
+      "formula": "分段折线插值"
+    },
+    {
+      "id": 21,
+      "category": "C",
+      "name": "弹簧弹出",
+      "enName": "Spring Pop",
+      "formula": "spring(scale 0→1)"
+    },
+    {
+      "id": 22,
+      "category": "C",
+      "name": "挤压拉伸",
+      "enName": "Squash & Stretch",
+      "formula": "sX·sY=const"
+    },
+    {
+      "id": 23,
+      "category": "C",
+      "name": "旋转缩放螺入",
+      "enName": "Rotate-Zoom Spiral",
+      "formula": "rot:180°→0°"
+    },
+    {
+      "id": 24,
+      "category": "C",
+      "name": "透视纵深推入",
+      "enName": "Z-Push Perspective",
+      "formula": "translateZ:-800→0"
+    },
+    {
+      "id": 25,
+      "category": "C",
+      "name": "焦点拉近",
+      "enName": "Dolly Zoom",
+      "formula": "scale↑·persp↓"
+    },
+    {
+      "id": 26,
+      "category": "C",
+      "name": "翻牌立体",
+      "enName": "3D Card Flip",
+      "formula": "rotateY:90°→0°"
+    },
+    {
+      "id": 27,
+      "category": "C",
+      "name": "折纸展开",
+      "enName": "Origami Unfold",
+      "formula": "rotateX 分段"
+    },
+    {
+      "id": 28,
+      "category": "C",
+      "name": "镜像对开",
+      "enName": "Mirror Split Open",
+      "formula": "上下半分"
+    },
+    {
+      "id": 29,
+      "category": "C",
+      "name": "厚度生长",
+      "enName": "Extrude Grow",
+      "formula": "K=round(maxK·t)"
+    },
+    {
+      "id": 30,
+      "category": "C",
+      "name": "弹性拉伸归位",
+      "enName": "Elastic Stretch",
+      "formula": "sY=1+(S-1)·elastic"
+    },
+    {
+      "id": 31,
+      "category": "D",
+      "name": "模糊聚焦",
+      "enName": "Blur-to-Focus",
+      "formula": "blur:16→0"
+    },
+    {
+      "id": 32,
+      "category": "D",
+      "name": "失焦呼吸",
+      "enName": "Focus Breathing",
+      "formula": "blur=|sin(πtn)|A(1-t)"
+    },
+    {
+      "id": 33,
+      "category": "D",
+      "name": "墨水晕染",
+      "enName": "Ink Bleed",
+      "formula": "blur=20(1-t)²"
+    },
+    {
+      "id": 34,
+      "category": "D",
+      "name": "辉光绽放",
+      "enName": "Glow Bloom",
+      "formula": "shadowBlur=A·e^(-kt)"
+    },
+    {
+      "id": 35,
+      "category": "D",
+      "name": "色差散焦",
+      "enName": "Chromatic Aberration",
+      "formula": "Δ=D(1-t)"
+    },
+    {
+      "id": 36,
+      "category": "D",
+      "name": "半调网点",
+      "enName": "Halftone Develop",
+      "formula": "r=R(1-t)"
+    },
+    {
+      "id": 37,
+      "category": "D",
+      "name": "像素化解析",
+      "enName": "Pixelate Resolve",
+      "formula": "b=round(B(1-t))+1"
+    },
+    {
+      "id": 38,
+      "category": "D",
+      "name": "热浪扭曲",
+      "enName": "Heat-Haze Reveal",
+      "formula": "d=noise(xf+t)A(1-t)"
+    },
+    {
+      "id": 39,
+      "category": "E",
+      "name": "正弦行波",
+      "enName": "Traveling Sine",
+      "formula": "y=A·sin(2πfu-ωt)"
+    },
+    {
+      "id": 40,
+      "category": "E",
+      "name": "余弦摆入",
+      "enName": "Cosine Pendulum",
+      "formula": "θ₀·cos(ωt)·e^(-kt)"
+    },
+    {
+      "id": 41,
+      "category": "E",
+      "name": "驻波涟漪",
+      "enName": "Standing Wave",
+      "formula": "A·sin(ku)cos(ωt)"
+    },
+    {
+      "id": 42,
+      "category": "E",
+      "name": "心跳脉动",
+      "enName": "Heartbeat Pulse",
+      "formula": "1+A(sinωt+½sin2ωt)"
+    },
+    {
+      "id": 43,
+      "category": "E",
+      "name": "正切骤变",
+      "enName": "Tangent Snap",
+      "formula": "y=A·tan((t-.5)θ)"
+    },
+    {
+      "id": 44,
+      "category": "E",
+      "name": "李萨如聚合",
+      "enName": "Lissajous Gather",
+      "formula": "sin(aφ+δ),sin(bφ)"
+    },
+    {
+      "id": 45,
+      "category": "E",
+      "name": "阻尼正弦定格",
+      "enName": "Damped Sine",
+      "formula": "A·e^(-ζt)·sin(ωt+φ)"
+    },
+    {
+      "id": 46,
+      "category": "E",
+      "name": "拍频闪烁",
+      "enName": "Beat Flicker",
+      "formula": "cos(2πf₁t)cos(2πf₂t)"
+    },
+    {
+      "id": 47,
+      "category": "E",
+      "name": "螺旋极坐标",
+      "enName": "Polar Spiral-In",
+      "formula": "r=R(1-t),θ=θ₀+kt"
+    },
+    {
+      "id": 48,
+      "category": "E",
+      "name": "波纹扩散",
+      "enName": "Ripple Expand",
+      "formula": "delay=dist·c"
+    },
+    {
+      "id": 49,
+      "category": "E",
+      "name": "旗帜飘动",
+      "enName": "Flag Wave",
+      "formula": "A·sin(ku-ωt)(1-t)"
+    },
+    {
+      "id": 50,
+      "category": "E",
+      "name": "摆线滚入",
+      "enName": "Cycloid Roll-In",
+      "formula": "x=R(φ-sinφ)"
+    },
+    {
+      "id": 51,
+      "category": "F",
+      "name": "打字机",
+      "enName": "Typewriter",
+      "formula": "n=floor(t·N)"
+    },
+    {
+      "id": 52,
+      "category": "F",
+      "name": "线性交错",
+      "enName": "Linear Stagger",
+      "formula": "delay(i)=i·d"
+    },
+    {
+      "id": 53,
+      "category": "F",
+      "name": "居中开花",
+      "enName": "Center-Out Bloom",
+      "formula": "delay=|i-N/2|·d"
+    },
+    {
+      "id": 54,
+      "category": "F",
+      "name": "随机浮现",
+      "enName": "Random Stagger",
+      "formula": "delay=rand(i)·D"
+    },
+    {
+      "id": 55,
+      "category": "F",
+      "name": "高斯交错",
+      "enName": "Gaussian Stagger",
+      "formula": "∝1-e^(-(u-.5)²/2σ²)"
+    },
+    {
+      "id": 56,
+      "category": "F",
+      "name": "逐字波浪",
+      "enName": "Per-Char Wave",
+      "formula": "y=A·sin(ωt-iΔφ)"
+    },
+    {
+      "id": 57,
+      "category": "F",
+      "name": "多米诺翻倒",
+      "enName": "Domino Topple",
+      "formula": "rot=90°(1-τ)"
+    },
+    {
+      "id": 58,
+      "category": "F",
+      "name": "字距收拢",
+      "enName": "Spacing Collapse",
+      "formula": "spacing=lerp(W,0,t)"
+    },
+    {
+      "id": 59,
+      "category": "F",
+      "name": "逐行上推",
+      "enName": "Line Mask Up",
+      "formula": "y:100%→0"
+    },
+    {
+      "id": 60,
+      "category": "F",
+      "name": "词级弹入",
+      "enName": "Word Pop",
+      "formula": "delay(w)=w·d"
+    },
+    {
+      "id": 61,
+      "category": "F",
+      "name": "卷帘百叶",
+      "enName": "Vertical Blinds",
+      "formula": "scaleX:0→1"
+    },
+    {
+      "id": 62,
+      "category": "F",
+      "name": "蛇形进场",
+      "enName": "Boustrophedon",
+      "formula": "蛇形重排 delay"
+    },
+    {
+      "id": 63,
+      "category": "G",
+      "name": "横向擦除",
+      "enName": "Horizontal Wipe",
+      "formula": "inset(0 (100(1-p))% 0 0)"
+    },
+    {
+      "id": 64,
+      "category": "G",
+      "name": "对角揭示",
+      "enName": "Diagonal Reveal",
+      "formula": "polygon(...) 推进"
+    },
+    {
+      "id": 65,
+      "category": "G",
+      "name": "圆形光圈",
+      "enName": "Circular Iris",
+      "formula": "circle(p·150%)"
+    },
+    {
+      "id": 66,
+      "category": "G",
+      "name": "马赛克揭示",
+      "enName": "Mosaic Reveal",
+      "formula": "delay=rand(r,c)·D"
+    },
+    {
+      "id": 67,
+      "category": "G",
+      "name": "扫描线显影",
+      "enName": "Scanline Develop",
+      "formula": "y<lerp(0,H,t)"
+    },
+    {
+      "id": 68,
+      "category": "G",
+      "name": "形状蒙版",
+      "enName": "SVG Mask Grow",
+      "formula": "mask scale=p"
+    },
+    {
+      "id": 69,
+      "category": "G",
+      "name": "笔画手写",
+      "enName": "Handwriting",
+      "formula": "dashoffset=L(1-p)"
+    },
+    {
+      "id": 70,
+      "category": "G",
+      "name": "液面上涨",
+      "enName": "Liquid Fill Up",
+      "formula": "h=lerp(0,H,p)"
+    },
+    {
+      "id": 71,
+      "category": "H",
+      "name": "噪声抖动收敛",
+      "enName": "Noise Jitter Settle",
+      "formula": "noise(i,tf)·A(1-t)"
+    },
+    {
+      "id": 72,
+      "category": "H",
+      "name": "乱码解码",
+      "enName": "Scramble / Decode",
+      "formula": "lock(i)=i·d"
+    },
+    {
+      "id": 73,
+      "category": "H",
+      "name": "沙化重组",
+      "enName": "Sand Reform",
+      "formula": "lerp(rand,target,t)"
+    },
+    {
+      "id": 74,
+      "category": "H",
+      "name": "概率点亮",
+      "enName": "Stochastic Light-Up",
+      "formula": "rand(i)<t"
+    },
+    {
+      "id": 75,
+      "category": "H",
+      "name": "布朗漂入",
+      "enName": "Brownian Drift-In",
+      "formula": "pos+=randn·σ(1-t)"
+    },
+    {
+      "id": 76,
+      "category": "H",
+      "name": "泊松雨滴",
+      "enName": "Poisson Rain",
+      "formula": "间隔~Exp(λ)"
+    },
+    {
+      "id": 77,
+      "category": "H",
+      "name": "噪声场流入",
+      "enName": "Curl-Noise Flow",
+      "formula": "v=curl(noise)(1-t)"
+    },
+    {
+      "id": 78,
+      "category": "H",
+      "name": "信噪比上升",
+      "enName": "SNR Rise",
+      "formula": "lerp(noise,glyph,t)"
+    },
+    {
+      "id": 79,
+      "category": "H",
+      "name": "抖动溶解",
+      "enName": "Dither Dissolve",
+      "formula": "bayer(x,y)<t"
+    },
+    {
+      "id": 80,
+      "category": "H",
+      "name": "量子坍缩",
+      "enName": "Quantum Collapse",
+      "formula": "softmax→target"
+    },
+    {
+      "id": 81,
+      "category": "I",
+      "name": "粒子聚合",
+      "enName": "Particle Assemble",
+      "formula": "lerp(spawn,glyph,t)"
+    },
+    {
+      "id": 82,
+      "category": "I",
+      "name": "破碎逆放",
+      "enName": "Reverse Shatter",
+      "formula": "lerp(scatter,0,p)"
+    },
+    {
+      "id": 83,
+      "category": "I",
+      "name": "冲击波成形",
+      "enName": "Shockwave Form",
+      "formula": "dist<R(t)"
+    },
+    {
+      "id": 84,
+      "category": "I",
+      "name": "烟雾凝结",
+      "enName": "Smoke Condense",
+      "formula": "扩散半径∝(1-t)"
+    },
+    {
+      "id": 85,
+      "category": "I",
+      "name": "磁粉吸附",
+      "enName": "Ferrofluid Pull",
+      "formula": "沿法线·noise·p"
+    },
+    {
+      "id": 86,
+      "category": "I",
+      "name": "体素堆叠",
+      "enName": "Voxel Stack-Up",
+      "formula": "delay=(y+rand)·d"
+    },
+    {
+      "id": 87,
+      "category": "I",
+      "name": "拉链合拢",
+      "enName": "Zipper Merge",
+      "formula": "x=±X(1-easeInOut)"
+    },
+    {
+      "id": 88,
+      "category": "I",
+      "name": "细胞增殖",
+      "enName": "Mitosis Spawn",
+      "formula": "N=2^(floor(tk))"
+    },
+    {
+      "id": 89,
+      "category": "J",
+      "name": "色相旋转",
+      "enName": "Hue-Rotate In",
+      "formula": "hue=lerp(360n,0,t)"
+    },
+    {
+      "id": 90,
+      "category": "J",
+      "name": "流光扫光",
+      "enName": "Gradient Sweep",
+      "formula": "bgPos:-100%→200%"
+    },
+    {
+      "id": 91,
+      "category": "J",
+      "name": "冷暖渐变",
+      "enName": "Blackbody Warm-Up",
+      "formula": "色温 T(t)"
+    },
+    {
+      "id": 92,
+      "category": "J",
+      "name": "投影成形",
+      "enName": "Long-Shadow Cast",
+      "formula": "L=lerp(Lmax,L0,p)"
+    },
+    {
+      "id": 93,
+      "category": "J",
+      "name": "光照浮雕",
+      "enName": "Lighting Emboss",
+      "formula": "max(0,N·L(t))"
+    },
+    {
+      "id": 94,
+      "category": "J",
+      "name": "霓虹点亮",
+      "enName": "Neon Sequential",
+      "formula": "seg delay=k·d"
+    },
+    {
+      "id": 95,
+      "category": "K",
+      "name": "RGB撕裂故障",
+      "enName": "Glitch Tear",
+      "formula": "step(rand(y,t)-θ)·D"
+    },
+    {
+      "id": 96,
+      "category": "K",
+      "name": "数据流下落",
+      "enName": "Datamosh Cascade",
+      "formula": "y=lerp(-H,0,easeOut)"
+    },
+    {
+      "id": 97,
+      "category": "K",
+      "name": "方波频闪",
+      "enName": "Square-Wave Strobe",
+      "formula": "sin(ωt)>0?1:0"
+    },
+    {
+      "id": 98,
+      "category": "L",
+      "name": "分形递归展开",
+      "enName": "Fractal Unfold",
+      "formula": "L 层∈[L/Lmax,...]"
+    },
+    {
+      "id": 99,
+      "category": "L",
+      "name": "混沌吸引子归位",
+      "enName": "Attractor Settle",
+      "formula": "洛伦兹·(1-t)"
+    },
+    {
+      "id": 100,
+      "category": "L",
+      "name": "逻辑斯蒂分岔",
+      "enName": "Logistic Bifurcation",
+      "formula": "x_{n+1}=r·x_n(1-x_n)"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "SceneHero",
+      "name": "主标题",
+      "role": "单段超大居中、戏剧化进出",
+      "stacks": false,
+      "propsKey": "entries[]"
+    },
+    {
+      "id": "SceneCaption",
+      "name": "字幕",
+      "role": "下三分之一、快速进出/原地替换",
+      "stacks": false,
+      "propsKey": "lines[]"
+    },
+    {
+      "id": "SceneList",
+      "name": "逐条列表",
+      "role": "条目依次入场并持续累积",
+      "stacks": true,
+      "propsKey": "items[]"
+    },
+    {
+      "id": "SceneLowerThird",
+      "name": "角标/署名",
+      "role": "左下品牌条、滑入停留滑出",
+      "stacks": false,
+      "propsKey": "entries[]"
+    },
+    {
+      "id": "SceneEmphasis",
+      "name": "行内强调",
+      "role": "句中某词高亮登场",
+      "stacks": false,
+      "propsKey": "lines[]"
+    },
+    {
+      "id": "SceneGallery",
+      "name": "目录陈列",
+      "role": "顺序陈列效果库 + 历史栈",
+      "stacks": true,
+      "propsKey": "effectIds[]"
+    }
+  ]
+}

@@ -17,6 +17,28 @@ export {
 
 import {clamp01, lerp, easeOutCubic, rand2} from '../effects/showcaseKit';
 
+/** 场景默认字体族（中英文兼容）。 */
+export const DEFAULT_FONT_FAMILY = 'Arial, "PingFang SC", "Microsoft YaHei", sans-serif';
+
+/** 水平对齐 → flex 主轴/CSS textAlign。 */
+export const alignToFlex = (a?: 'left' | 'center' | 'right'): 'flex-start' | 'center' | 'flex-end' =>
+  a === 'left' ? 'flex-start' : a === 'right' ? 'flex-end' : 'center';
+
+/** 垂直对齐 → flex 主轴。 */
+export const vAlignToFlex = (a?: 'top' | 'center' | 'bottom'): 'flex-start' | 'center' | 'flex-end' =>
+  a === 'top' ? 'flex-start' : a === 'bottom' ? 'flex-end' : 'center';
+
+/**
+ * 按当前阶段挑选该段文字应使用的原子编号：
+ *  - phase='out'：outEffectId ?? effectId
+ *  - 否则（in/hold）：inEffectId ?? effectId
+ * 让入场与出场可以分别指定不同原子；缺省时两端共用 effectId（向后兼容）。
+ */
+export const pickPhaseEffectId = (
+  e: {effectId: number; inEffectId?: number; outEffectId?: number},
+  phase: Phase
+): number => (phase === 'out' ? e.outEffectId ?? e.effectId : e.inEffectId ?? e.effectId);
+
 /**
  * 在场度 presence ∈ [0,1]：1 = 完全到位（稳定态），0 = 完全缺席。
  *  - phase='in'：presence = ease(t)

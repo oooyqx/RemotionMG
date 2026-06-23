@@ -1,3 +1,5 @@
+<p align="right"><strong>简体中文</strong> · <a href="./ai-usage.en.md">English</a></p>
+
 # AI 调用指南（零改代码出片）
 
 本项目把文字动效拆成两层，**其他 AI / 程序只需传 JSON props 即可渲染**，无需改动源码。
@@ -39,6 +41,67 @@ npx remotion still  src/index.ts <SceneId> out.png --frame=40 --props='<JSON>'
 ```
 
 **时长无需指定**：每个场景用 `calculateMetadata` 按 props 自动计算 `durationInFrames`。
+
+### 通用可选排版/位置参数（全部可选，向后兼容）
+
+除文字与 `effectId` 外，文字场景还接受以下可选 props 定义排版与位置；不传即用默认值：
+
+| 参数 | 类型 | 含义 | 适用场景 |
+|---|---|---|---|
+| `fontSize` | number | 字号(px) | 全部文字场景 |
+| `fontWeight` | number | 字重(100–900) | Hero/Caption/List/Emphasis/LowerThird |
+| `fontFamily` | string | 字体族 | 同上 |
+| `letterSpacing` | number | 字间距(px) | 同上 |
+| `align` | `left\|center\|right` | 水平对齐 | Hero/Caption/Emphasis |
+| `vAlign` | `top\|center\|bottom` | 垂直对齐 | Hero |
+| `offsetX`/`offsetY` | number | 位置偏移(px) | Hero/Caption/LowerThird |
+| `subSize`/`subColor` | number/string | 副标题字号/颜色 | Hero |
+| `showLabel` | boolean | 是否显示左上角场景标签 | 全部 |
+
+示例（左对齐置顶、细体、字间距、自定位置、隐藏标签）：
+```bash
+npx remotion render src/index.ts SceneHero out.mp4 --props='{
+  "entries":[{"text":"左上角标题","sub":"custom","effectId":21}],
+  "timing":{"inF":22,"holdF":40,"outF":18},
+  "background":"#0c0e1c","color":"#7fe3ff",
+  "fontSize":120,"fontWeight":400,"letterSpacing":8,
+  "align":"left","vAlign":"top","offsetX":40,"offsetY":20,"showLabel":false
+}'
+```
+
+### 分别指定入场 / 出场原子（可选）
+
+每段文字除 `effectId` 外，可加 `inEffectId` / `outEffectId` 分别覆盖入场与出场所用原子；
+缺省时两端都用 `effectId`（向后兼容）。例：乱码解码登场、RGB 撕裂离场：
+```json
+{"text":"标题","effectId":72,"inEffectId":72,"outEffectId":95}
+```
+
+### 主题（一键成套，最省事）
+
+不想逐场景挑效果？用 **SceneTheme**：选一个主题（`theme`）+ 填文字（`content`），
+即生成整套"配色 / 字体 / 节奏 / 入出场"都协调的多场景成片。主题清单见 `effects.json` 的 `themes`。
+
+预设主题：`glitch` 故障赛博 · `soft` 柔和优雅 · `bouncy` 活力弹跳 · `minimal` 极简打字 · `elegant` 优雅衬线。
+
+```bash
+npx remotion render src/index.ts SceneTheme out.mp4 --props='{
+  "theme":"glitch",
+  "content":{
+    "hero":{"entries":[{"text":"年度发布会","sub":"2025"}]},
+    "list":{"title":"今天的内容","items":[{"text":"新品"},{"text":"路线图"},{"text":"答疑"}]},
+    "caption":{"lines":[{"text":"欢迎来到现场。"}]}
+  }
+}'
+```
+
+可选字段（在项目范围内细调，仍保持成套）：
+- `order`：场景出现顺序，取自 `["hero","list","lowerThird","caption","emphasis"]`，只列出要用的。
+- `effects.<role>`：逐场景覆盖入/出原子，如 `{"hero":{"inEffectId":47,"outEffectId":34}}`。
+- `style`：覆盖主题的 `background/color/accent/barColor/fontFamily/fontWeight/letterSpacing`。
+- `timing`：覆盖 `{inF,holdF,outF}`。
+
+只填 `theme` 不填 `content` 也能跑（用内置演示文字）。`content` 里缺省的场景角色不会出现在成片中。
 
 ### 各场景 props 示例
 

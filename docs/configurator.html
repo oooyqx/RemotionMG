@@ -3,792 +3,803 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>主题配置器 / Theme Configurator — RemotionMG</title>
+<title>主题配置器 — RemotionMG</title>
 <style>
   :root {
-    --bg: #0a0e1c;
-    --bg2: #0d1226;
-    --card: #111733;
+    --bg: #08090f;
+    --bg2: #0d1020;
+    --card: #111528;
     --border: #1e2748;
     --text: #e8ecf5;
-    --muted: #8892b0;
-    --accent: #38e0ff;
-    --accent2: #7aa2ff;
-    --danger: #ff5d73;
+    --text2: #c0c8dd;
+    --dim: #6b7a9e;
+    --acc: #38e0ff;
+    --acc2: #7aa2ff;
+    --glow: rgba(56,224,255,0.12);
+    --red: #ff5d73;
     --ok: #4ad9a0;
-    --radius: 8px;
+    --warn: #f0c040;
+    --r: 8px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    padding: 20px;
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:12px;line-height:1.5}
+
+  /* === Shell === */
+  .shell{display:flex;flex-direction:column;height:100vh}
+
+  /* === Top bar === */
+  .top{height:38px;min-height:38px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+  .top-title{font-weight:700;font-size:13px;white-space:nowrap;margin-right:8px}
+  .theme-pills{display:flex;gap:3px;flex:1;min-width:0;overflow-x:auto}
+  .theme-pills::-webkit-scrollbar{display:none}
+  .tp{padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:all .12s;font-family:inherit}
+  .tp:hover{border-color:var(--dim);color:var(--text2)}
+  .tp.on{border-color:var(--acc);color:var(--acc);background:var(--glow)}
+  .tp .dot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);flex-shrink:0}
+  .top-acts{display:flex;gap:4px;flex-shrink:0}
+
+  /* === Body === */
+  .body{flex:1;display:flex;min-height:0}
+
+  /* === Left panel === */
+  .left{width:50%;min-width:380px;display:flex;flex-direction:column;border-right:1px solid var(--border);min-height:0}
+
+  /* -- Scene tabs -- */
+  .scene-tabs{display:flex;gap:2px;padding:6px 10px 0;background:var(--bg2);flex-shrink:0}
+  .st{padding:4px 12px;border-radius:var(--r) var(--r) 0 0;border:1px solid var(--border);border-bottom:none;background:var(--bg);color:var(--dim);font-size:11px;font-weight:600;cursor:pointer;transition:all .1s;font-family:inherit;display:flex;align-items:center;gap:4px}
+  .st:hover{color:var(--text2)}
+  .st.on{background:var(--card);color:var(--acc);border-color:var(--acc)}
+  .st .sd{width:6px;height:6px;border-radius:50%}
+  .st .sd.has{background:var(--ok)}.st .sd.no{background:var(--border)}
+
+  /* -- Editor area -- */
+  .editor{flex:1;overflow-y:auto;padding:10px 12px;background:var(--card);min-height:0}
+  .editor::-webkit-scrollbar{width:4px}
+  .editor::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+  .ed-row{display:flex;gap:4px;margin-bottom:4px;align-items:center}
+  .ed-row input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:4px 6px;font-size:11px;font-family:inherit;min-width:0}
+  .ed-row input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 2px var(--glow)}
+  .ed-row input.narrow{max-width:100px}
+  .ed-row input.em{border-color:var(--warn);font-weight:700}
+  .x-btn{width:20px;height:20px;border-radius:4px;border:1px solid var(--border);background:var(--bg2);color:var(--dim);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .1s}
+  .x-btn:hover{border-color:var(--red);color:var(--red);background:rgba(255,93,115,0.08)}
+  .add-btn{padding:3px 10px;border-radius:4px;border:1px dashed var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:10px;font-family:inherit;transition:all .1s;margin-top:2px}
+  .add-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--glow)}
+  .empty-msg{color:var(--dim);font-size:11px;text-align:center;padding:12px 0}
+
+  /* -- Controls strip -- */
+  .controls{flex-shrink:0;padding:8px 12px;border-top:1px solid var(--border);background:var(--bg2)}
+  .ctrl-section{margin-bottom:6px}
+  .ctrl-label{font-size:9px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
+  .sl-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+  .sl-row .sl-name{font-size:10px;color:var(--dim);min-width:24px;font-weight:600}
+  .sl-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:3px;background:var(--border);border-radius:2px;outline:none;border:none;padding:0}
+  .sl-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--acc);cursor:pointer;border:2px solid var(--bg)}
+  .sl-row input[type=range]::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--acc);cursor:pointer;border:2px solid var(--bg)}
+  .sl-row .sl-v{font-size:10px;font-weight:700;color:var(--acc);min-width:24px;text-align:right;font-variant-numeric:tabular-nums}
+
+  .clr-row{display:flex;gap:8px;align-items:center}
+  .clr-item{display:flex;align-items:center;gap:3px}
+  .clr-item label{font-size:9px;color:var(--dim);font-weight:600}
+  .clr-item input[type=color]{width:18px;height:18px;padding:0;border:1px solid var(--border);border-radius:3px;cursor:pointer;background:var(--bg);flex-shrink:0}
+  .clr-item input[type=text]{width:64px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 4px;font-size:10px;font-family:"Menlo","Consolas",monospace}
+  .clr-item input[type=text]:focus{outline:none;border-color:var(--acc)}
+
+  .eo-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+  .eo-pair{display:flex;align-items:center;gap:2px;font-size:10px}
+  .eo-pair span{color:var(--dim);font-weight:600;font-size:9px;min-width:18px}
+  .eo-pair input{width:36px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;text-align:center;font-family:inherit}
+  .eo-pair input:focus{outline:none;border-color:var(--acc)}
+  .eo-sep{color:var(--border);margin:0 2px}
+
+  /* === Right panel === */
+  .right{flex:1;display:flex;flex-direction:column;min-width:300px;min-height:0}
+
+  /* -- Preview -- */
+  .pv-header{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+  .pv-label{font-size:10px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:1px}
+  .pv-spacer{flex:1}
+  .pv-btn{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--acc);cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;transition:all .1s}
+  .pv-btn:hover{border-color:var(--acc);background:var(--glow)}
+  .sp-btn{padding:1px 6px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .1s}
+  .sp-btn:hover{border-color:var(--acc);color:var(--acc)}
+
+  .pv-stage{flex:1;position:relative;overflow:hidden;min-height:120px}
+  .pv-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:16px;overflow:hidden}
+  .pv-text{white-space:nowrap;will-change:transform,opacity,filter}
+  .pv-sub{font-size:10px;margin-top:4px;letter-spacing:1.5px;opacity:0.5}
+  .pv-tag{position:absolute;left:8px;top:6px;font-size:8px;letter-spacing:1.5px;opacity:0.25;text-transform:uppercase;font-weight:700}
+
+  .pv-bar{display:flex;align-items:center;gap:6px;padding:6px 10px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;flex-wrap:wrap}
+  .chips{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
+  .chip{padding:2px 7px;border-radius:8px;font-size:9px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--dim);transition:all .1s;font-family:inherit}
+  .chip.on{border-color:var(--acc);color:var(--acc);background:var(--glow)}
+  .chip:hover:not(.on){border-color:var(--dim)}
+  .tl{flex:1;min-width:60px;height:3px;background:var(--border);border-radius:2px;position:relative;overflow:hidden}
+  .tl-p{position:absolute;left:0;top:0;height:100%;background:var(--acc);border-radius:2px;transition:width .05s linear}
+  .tl-i{font-size:9px;color:var(--dim);white-space:nowrap}
+
+  /* -- Output -- */
+  .out{flex-shrink:0;border-top:1px solid var(--border);display:flex;flex-direction:column;max-height:40%;min-height:0}
+  .out-head{display:flex;align-items:center;gap:6px;padding:4px 10px;cursor:pointer;user-select:none;background:var(--bg2)}
+  .out-head:hover{background:rgba(255,255,255,0.02)}
+  .out-head .arr{font-size:8px;color:var(--dim);transition:transform .15s}
+  .out.open .out-head .arr{transform:rotate(90deg);color:var(--acc)}
+  .out-head .oh-l{font-size:10px;font-weight:600;flex:1}
+  .out-body{display:none;overflow:hidden;flex:1;min-height:0}
+  .out.open .out-body{display:flex;flex-direction:column}
+  .out-tabs{display:flex;gap:2px;padding:4px 10px 0;flex-shrink:0}
+  .ot{padding:2px 8px;border-radius:4px 4px 0 0;cursor:pointer;font-size:10px;font-weight:600;border:1px solid var(--border);border-bottom:none;background:var(--bg);color:var(--dim);font-family:inherit;transition:all .1s}
+  .ot.on{background:var(--card);color:var(--acc);border-color:var(--acc)}
+  .out-code{flex:1;overflow:auto;padding:6px 10px;font-family:"Menlo","Consolas",monospace;font-size:10px;white-space:pre-wrap;word-break:break-all;line-height:1.4;color:var(--text2);min-height:0;background:var(--bg)}
+  .tc{display:none}.tc.on{display:block}
+
+  /* === Bottom bar === */
+  .bot{height:34px;min-height:34px;display:flex;align-items:center;gap:6px;padding:0 12px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+  .bot-info{font-size:10px;color:var(--dim);flex:1}
+  .btn{padding:5px 14px;border-radius:var(--r);border:none;cursor:pointer;font-size:11px;font-weight:600;font-family:inherit;transition:all .12s;white-space:nowrap}
+  .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}.btn:active{transform:translateY(0)}
+  .btn-p{background:linear-gradient(135deg,#38e0ff,#2a9fd6);color:#000}
+  .btn-s{background:var(--card);border:1px solid var(--border);color:var(--text)}
+  .btn-s:hover{border-color:var(--acc);color:var(--acc)}
+  .btn-g{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:10px;padding:4px 10px}
+  .btn-g:hover{border-color:var(--acc);color:var(--acc)}
+
+  /* === Toast === */
+  .toast{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);background:var(--ok);color:#000;padding:6px 20px;border-radius:var(--r);font-weight:600;font-size:11px;z-index:999;animation:su .25s,fo 1.8s .4s forwards;box-shadow:0 3px 12px rgba(74,217,160,0.2)}
+  @keyframes su{from{transform:translateX(-50%) translateY(12px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+  @keyframes fo{0%,50%{opacity:1}100%{opacity:0}}
+
+  @media(max-width:760px){
+    .body{flex-direction:column}
+    .left{width:100%;min-width:0;max-height:55%}
+    .right{min-width:0}
   }
-  h1 { font-size: 1.4rem; margin-bottom: 4px; }
-  h1 small { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
-  .container { max-width: 1100px; margin: 0 auto; }
-  .header { margin-bottom: 24px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-  .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
-  label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; margin-top: 10px; }
-  label:first-child { margin-top: 0; }
-  input, select, textarea {
-    width: 100%;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    padding: 8px 10px;
-    font-size: 0.85rem;
-    font-family: inherit;
-  }
-  textarea { resize: vertical; min-height: 60px; font-family: "Menlo", "Consolas", monospace; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
-  .row { display: flex; gap: 10px; }
-  .row > * { flex: 1; }
-  .scene-section { border-left: 3px solid var(--border); padding-left: 12px; margin-bottom: 12px; }
-  .scene-section h3 { font-size: 0.85rem; margin-bottom: 8px; cursor: pointer; user-select: none; }
-  .scene-section h3:hover { color: var(--accent); }
-  .scene-section.collapsed .scene-body { display: none; }
-  .scene-section.collapsed h3::after { content: " ▸"; }
-  .scene-section h3::after { content: " ▾"; color: var(--muted); }
-  .entry-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
-  .entry-row input { flex: 1; }
-  .btn-mini {
-    background: var(--border);
-    border: none;
-    color: var(--text);
-    border-radius: 4px;
-    padding: 4px 8px;
-    cursor: pointer;
-    font-size: 0.75rem;
-    white-space: nowrap;
-  }
-  .btn-mini:hover { background: var(--accent); color: var(--bg); }
-  .btn-mini.danger:hover { background: var(--danger); }
-  .btn {
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: var(--radius);
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: opacity .15s;
-  }
-  .btn:hover { opacity: 0.85; }
-  .btn-primary { background: var(--accent); color: var(--bg); }
-  .btn-secondary { background: var(--accent2); color: #fff; }
-  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
-  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  .json-preview {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px;
-    font-family: "Menlo", "Consolas", monospace;
-    font-size: 0.78rem;
-    max-height: 400px;
-    overflow: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-  .readme-preview {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px;
-    font-size: 0.8rem;
-    max-height: 400px;
-    overflow: auto;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .tabs { display: flex; gap: 4px; margin-bottom: 8px; }
-  .tab {
-    padding: 6px 14px;
-    border-radius: 6px 6px 0 0;
-    cursor: pointer;
-    font-size: 0.8rem;
-    border: 1px solid var(--border);
-    border-bottom: none;
-    background: var(--bg2);
-    color: var(--muted);
-  }
-  .tab.active { background: var(--card); color: var(--accent); border-color: var(--accent); }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--ok);
-    color: var(--bg);
-    padding: 10px 20px;
-    border-radius: var(--radius);
-    font-weight: 600;
-    font-size: 0.85rem;
-    z-index: 999;
-    animation: fadeOut 2s forwards;
-  }
-  @keyframes fadeOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
-  .hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
-  .toggle { display: flex; align-items: center; gap: 6px; }
-  .toggle input { width: auto; }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>主题配置器 <small>Theme Configurator — RemotionMG</small></h1>
-    <p style="color:var(--muted);font-size:.82rem">选主题 → 填文字 → 导出主题包（theme.json + README.md）</p>
+<div class="shell">
+
+<!-- === Top bar === -->
+<div class="top">
+  <span class="top-title">主题配置器</span>
+  <div class="theme-pills" id="themePills"></div>
+  <div class="top-acts">
+    <button class="btn-g" onclick="resetConfig()">重置</button>
   </div>
+</div>
 
-  <div class="grid">
-    <!-- Left: Editor -->
-    <div>
-      <!-- Theme selection -->
-      <div class="card">
-        <h2>1. 主题 / Theme</h2>
-        <label>主题 / Theme</label>
-        <select id="themeSelect"></select>
-        <div id="themeDesc" style="margin-top:8px;font-size:.8rem;color:var(--muted)"></div>
+<!-- === Body === -->
+<div class="body">
+
+  <!-- Left: Controls -->
+  <div class="left">
+    <!-- Scene tabs -->
+    <div class="scene-tabs" id="sceneTabs"></div>
+
+    <!-- Editor -->
+    <div class="editor" id="editorArea"></div>
+
+    <!-- Controls strip -->
+    <div class="controls">
+      <div class="ctrl-section">
+        <div class="ctrl-label">时序 Timing</div>
+        <div class="sl-row"><span class="sl-name">入</span><input type="range" id="inF" min="4" max="60" value="20" oninput="sSync(this,'iv');uc()"><span class="sl-v" id="iv">20f</span></div>
+        <div class="sl-row"><span class="sl-name">停</span><input type="range" id="holdF" min="0" max="90" value="40" oninput="sSync(this,'hv');uc()"><span class="sl-v" id="hv">40f</span></div>
+        <div class="sl-row"><span class="sl-name">出</span><input type="range" id="outF" min="4" max="60" value="16" oninput="sSync(this,'ov');uc()"><span class="sl-v" id="ov">16f</span></div>
       </div>
-
-      <!-- Content editor -->
-      <div class="card">
-        <h2>2. 内容 / Content</h2>
-
-        <div class="scene-section" id="sec-hero">
-          <h3 onclick="toggleSection('sec-hero')">主标题 / Hero</h3>
-          <div class="scene-body">
-            <div id="heroEntries"></div>
-            <button class="btn-mini" onclick="addHeroEntry()">+ 添加 / Add</button>
-          </div>
-        </div>
-
-        <div class="scene-section" id="sec-list">
-          <h3 onclick="toggleSection('sec-list')">列表 / List</h3>
-          <div class="scene-body">
-            <label>标题 / Title</label>
-            <input id="listTitle" type="text" oninput="updateConfig()">
-            <label>条目 / Items</label>
-            <div id="listItems"></div>
-            <button class="btn-mini" onclick="addListItem()">+ 添加 / Add</button>
-          </div>
-        </div>
-
-        <div class="scene-section" id="sec-lowerThird">
-          <h3 onclick="toggleSection('sec-lowerThird')">角标 / Lower-third</h3>
-          <div class="scene-body">
-            <div id="lowerThirdEntries"></div>
-            <button class="btn-mini" onclick="addLowerThirdEntry()">+ 添加 / Add</button>
-          </div>
-        </div>
-
-        <div class="scene-section" id="sec-caption">
-          <h3 onclick="toggleSection('sec-caption')">字幕 / Caption</h3>
-          <div class="scene-body">
-            <div id="captionLines"></div>
-            <button class="btn-mini" onclick="addCaptionLine()">+ 添加 / Add</button>
-          </div>
-        </div>
-
-        <div class="scene-section" id="sec-emphasis">
-          <h3 onclick="toggleSection('sec-emphasis')">强调 / Emphasis</h3>
-          <div class="scene-body">
-            <div id="emphasisLines"></div>
-            <button class="btn-mini" onclick="addEmphasisLine()">+ 添加 / Add</button>
-          </div>
+      <div class="ctrl-section">
+        <div class="ctrl-label">配色</div>
+        <div class="clr-row">
+          <div class="clr-item"><label>背景</label><input type="color" id="bgC" value="#0a1320" oninput="cSync('bgC','bgT');uc()"><input type="text" id="bgT" placeholder="#hex" oninput="uc()"></div>
+          <div class="clr-item"><label>文字</label><input type="color" id="fgC" value="#eafcff" oninput="cSync('fgC','fgT');uc()"><input type="text" id="fgT" placeholder="#hex" oninput="uc()"></div>
+          <div class="clr-item"><label>强调</label><input type="color" id="acC" value="#38e0ff" oninput="cSync('acC','acT');uc()"><input type="text" id="acT" placeholder="#hex" oninput="uc()"></div>
         </div>
       </div>
-
-      <!-- Advanced overrides -->
-      <div class="card">
-        <h2>3. 高级覆盖 / Advanced Overrides <span style="font-size:.7rem;color:var(--muted)">(可选 / optional)</span></h2>
-        <label>场景顺序 / Scene Order (逗号分隔)</label>
-        <input id="orderInput" type="text" placeholder="hero,list,lowerThird,caption,emphasis" oninput="updateConfig()">
-        <div class="hint">默认: hero → list → lowerThird → caption → emphasis</div>
-
-        <div class="row">
-          <div>
-            <label>入场帧 / In frames</label>
-            <input id="inF" type="number" oninput="updateConfig()">
-          </div>
-          <div>
-            <label>停留帧 / Hold frames</label>
-            <input id="holdF" type="number" oninput="updateConfig()">
-          </div>
-          <div>
-            <label>出场帧 / Out frames</label>
-            <input id="outF" type="number" oninput="updateConfig()">
-          </div>
-        </div>
-        <div class="hint">留空即用主题默认时序</div>
-
-        <label>背景 / Background</label>
-        <input id="bgOverride" type="text" placeholder="覆盖主题背景 (CSS)" oninput="updateConfig()">
-        <label>前景色 / Foreground</label>
-        <input id="colorOverride" type="text" placeholder="覆盖主题前景色" oninput="updateConfig()">
-        <label>强调色 / Accent</label>
-        <input id="accentOverride" type="text" placeholder="覆盖主题强调色" oninput="updateConfig()">
-      </div>
-
-      <!-- Actions -->
-      <div class="card">
-        <div class="actions">
-          <button class="btn btn-primary" onclick="exportZip()">📦 导出主题包 / Export ZIP</button>
-          <button class="btn btn-secondary" onclick="copyJson()">📋 复制 JSON / Copy JSON</button>
-          <button class="btn btn-ghost" onclick="copyRenderCmd()">⌨️ 复制渲染命令 / Copy Render Cmd</button>
+      <div class="ctrl-section" style="margin-bottom:0">
+        <div class="ctrl-label">动效覆盖 <span style="font-weight:400;text-transform:none">effectId 1-100</span></div>
+        <div class="eo-row">
+          <div class="eo-pair"><span>H入</span><input id="eo-hero-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <div class="eo-pair"><span>出</span><input id="eo-hero-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <span class="eo-sep">|</span>
+          <div class="eo-pair"><span>L入</span><input id="eo-list-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <div class="eo-pair"><span>出</span><input id="eo-list-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <span class="eo-sep">|</span>
+          <div class="eo-pair"><span>角入</span><input id="eo-lowerThird-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <div class="eo-pair"><span>出</span><input id="eo-lowerThird-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <span class="eo-sep">|</span>
+          <div class="eo-pair"><span>字入</span><input id="eo-caption-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <div class="eo-pair"><span>出</span><input id="eo-caption-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <span class="eo-sep">|</span>
+          <div class="eo-pair"><span>强入</span><input id="eo-emphasis-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+          <div class="eo-pair"><span>出</span><input id="eo-emphasis-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Right: Preview -->
-    <div>
-      <div class="card">
-        <div class="tabs">
-          <div class="tab active" onclick="switchTab('json')">theme.json</div>
-          <div class="tab" onclick="switchTab('readme')">README.md</div>
-          <div class="tab" onclick="switchTab('cmd')">渲染命令 / Render Cmd</div>
+  <!-- Right: Preview + Output -->
+  <div class="right">
+    <div class="pv-header">
+      <span class="pv-label">预览</span>
+      <div class="pv-spacer"></div>
+      <button class="sp-btn" id="spBtn" onclick="cycleSpeed()">1x</button>
+      <button class="pv-btn" id="playBtn" onclick="togglePlay()">&#9654;</button>
+    </div>
+    <div class="pv-stage" id="pvStage">
+      <div class="pv-inner" id="pvInner">
+        <div class="pv-tag" id="pvTag">HERO</div>
+        <div class="pv-text" id="pvText" style="font-size:24px;font-weight:800">预览</div>
+        <div class="pv-sub" id="pvSub"></div>
+      </div>
+    </div>
+    <div class="pv-bar">
+      <div class="chips" id="pvChips"></div>
+      <div class="tl"><div class="tl-p" id="tlP"></div></div>
+      <span class="tl-i" id="tlI">入场 0.0s</span>
+    </div>
+
+    <!-- Output -->
+    <div class="out open" id="outSec">
+      <div class="out-head" onclick="document.getElementById('outSec').classList.toggle('open')">
+        <span class="arr">&#9654;</span>
+        <span class="oh-l">输出</span>
+        <button class="btn-g" onclick="event.stopPropagation();copyJson()" style="font-size:9px;padding:2px 8px">复制</button>
+      </div>
+      <div class="out-body">
+        <div class="out-tabs">
+          <div class="ot on" onclick="stab('json',this)">JSON</div>
+          <div class="ot" onclick="stab('readme',this)">README</div>
+          <div class="ot" onclick="stab('cmd',this)">命令</div>
         </div>
-        <div id="tab-json" class="tab-content active">
-          <div class="json-preview" id="jsonPreview"></div>
-        </div>
-        <div id="tab-readme" class="tab-content">
-          <div class="readme-preview" id="readmePreview"></div>
-        </div>
-        <div id="tab-cmd" class="tab-content">
-          <div class="json-preview" id="cmdPreview"></div>
-        </div>
+        <div id="t-json" class="tc on"><div class="out-code" id="oJson"></div></div>
+        <div id="t-readme" class="tc"><div class="out-code" id="oReadme"></div></div>
+        <div id="t-cmd" class="tc"><div class="out-code" id="oCmd"></div></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- === Bottom bar === -->
+<div class="bot">
+  <span class="bot-info" id="botInfo">9 项 · glitch</span>
+  <button class="btn btn-p" onclick="exportZip()">导出 ZIP</button>
+  <button class="btn btn-s" onclick="copyJson()">复制 JSON</button>
+  <button class="btn btn-g" onclick="copyRenderCmd()">复制命令</button>
+</div>
+
+</div>
+
+<script id="srcBundle" type="application/json">{"src/effects/showcaseKit.ts":"/**\r\n * 全屏展示动画共享工具：时间编排、数学小工具、确定性随机/噪声。\r\n * 各类别（A–L）的展示合成共用这里的时序逻辑，但各自实现不同的入场/出场/堆栈。\r\n */\r\n\r\nexport const SEG = 48; // 每个方式占据\"主角\"的帧数\r\nexport const REVEAL_FRAC = 0.5; // 主角阶段中用于\"出现\"的比例\r\nexport const TAIL_SEG = 3; // 末尾留给最后一个方式沉淀为历史的额外段数\r\n\r\nexport const clamp01 = (x: number): number => Math.max(0, Math.min(1, x));\r\nexport const clamp = (x: number, lo: number, hi: number): number =>\r\n  Math.max(lo, Math.min(hi, x));\r\nexport const lerp = (a: number, b: number, p: number): number => a + (b - a) * p;\r\nexport const smoothstep = (edge0: number, edge1: number, x: number): number => {\r\n  const t = clamp01((x - edge0) / (edge1 - edge0));\r\n  return t * t * (3 - 2 * t);\r\n};\r\n\r\n/** 总时长（帧）：方式数 + 收尾段 */\r\nexport const totalFrames = (count: number): number => (count + TAIL_SEG) * SEG;\r\n\r\nexport type ItemTiming = {\r\n  /** 连续出场序数：d∈[0,1) 主角；d≥1 历史 */\r\n  d: number;\r\n  /** 离场/堆叠推进量 max(0, d-1) */\r\n  m: number;\r\n  /** 是否当前主角 */\r\n  isFeatured: boolean;\r\n  /** 主角阶段的出现进度（0→1，前 REVEAL_FRAC 完成） */\r\n  revealT: number;\r\n  /** 出场过渡 0→1（m 的前一段） */\r\n  move: number;\r\n};\r\n\r\nexport const itemTiming = (frame: number, index: number): ItemTiming => {\r\n  const d = (frame - index * SEG) / SEG;\r\n  const m = Math.max(0, d - 1);\r\n  return {\r\n    d,\r\n    m,\r\n    isFeatured: d >= 0 && d < 1,\r\n    revealT: clamp01(d / REVEAL_FRAC),\r\n    move: clamp01(m),\r\n  };\r\n};\r\n\r\n/** 确定性伪随机 ∈ [0,1)，以整数 seed 为种子（每帧一致，避免闪烁） */\r\nexport const rand = (seed: number): number => {\r\n  const s = Math.sin(seed * 127.1 + 311.7) * 43758.5453;\r\n  return s - Math.floor(s);\r\n};\r\n\r\n/** 二维种子随机 */\r\nexport const rand2 = (a: number, b: number): number => rand(a * 73.13 + b * 19.97);\r\n\r\n/** 一维平滑噪声 ∈ [-1,1] */\r\nexport const noise1 = (x: number): number => {\r\n  const i = Math.floor(x);\r\n  const f = x - i;\r\n  const u = f * f * (3 - 2 * f);\r\n  const a = rand(i) * 2 - 1;\r\n  const b = rand(i + 1) * 2 - 1;\r\n  return a + (b - a) * u;\r\n};\r\n\r\n/** easeOutBack：带过冲的缓出 */\r\nexport const easeOutBack = (t: number, s = 1.70158): number => {\r\n  const x = t - 1;\r\n  return 1 + (s + 1) * x * x * x + s * x * x;\r\n};\r\n\r\n/** easeInBack：带预备的缓入 */\r\nexport const easeInBack = (t: number, s = 1.70158): number =>\r\n  (s + 1) * t * t * t - s * t * t;\r\n\r\n/** easeOutCubic */\r\nexport const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);\r\n\r\n/** easeOutElastic：到位后弹性振荡 */\r\nexport const easeOutElastic = (t: number): number => {\r\n  if (t === 0) return 0;\r\n  if (t === 1) return 1;\r\n  const c4 = (2 * Math.PI) / 3;\r\n  return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;\r\n};\r\n\r\nexport type ShowItem = {\r\n  id: number;\r\n  name: string;\r\n  enName: string;\r\n  formula: string;\r\n};\r\n","src/effects/opacityCurves.ts":"/**\r\n * A 类：透明度 · 多项式与指数曲线（方法 1–10）\r\n *\r\n * 每个函数输入归一化进度 t ∈ [0,1]，返回该曲线在该进度下的值。\r\n * 大多数返回 opacity ∈ [0,1]；个别（高斯闪现 / 双指数过冲）会返回\r\n * 额外的亮度 / 缩放等附加量，便于在组件中驱动多个样式属性。\r\n *\r\n * 对应参考文档：docs/font-entrance-effects-100.md  →  A. 透明度类（1–10）\r\n */\r\n\r\nexport const clamp01 = (x: number): number => Math.max(0, Math.min(1, x));\r\n\r\n/** 1. 线性淡入（Linear Fade）: opacity = t */\r\nexport const linearFade = (t: number): number => clamp01(t);\r\n\r\n/** 2. 二次淡入（Quadratic Ease-In）: opacity = t^2 */\r\nexport const quadraticEaseIn = (t: number): number => {\r\n  const x = clamp01(t);\r\n  return x * x;\r\n};\r\n\r\n/** 3. 三次缓出淡入（Cubic Ease-Out）: opacity = 1 - (1 - t)^3 */\r\nexport const cubicEaseOut = (t: number): number => {\r\n  const x = clamp01(t);\r\n  return 1 - Math.pow(1 - x, 3);\r\n};\r\n\r\n/** 4. 指数冲入（Exponential Ease-Out）: opacity = 1 - 2^(-10t) */\r\nexport const exponentialEaseOut = (t: number): number => {\r\n  const x = clamp01(t);\r\n  return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);\r\n};\r\n\r\n/** 5. 对数渐显（Logarithmic Reveal）: opacity = ln(1 + (e-1)·t) */\r\nexport const logarithmicReveal = (t: number): number => {\r\n  const x = clamp01(t);\r\n  return clamp01(Math.log(1 + (Math.E - 1) * x));\r\n};\r\n\r\n/**\r\n * 6. Sigmoid 渐显（Logistic S-Curve）: 1 / (1 + e^(-k(t-0.5)))\r\n * 做端点归一化，保证 t=0→0、t=1→1。\r\n */\r\nexport const sigmoidReveal = (t: number, k = 12): number => {\r\n  const x = clamp01(t);\r\n  const logistic = (v: number) => 1 / (1 + Math.exp(-k * (v - 0.5)));\r\n  const a = logistic(0);\r\n  const b = logistic(1);\r\n  return clamp01((logistic(x) - a) / (b - a));\r\n};\r\n\r\n/**\r\n * 7. 高斯脉冲闪现（Gaussian Flash-In）\r\n * 透明度走快速淡入；额外返回 brightness = 1 + A·e^(-((t-μ)^2)/(2σ^2))\r\n * 用于在出现瞬间过曝高亮一下再回落。\r\n */\r\nexport const gaussianFlashIn = (\r\n  t: number,\r\n  {amp = 1.6, mu = 0.3, sigma = 0.12}: {amp?: number; mu?: number; sigma?: number} = {}\r\n): {opacity: number; brightness: number} => {\r\n  const x = clamp01(t);\r\n  const opacity = cubicEaseOut(Math.min(1, x / 0.4));\r\n  const brightness = 1 + amp * Math.exp(-((x - mu) * (x - mu)) / (2 * sigma * sigma));\r\n  return {opacity, brightness};\r\n};\r\n\r\n/** 8. 伽马校正淡入（Gamma Fade）: opacity = t^(1/2.2) */\r\nexport const gammaFade = (t: number, gamma = 2.2): number => {\r\n  const x = clamp01(t);\r\n  return Math.pow(x, 1 / gamma);\r\n};\r\n\r\n/**\r\n * 9. 双指数过冲（Bi-Exponential Overshoot）\r\n * v = (1 - e^(-a t)) · (1 + b·e^(-c t))，先冲过 1 再回稳。\r\n * 同一个 v 同时驱动 opacity（限幅）与 scale（保留过冲）。\r\n */\r\nexport const biExponentialOvershoot = (\r\n  t: number,\r\n  {a = 6, b = 0.5, c = 9}: {a?: number; b?: number; c?: number} = {}\r\n): {opacity: number; scale: number} => {\r\n  const x = clamp01(t);\r\n  const v = (1 - Math.exp(-a * x)) * (1 + b * Math.exp(-c * x));\r\n  return {opacity: clamp01(v), scale: v};\r\n};\r\n\r\n/**\r\n * 10. 幂律阶梯淡入（Power-Step Fade）\r\n * 把进度量化成 k 段，每段内再套 t^2 平滑，呈\"分级点亮\"。\r\n */\r\nexport const powerStepFade = (t: number, steps = 5): number => {\r\n  const x = clamp01(t);\r\n  const stepIndex = Math.min(steps, Math.floor(x * steps));\r\n  const base = stepIndex / steps;\r\n  const frac = clamp01(x * steps - stepIndex);\r\n  const eased = base + (frac * frac) / steps;\r\n  return clamp01(eased);\r\n};\r\n\r\nexport type OpacityCurve = {\r\n  /** 序号（对应文档编号 1–10） */\r\n  id: number;\r\n  /** 中文名 */\r\n  name: string;\r\n  /** 英文名 */\r\n  enName: string;\r\n  /** 数学表达（用于在预览中展示） */\r\n  formula: string;\r\n  /**\r\n   * 给定归一化进度 t，返回该方法在该帧应用到文字上的样式片段。\r\n   */\r\n  apply: (t: number) => {\r\n    opacity: number;\r\n    transform?: string;\r\n    filter?: string;\r\n  };\r\n};\r\n\r\nexport const OPACITY_CURVES_A: OpacityCurve[] = [\r\n  {\r\n    id: 1,\r\n    name: '线性淡入',\r\n    enName: 'Linear Fade',\r\n    formula: 'opacity = t',\r\n    apply: (t) => ({opacity: linearFade(t)}),\r\n  },\r\n  {\r\n    id: 2,\r\n    name: '二次淡入',\r\n    enName: 'Quadratic Ease-In',\r\n    formula: 'opacity = t²',\r\n    apply: (t) => ({opacity: quadraticEaseIn(t)}),\r\n  },\r\n  {\r\n    id: 3,\r\n    name: '三次缓出',\r\n    enName: 'Cubic Ease-Out',\r\n    formula: 'opacity = 1 − (1 − t)³',\r\n    apply: (t) => ({opacity: cubicEaseOut(t)}),\r\n  },\r\n  {\r\n    id: 4,\r\n    name: '指数冲入',\r\n    enName: 'Exponential Ease-Out',\r\n    formula: 'opacity = 1 − 2^(−10t)',\r\n    apply: (t) => ({opacity: exponentialEaseOut(t)}),\r\n  },\r\n  {\r\n    id: 5,\r\n    name: '对数渐显',\r\n    enName: 'Logarithmic Reveal',\r\n    formula: 'opacity = ln(1 + (e−1)·t)',\r\n    apply: (t) => ({opacity: logarithmicReveal(t)}),\r\n  },\r\n  {\r\n    id: 6,\r\n    name: 'Sigmoid 渐显',\r\n    enName: 'Logistic S-Curve',\r\n    formula: 'opacity = 1 / (1 + e^(−k(t−0.5)))',\r\n    apply: (t) => ({opacity: sigmoidReveal(t)}),\r\n  },\r\n  {\r\n    id: 7,\r\n    name: '高斯闪现',\r\n    enName: 'Gaussian Flash-In',\r\n    formula: 'b = 1 + A·e^(−(t−μ)²/2σ²)',\r\n    apply: (t) => {\r\n      const {opacity, brightness} = gaussianFlashIn(t);\r\n      return {opacity, filter: `brightness(${brightness})`};\r\n    },\r\n  },\r\n  {\r\n    id: 8,\r\n    name: '伽马淡入',\r\n    enName: 'Gamma Fade',\r\n    formula: 'opacity = t^(1/2.2)',\r\n    apply: (t) => ({opacity: gammaFade(t)}),\r\n  },\r\n  {\r\n    id: 9,\r\n    name: '双指数过冲',\r\n    enName: 'Bi-Exponential Overshoot',\r\n    formula: 'v = (1−e^(−at))(1+b·e^(−ct))',\r\n    apply: (t) => {\r\n      const {opacity, scale} = biExponentialOvershoot(t);\r\n      return {opacity, transform: `scale(${scale})`};\r\n    },\r\n  },\r\n  {\r\n    id: 10,\r\n    name: '幂律阶梯',\r\n    enName: 'Power-Step Fade',\r\n    formula: 'opacity = ⌊t·k⌋/k (段内 t²)',\r\n    apply: (t) => ({opacity: powerStepFade(t)}),\r\n  },\r\n];\r\n","src/effects/categories.ts":"import {ShowItem} from './showcaseKit';\r\n\r\n/**\r\n * B–L 各类别的方式清单（名称 / 英文名 / 公式），用于全屏展示中的主角文字与说明。\r\n * 对应 docs/font-entrance-effects-100.md 的编号 11–100。\r\n */\r\n\r\nexport const CATEGORY_B: ShowItem[] = [\r\n  {id: 11, name: '上移淡入', enName: 'Slide-Up Fade', formula: 'y=lerp(50,0,easeOut)'},\r\n  {id: 12, name: '回退超调滑入', enName: 'Back Ease', formula: 'easeOutBack(t)'},\r\n  {id: 13, name: '弹性滑入', enName: 'Elastic Slide', formula: '2^(-10t)·sin(...)'},\r\n  {id: 14, name: '重力下坠', enName: 'Gravity Drop', formula: 'y=½·g·t²'},\r\n  {id: 15, name: '抛物线抛入', enName: 'Projectile Toss', formula: 'y=h·4t(1-t)'},\r\n  {id: 16, name: '阻尼回正', enName: 'Damped Settle', formula: 'A·e^(-ζt)·cos(ωt)'},\r\n  {id: 17, name: '速度模糊滑入', enName: 'Motion-Blur Slide', formula: 'blur=k·|v|'},\r\n  {id: 18, name: '惯性甩入', enName: 'Inertia Whip', formula: 'easeOutExpo + skew'},\r\n  {id: 19, name: '磁吸归位', enName: 'Magnetic Snap', formula: 'pos+=(t-pos)·k'},\r\n  {id: 20, name: '折线入场', enName: 'Polyline Path-In', formula: '分段折线插值'},\r\n];\r\n\r\nexport const CATEGORY_C: ShowItem[] = [\r\n  {id: 21, name: '弹簧弹出', enName: 'Spring Pop', formula: 'spring(scale 0→1)'},\r\n  {id: 22, name: '挤压拉伸', enName: 'Squash & Stretch', formula: 'sX·sY=const'},\r\n  {id: 23, name: '旋转缩放螺入', enName: 'Rotate-Zoom Spiral', formula: 'rot:180°→0°'},\r\n  {id: 24, name: '透视纵深推入', enName: 'Z-Push Perspective', formula: 'translateZ:-800→0'},\r\n  {id: 25, name: '焦点拉近', enName: 'Dolly Zoom', formula: 'scale↑·persp↓'},\r\n  {id: 26, name: '翻牌立体', enName: '3D Card Flip', formula: 'rotateY:90°→0°'},\r\n  {id: 27, name: '折纸展开', enName: 'Origami Unfold', formula: 'rotateX 分段'},\r\n  {id: 28, name: '镜像对开', enName: 'Mirror Split Open', formula: '上下半分'},\r\n  {id: 29, name: '厚度生长', enName: 'Extrude Grow', formula: 'K=round(maxK·t)'},\r\n  {id: 30, name: '弹性拉伸归位', enName: 'Elastic Stretch', formula: 'sY=1+(S-1)·elastic'},\r\n];\r\n\r\nexport const CATEGORY_D: ShowItem[] = [\r\n  {id: 31, name: '模糊聚焦', enName: 'Blur-to-Focus', formula: 'blur:16→0'},\r\n  {id: 32, name: '失焦呼吸', enName: 'Focus Breathing', formula: 'blur=|sin(πtn)|A(1-t)'},\r\n  {id: 33, name: '墨水晕染', enName: 'Ink Bleed', formula: 'blur=20(1-t)²'},\r\n  {id: 34, name: '辉光绽放', enName: 'Glow Bloom', formula: 'shadowBlur=A·e^(-kt)'},\r\n  {id: 35, name: '色差散焦', enName: 'Chromatic Aberration', formula: 'Δ=D(1-t)'},\r\n  {id: 36, name: '半调网点', enName: 'Halftone Develop', formula: 'r=R(1-t)'},\r\n  {id: 37, name: '像素化解析', enName: 'Pixelate Resolve', formula: 'b=round(B(1-t))+1'},\r\n  {id: 38, name: '热浪扭曲', enName: 'Heat-Haze Reveal', formula: 'd=noise(xf+t)A(1-t)'},\r\n];\r\n\r\nexport const CATEGORY_E: ShowItem[] = [\r\n  {id: 39, name: '正弦行波', enName: 'Traveling Sine', formula: 'y=A·sin(2πfu-ωt)'},\r\n  {id: 40, name: '余弦摆入', enName: 'Cosine Pendulum', formula: 'θ₀·cos(ωt)·e^(-kt)'},\r\n  {id: 41, name: '驻波涟漪', enName: 'Standing Wave', formula: 'A·sin(ku)cos(ωt)'},\r\n  {id: 42, name: '心跳脉动', enName: 'Heartbeat Pulse', formula: '1+A(sinωt+½sin2ωt)'},\r\n  {id: 43, name: '正切骤变', enName: 'Tangent Snap', formula: 'y=A·tan((t-.5)θ)'},\r\n  {id: 44, name: '李萨如聚合', enName: 'Lissajous Gather', formula: 'sin(aφ+δ),sin(bφ)'},\r\n  {id: 45, name: '阻尼正弦定格', enName: 'Damped Sine', formula: 'A·e^(-ζt)·sin(ωt+φ)'},\r\n  {id: 46, name: '拍频闪烁', enName: 'Beat Flicker', formula: 'cos(2πf₁t)cos(2πf₂t)'},\r\n  {id: 47, name: '螺旋极坐标', enName: 'Polar Spiral-In', formula: 'r=R(1-t),θ=θ₀+kt'},\r\n  {id: 48, name: '波纹扩散', enName: 'Ripple Expand', formula: 'delay=dist·c'},\r\n  {id: 49, name: '旗帜飘动', enName: 'Flag Wave', formula: 'A·sin(ku-ωt)(1-t)'},\r\n  {id: 50, name: '摆线滚入', enName: 'Cycloid Roll-In', formula: 'x=R(φ-sinφ)'},\r\n];\r\n\r\nexport const CATEGORY_F: ShowItem[] = [\r\n  {id: 51, name: '打字机', enName: 'Typewriter', formula: 'n=floor(t·N)'},\r\n  {id: 52, name: '线性交错', enName: 'Linear Stagger', formula: 'delay(i)=i·d'},\r\n  {id: 53, name: '居中开花', enName: 'Center-Out Bloom', formula: 'delay=|i-N/2|·d'},\r\n  {id: 54, name: '随机浮现', enName: 'Random Stagger', formula: 'delay=rand(i)·D'},\r\n  {id: 55, name: '高斯交错', enName: 'Gaussian Stagger', formula: '∝1-e^(-(u-.5)²/2σ²)'},\r\n  {id: 56, name: '逐字波浪', enName: 'Per-Char Wave', formula: 'y=A·sin(ωt-iΔφ)'},\r\n  {id: 57, name: '多米诺翻倒', enName: 'Domino Topple', formula: 'rot=90°(1-τ)'},\r\n  {id: 58, name: '字距收拢', enName: 'Spacing Collapse', formula: 'spacing=lerp(W,0,t)'},\r\n  {id: 59, name: '逐行上推', enName: 'Line Mask Up', formula: 'y:100%→0'},\r\n  {id: 60, name: '词级弹入', enName: 'Word Pop', formula: 'delay(w)=w·d'},\r\n  {id: 61, name: '卷帘百叶', enName: 'Vertical Blinds', formula: 'scaleX:0→1'},\r\n  {id: 62, name: '蛇形进场', enName: 'Boustrophedon', formula: '蛇形重排 delay'},\r\n];\r\n\r\nexport const CATEGORY_G: ShowItem[] = [\r\n  {id: 63, name: '横向擦除', enName: 'Horizontal Wipe', formula: 'inset(0 (100(1-p))% 0 0)'},\r\n  {id: 64, name: '对角揭示', enName: 'Diagonal Reveal', formula: 'polygon(...) 推进'},\r\n  {id: 65, name: '圆形光圈', enName: 'Circular Iris', formula: 'circle(p·150%)'},\r\n  {id: 66, name: '马赛克揭示', enName: 'Mosaic Reveal', formula: 'delay=rand(r,c)·D'},\r\n  {id: 67, name: '扫描线显影', enName: 'Scanline Develop', formula: 'y<lerp(0,H,t)'},\r\n  {id: 68, name: '形状蒙版', enName: 'SVG Mask Grow', formula: 'mask scale=p'},\r\n  {id: 69, name: '笔画手写', enName: 'Handwriting', formula: 'dashoffset=L(1-p)'},\r\n  {id: 70, name: '液面上涨', enName: 'Liquid Fill Up', formula: 'h=lerp(0,H,p)'},\r\n];\r\n\r\nexport const CATEGORY_H: ShowItem[] = [\r\n  {id: 71, name: '噪声抖动收敛', enName: 'Noise Jitter Settle', formula: 'noise(i,tf)·A(1-t)'},\r\n  {id: 72, name: '乱码解码', enName: 'Scramble / Decode', formula: 'lock(i)=i·d'},\r\n  {id: 73, name: '沙化重组', enName: 'Sand Reform', formula: 'lerp(rand,target,t)'},\r\n  {id: 74, name: '概率点亮', enName: 'Stochastic Light-Up', formula: 'rand(i)<t'},\r\n  {id: 75, name: '布朗漂入', enName: 'Brownian Drift-In', formula: 'pos+=randn·σ(1-t)'},\r\n  {id: 76, name: '泊松雨滴', enName: 'Poisson Rain', formula: '间隔~Exp(λ)'},\r\n  {id: 77, name: '噪声场流入', enName: 'Curl-Noise Flow', formula: 'v=curl(noise)(1-t)'},\r\n  {id: 78, name: '信噪比上升', enName: 'SNR Rise', formula: 'lerp(noise,glyph,t)'},\r\n  {id: 79, name: '抖动溶解', enName: 'Dither Dissolve', formula: 'bayer(x,y)<t'},\r\n  {id: 80, name: '量子坍缩', enName: 'Quantum Collapse', formula: 'softmax→target'},\r\n];\r\n\r\nexport const CATEGORY_I: ShowItem[] = [\r\n  {id: 81, name: '粒子聚合', enName: 'Particle Assemble', formula: 'lerp(spawn,glyph,t)'},\r\n  {id: 82, name: '破碎逆放', enName: 'Reverse Shatter', formula: 'lerp(scatter,0,p)'},\r\n  {id: 83, name: '冲击波成形', enName: 'Shockwave Form', formula: 'dist<R(t)'},\r\n  {id: 84, name: '烟雾凝结', enName: 'Smoke Condense', formula: '扩散半径∝(1-t)'},\r\n  {id: 85, name: '磁粉吸附', enName: 'Ferrofluid Pull', formula: '沿法线·noise·p'},\r\n  {id: 86, name: '体素堆叠', enName: 'Voxel Stack-Up', formula: 'delay=(y+rand)·d'},\r\n  {id: 87, name: '拉链合拢', enName: 'Zipper Merge', formula: 'x=±X(1-easeInOut)'},\r\n  {id: 88, name: '细胞增殖', enName: 'Mitosis Spawn', formula: 'N=2^(floor(tk))'},\r\n];\r\n\r\nexport const CATEGORY_J: ShowItem[] = [\r\n  {id: 89, name: '色相旋转', enName: 'Hue-Rotate In', formula: 'hue=lerp(360n,0,t)'},\r\n  {id: 90, name: '流光扫光', enName: 'Gradient Sweep', formula: 'bgPos:-100%→200%'},\r\n  {id: 91, name: '冷暖渐变', enName: 'Blackbody Warm-Up', formula: '色温 T(t)'},\r\n  {id: 92, name: '投影成形', enName: 'Long-Shadow Cast', formula: 'L=lerp(Lmax,L0,p)'},\r\n  {id: 93, name: '光照浮雕', enName: 'Lighting Emboss', formula: 'max(0,N·L(t))'},\r\n  {id: 94, name: '霓虹点亮', enName: 'Neon Sequential', formula: 'seg delay=k·d'},\r\n];\r\n\r\nexport const CATEGORY_K: ShowItem[] = [\r\n  {id: 95, name: 'RGB撕裂故障', enName: 'Glitch Tear', formula: 'step(rand(y,t)-θ)·D'},\r\n  {id: 96, name: '数据流下落', enName: 'Datamosh Cascade', formula: 'y=lerp(-H,0,easeOut)'},\r\n  {id: 97, name: '方波频闪', enName: 'Square-Wave Strobe', formula: 'sin(ωt)>0?1:0'},\r\n];\r\n\r\nexport const CATEGORY_L: ShowItem[] = [\r\n  {id: 98, name: '分形递归展开', enName: 'Fractal Unfold', formula: 'L 层∈[L/Lmax,...]'},\r\n  {id: 99, name: '混沌吸引子归位', enName: 'Attractor Settle', formula: '洛伦兹·(1-t)'},\r\n  {id: 100, name: '逻辑斯蒂分岔', enName: 'Logistic Bifurcation', formula: 'x_{n+1}=r·x_n(1-x_n)'},\r\n];\r\n","src/textfx/types.ts":"import React from 'react';\r\n\r\n/**\r\n * 文字特效解耦架构 —— 类型定义\r\n *\r\n * 核心思想：把\"动效原子\"（一段文字怎么进/怎么出）与\"场景编排\"（这段文字\r\n * 在镜头里扮演什么角色、怎么布局、停留多久、是否堆叠）彻底分离。\r\n *\r\n *  - TextEffect：纯入场/出场原子，只描述单段文字的视觉，不含任何布局/堆栈。\r\n *  - Scene（见 ./scenes）：上层模板，负责位置、字号、配色、时间编排与多段共存方式，\r\n *    可以接入任意一个 TextEffect。\r\n */\r\n\r\n/** 动效阶段：入场 or 出场。hold（停留）= 用 phase='in', t=1 取稳定态。 */\r\nexport type Phase = 'in' | 'out';\r\n\r\nexport type EffectVisualArgs = {\r\n  /** 要呈现的文字 */\r\n  text: string;\r\n  /** 当前阶段 */\r\n  phase: Phase;\r\n  /**\r\n   * 阶段内归一化进度 t ∈ [0,1]\r\n   *  - phase='in'：0 = 刚开始入场（屏外/不可见），1 = 完全到位\r\n   *  - phase='out'：0 = 稳定态，1 = 完全离场（消失）\r\n   */\r\n  t: number;\r\n  /** 全局帧号，用于持续性的噪声/抖动/振荡 */\r\n  frame: number;\r\n  /** 该段文字的确定性种子（同一段每帧一致，避免闪烁） */\r\n  seed: number;\r\n};\r\n\r\nexport type EffectVisual = {\r\n  /** 作用在文字外层容器上的样式（transform / filter / opacity 等） */\r\n  wrapper?: React.CSSProperties;\r\n  /** 自定义内容渲染（逐字 / 粒子 / 乱码等）；省略则由场景渲染纯文字 */\r\n  content?: React.ReactNode;\r\n};\r\n\r\nexport type TextEffect = {\r\n  /** 编号（对应文档 1–100） */\r\n  id: number;\r\n  /** 所属类别 A–L */\r\n  category: string;\r\n  /** 中文名 */\r\n  name: string;\r\n  /** 英文名 */\r\n  enName: string;\r\n  /** 数学表达 */\r\n  formula: string;\r\n  /** 给定阶段与进度，返回该段文字的视觉片段 */\r\n  visual: (args: EffectVisualArgs) => EffectVisual;\r\n};\r\n","src/textfx/shared.tsx":"import React from 'react';\r\nimport {Phase} from './types';\r\n\r\nexport {\r\n  clamp01,\r\n  clamp,\r\n  lerp,\r\n  smoothstep,\r\n  rand,\r\n  rand2,\r\n  noise1,\r\n  easeOutBack,\r\n  easeInBack,\r\n  easeOutCubic,\r\n  easeOutElastic,\r\n} from '../effects/showcaseKit';\r\n\r\nimport {clamp01, lerp, easeOutCubic, rand2} from '../effects/showcaseKit';\r\n\r\n/** 场景默认字体族（中英文兼容）。 */\r\nexport const DEFAULT_FONT_FAMILY = 'Arial, \"PingFang SC\", \"Microsoft YaHei\", sans-serif';\r\n\r\n/** 水平对齐 → flex 主轴/CSS textAlign。 */\r\nexport const alignToFlex = (a?: 'left' | 'center' | 'right'): 'flex-start' | 'center' | 'flex-end' =>\r\n  a === 'left' ? 'flex-start' : a === 'right' ? 'flex-end' : 'center';\r\n\r\n/** 垂直对齐 → flex 主轴。 */\r\nexport const vAlignToFlex = (a?: 'top' | 'center' | 'bottom'): 'flex-start' | 'center' | 'flex-end' =>\r\n  a === 'top' ? 'flex-start' : a === 'bottom' ? 'flex-end' : 'center';\r\n\r\n/**\r\n * 按当前阶段挑选该段文字应使用的原子编号：\r\n *  - phase='out'：outEffectId ?? effectId\r\n *  - 否则（in/hold）：inEffectId ?? effectId\r\n * 让入场与出场可以分别指定不同原子；缺省时两端共用 effectId（向后兼容）。\r\n */\r\nexport const pickPhaseEffectId = (\r\n  e: {effectId: number; inEffectId?: number; outEffectId?: number},\r\n  phase: Phase\r\n): number => (phase === 'out' ? e.outEffectId ?? e.effectId : e.inEffectId ?? e.effectId);\r\n\r\n/**\r\n * 在场度 presence ∈ [0,1]：1 = 完全到位（稳定态），0 = 完全缺席。\r\n *  - phase='in'：presence = ease(t)\r\n *  - phase='out'：presence = 1 - ease(t)\r\n * 大多数原子的视觉都可写成 presence 的函数，从而自动同时得到入场与出场。\r\n */\r\nexport const presence = (\r\n  phase: Phase,\r\n  t: number,\r\n  ease: (x: number) => number = easeOutCubic\r\n): number => (phase === 'in' ? ease(clamp01(t)) : 1 - ease(clamp01(t)));\r\n\r\n/** 确定性正态近似（Box-Muller 简化），种子一致 */\r\nexport const randn = (seed: number): number => {\r\n  const u1 = Math.max(1e-6, rand2(seed, 1.1));\r\n  const u2 = rand2(seed, 2.2);\r\n  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);\r\n};\r\n\r\n/** 逐字渲染：charStyle 给每个字符返回样式（用于交错/波浪/多米诺/粒子散入等） */\r\nexport const PerChar: React.FC<{\r\n  text: string;\r\n  charStyle: (i: number, N: number) => React.CSSProperties;\r\n  charWrap?: (i: number, N: number) => React.CSSProperties;\r\n}> = ({text, charStyle, charWrap}) => {\r\n  const chars = Array.from(text);\r\n  const N = chars.length;\r\n  return (\r\n    <>\r\n      {chars.map((ch, i) => (\r\n        <span\r\n          key={i}\r\n          style={{display: 'inline-block', whiteSpace: 'pre', ...charWrap?.(i, N)}}\r\n        >\r\n          <span style={{display: 'inline-block', ...charStyle(i, N)}}>\r\n            {ch === ' ' ? '\\u00A0' : ch}\r\n          </span>\r\n        </span>\r\n      ))}\r\n    </>\r\n  );\r\n};\r\n\r\nconst GLYPHS = 'アカサタナ01XΞΨ#%&@王金木水火土π∑∆◇▦';\r\nexport const randGlyph = (seed: number): string =>\r\n  GLYPHS[Math.floor(rand2(Math.floor(seed), 7.3) * GLYPHS.length)] ?? '#';\r\n\r\n/** 乱码解码渲染：随进度逐字锁定为真字 */\r\nexport const Scramble: React.FC<{\r\n  text: string;\r\n  a: number; // 0→1 解码进度\r\n  frame: number;\r\n  seed: number;\r\n  scrambleColor?: string;\r\n}> = ({text, a, frame, seed, scrambleColor = '#ff4d6d'}) => {\r\n  const chars = Array.from(text);\r\n  const N = chars.length;\r\n  return (\r\n    <>\r\n      {chars.map((ch, i) => {\r\n        const lock = (i / Math.max(N, 1)) * 0.85;\r\n        const locked = a > lock + 0.12;\r\n        return (\r\n          <span key={i} style={{color: locked ? 'inherit' : scrambleColor}}>\r\n            {locked ? ch : randGlyph(frame * 0.5 + i * 31 + seed)}\r\n          </span>\r\n        );\r\n      })}\r\n    </>\r\n  );\r\n};\r\n","src/textfx/library.tsx":"import React from 'react';\r\nimport {EffectVisual, EffectVisualArgs, TextEffect} from './types';\r\nimport {\r\n  clamp01,\r\n  lerp,\r\n  easeOutCubic,\r\n  easeOutBack,\r\n  easeOutElastic,\r\n  noise1,\r\n  rand2,\r\n  randn,\r\n  presence,\r\n  PerChar,\r\n  Scramble,\r\n} from './shared';\r\nimport {OPACITY_CURVES_A} from '../effects/opacityCurves';\r\nimport {\r\n  CATEGORY_B,\r\n  CATEGORY_C,\r\n  CATEGORY_D,\r\n  CATEGORY_E,\r\n  CATEGORY_F,\r\n  CATEGORY_G,\r\n  CATEGORY_H,\r\n  CATEGORY_I,\r\n  CATEGORY_J,\r\n  CATEGORY_K,\r\n  CATEGORY_L,\r\n} from '../effects/categories';\r\n\r\n/** 线性在场进度：in→t, out→1-t（用于逐字交错/解码等） */\r\nconst appear = (a: EffectVisualArgs): number =>\r\n  a.phase === 'in' ? clamp01(a.t) : clamp01(1 - a.t);\r\n\r\n/** 逐字局部进度：全局 g∈[0,1]，第 i 个字符在 [start, start+spread] 内 0→1 */\r\nconst stagger = (g: number, i: number, N: number, spread = 0.45): number => {\r\n  const start = (i / Math.max(N - 1, 1)) * (1 - spread);\r\n  return clamp01((g - start) / spread);\r\n};\r\n\r\ntype Builder = (a: EffectVisualArgs) => EffectVisual;\r\n\r\nconst B: Record<number, Builder> = {\r\n  11: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01(p * 1.4), transform: `translateY(${(1 - p) * 64}px)`}};\r\n  },\r\n  12: (a) => {\r\n    const p = presence(a.phase, a.t, easeOutBack);\r\n    return {wrapper: {opacity: clamp01(a.phase === 'in' ? a.t * 1.6 : (1 - a.t) * 1.6), transform: `translateX(${(1 - p) * -180}px)`}};\r\n  },\r\n  13: (a) => {\r\n    const p = presence(a.phase, a.t, easeOutElastic);\r\n    return {wrapper: {opacity: clamp01(a.phase === 'in' ? a.t * 2 : (1 - a.t) * 2), transform: `translateX(${(1 - p) * 220}px)`}};\r\n  },\r\n  14: (a) => {\r\n    const e = (x: number) => x * x;\r\n    const p = presence(a.phase, a.t, e);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `translateY(${(p - 1) * 520}px)`}};\r\n  },\r\n  15: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: p, transform: `translate(${(1 - p) * -320}px, ${-Math.sin(p * Math.PI) * 220}px)`}};\r\n  },\r\n  16: (a) => {\r\n    const tt = a.phase === 'in' ? a.t : 1 - a.t;\r\n    const y = Math.exp(-4 * tt) * Math.cos(9 * tt) * 70;\r\n    return {wrapper: {opacity: clamp01(tt * 3), transform: `translateY(${y}px)`}};\r\n  },\r\n  17: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: p, transform: `translateX(${(1 - p) * -300}px)`, filter: `blur(${(1 - p) * 18}px)`}};\r\n  },\r\n  18: (a) => {\r\n    const expo = (x: number) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));\r\n    const p = presence(a.phase, a.t, expo);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `translateX(${(1 - p) * -340}px) skewX(${(1 - p) * 22}deg)`}};\r\n  },\r\n  19: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const ang = rand2(a.seed, 5) * Math.PI * 2;\r\n    const d = (1 - p) * 240;\r\n    return {wrapper: {opacity: p, transform: `translate(${Math.cos(ang) * d}px, ${Math.sin(ang) * d}px)`}};\r\n  },\r\n  20: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const y = p < 0.5 ? lerp(-180, 50, p / 0.5) : lerp(50, 0, (p - 0.5) / 0.5);\r\n    return {wrapper: {opacity: p, transform: `translate(${(1 - p) * -280}px, ${y}px)`}};\r\n  },\r\n};\r\n\r\nconst C: Record<number, Builder> = {\r\n  21: (a) => {\r\n    const p = presence(a.phase, a.t, easeOutBack);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2.5), transform: `scale(${clamp01(p)})`}};\r\n  },\r\n  22: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const sx = 1 + (1 - p) * 0.9;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `scale(${sx}, ${1 / sx})`}};\r\n  },\r\n  23: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: p, transform: `rotate(${(1 - p) * 180}deg) scale(${p})`}};\r\n  },\r\n  24: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), transform: `perspective(1000px) translateZ(${(p - 1) * 800}px)`}};\r\n  },\r\n  25: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), transform: `scale(${lerp(1.9, 1, p)})`, filter: `blur(${(1 - p) * 6}px)`}};\r\n  },\r\n  26: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((p - 0.1) / 0.3), transform: `perspective(1000px) rotateY(${(1 - p) * 90}deg)`}};\r\n  },\r\n  27: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((p - 0.1) / 0.3), transform: `perspective(1000px) rotateX(${(1 - p) * -90}deg)`, transformOrigin: 'top center'}};\r\n  },\r\n  28: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `scaleY(${p})`}};\r\n  },\r\n  29: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const depth = Math.round(p * 9);\r\n    const shadow = Array.from({length: depth}, (_, k) => `${k + 1}px ${k + 1}px 0 rgba(90,60,170,0.5)`).join(', ');\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), textShadow: shadow || 'none'}};\r\n  },\r\n  30: (a) => {\r\n    const p = presence(a.phase, a.t, easeOutElastic);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2.5), transform: `scaleY(${clamp01(p)})`}};\r\n  },\r\n};\r\n\r\nconst D: Record<number, Builder> = {\r\n  31: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), filter: `blur(${(1 - p) * 16}px)`}};\r\n  },\r\n  32: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const blur = Math.abs(Math.sin(a.frame * 0.25)) * (1 - p) * 10 + (1 - p) * 3;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), filter: `blur(${blur}px)`}};\r\n  },\r\n  33: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const b = 20 * (1 - p) * (1 - p);\r\n    return {wrapper: {opacity: p, filter: `blur(${b}px)`, textShadow: `0 0 ${b}px rgba(40,90,140,0.6)`}};\r\n  },\r\n  34: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const g = 14 + (1 - p) * 44;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), textShadow: `0 0 ${g}px #8fd6ff, 0 0 ${g * 2}px #4aa3ff`}};\r\n  },\r\n  35: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const o = (1 - p) * 16;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), textShadow: `${o}px 0 #ff004c, ${-o}px 0 #00e5ff`}};\r\n  },\r\n  36: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: p, filter: `blur(${(1 - p) * 8}px) contrast(${lerp(2.4, 1, p)})`}};\r\n  },\r\n  37: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: p, filter: `blur(${(1 - p) * 7}px) contrast(${lerp(1.8, 1, p)})`, letterSpacing: `${(1 - p) * 6}px`}};\r\n  },\r\n  38: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const sk = Math.sin(a.frame * 0.3) * (1 - p) * 8;\r\n    return {wrapper: {opacity: p, transform: `skewX(${sk}deg)`, filter: `blur(${(1 - p) * 4}px)`}};\r\n  },\r\n};\r\n\r\nconst E: Record<number, Builder> = {\r\n  39: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => ({transform: `translateY(${Math.sin((i / N) * Math.PI * 4 - a.frame * 0.2) * 34 * (1 - p)}px)`})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  40: (a) => {\r\n    const tt = a.phase === 'in' ? a.t : 1 - a.t;\r\n    const rot = 32 * Math.cos(a.frame * 0.2) * Math.exp(-3 * tt);\r\n    return {wrapper: {opacity: clamp01(tt * 3), transform: `rotate(${rot}deg)`, transformOrigin: 'top center'}};\r\n  },\r\n  41: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => ({transform: `translateY(${Math.sin(i * 0.9) * Math.cos(a.frame * 0.18) * 30 * (1 - p)}px)`})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  42: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const beat = 1 + Math.max(0, Math.sin(a.frame * 0.5)) * 0.08 * p;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `scale(${p * beat})`}};\r\n  },\r\n  43: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const y = -Math.tan((p - 0.5) * 1.1) * 110;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `translateY(${y}px)`}};\r\n  },\r\n  44: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => ({transform: `translate(${Math.sin(2 * i + a.frame * 0.1) * 40 * (1 - p)}px, ${Math.sin(3 * i) * 40 * (1 - p)}px)`})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  45: (a) => {\r\n    const tt = a.phase === 'in' ? a.t : 1 - a.t;\r\n    const y = Math.exp(-4 * tt) * Math.sin(12 * tt) * 55;\r\n    return {wrapper: {opacity: clamp01(tt * 3), transform: `translateY(${y}px)`}};\r\n  },\r\n  46: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const beat = 0.55 + 0.45 * Math.abs(Math.cos(a.frame * 0.5) * Math.cos(a.frame * 0.13));\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2) * beat}};\r\n  },\r\n  47: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const r = (1 - p) * 320;\r\n    const ang = a.frame * 0.1 + (1 - p) * 6;\r\n    return {wrapper: {opacity: p, transform: `translate(${Math.cos(ang) * r}px, ${Math.sin(ang) * r}px) rotate(${(1 - p) * 180}deg)`}};\r\n  },\r\n  48: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      wrapper: {opacity: clamp01(g * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => {\r\n            const dist = Math.abs(i - (N - 1) / 2);\r\n            const li = clamp01(g * (N + 2) - dist);\r\n            return {transform: `scale(${li})`, opacity: li};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  49: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => ({transform: `translateY(${Math.sin(i * 0.7 - a.frame * 0.25) * (26 * (1 - p) + 6 * p)}px) rotate(${Math.sin(i * 0.7 - a.frame * 0.25) * 6}deg)`})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  50: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: p, transform: `translateX(${(1 - p) * -340}px) rotate(${(1 - p) * -360}deg)`}};\r\n  },\r\n};\r\n\r\nconst F: Record<number, Builder> = {\r\n  51: (a) => {\r\n    const g = appear(a);\r\n    const N = Array.from(a.text).length;\r\n    const n = Math.floor(g * N + 0.001);\r\n    return {\r\n      content: (\r\n        <PerChar text={a.text} charStyle={(i) => ({opacity: i < n ? 1 : 0})} />\r\n      ),\r\n    };\r\n  },\r\n  52: (a) => withStagger(a, (li) => ({opacity: li, transform: `translateY(${(1 - li) * 30}px)`})),\r\n  53: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => {\r\n            const dist = Math.abs(i - (N - 1) / 2) / Math.max(N / 2, 1);\r\n            const li = clamp01((g - dist * 0.6) / 0.4);\r\n            return {opacity: li, transform: `scale(${li})`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  54: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const start = rand2(i, a.seed) * 0.6;\r\n            const li = clamp01((g - start) / 0.4);\r\n            return {opacity: li, transform: `translateY(${(1 - li) * 26}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  55: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => {\r\n            const u = i / Math.max(N - 1, 1);\r\n            const delay = (1 - Math.exp(-((u - 0.5) * (u - 0.5)) / (2 * 0.16 * 0.16))) * 0.6;\r\n            const li = clamp01((g - delay) / 0.4);\r\n            return {opacity: li, transform: `translateY(${(1 - li) * 24}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  56: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const li = stagger(g, i, Array.from(a.text).length);\r\n            return {opacity: li, transform: `translateY(${Math.sin(i * 0.6 - a.frame * 0.2) * 22 * (1 - li) + (1 - li) * 20}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  57: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const li = stagger(g, i, Array.from(a.text).length, 0.5);\r\n            return {opacity: clamp01(li * 2), transform: `perspective(600px) rotateX(${(1 - li) * 90}deg)`, transformOrigin: 'bottom'};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  58: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), letterSpacing: `${(1 - p) * 44}px`}};\r\n  },\r\n  59: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const clip = `inset(${(1 - p) * 100}% 0 0 0)`;\r\n    return {wrapper: {opacity: 1, clipPath: clip, WebkitClipPath: clip, transform: `translateY(${(1 - p) * 18}px)`}};\r\n  },\r\n  60: (a) => {\r\n    const g = appear(a);\r\n    const words = a.text.split(/(\\s+)/);\r\n    let charBase = 0;\r\n    return {\r\n      content: (\r\n        <>\r\n          {words.map((w, wi) => {\r\n            const li = stagger(g, wi, words.length, 0.5);\r\n            charBase += w.length;\r\n            return (\r\n              <span key={wi} style={{display: 'inline-block', whiteSpace: 'pre', opacity: clamp01(li * 2), transform: `scale(${lerp(0.6, 1, easeOutBack(li))})`}}>\r\n                {w}\r\n              </span>\r\n            );\r\n          })}\r\n        </>\r\n      ),\r\n    };\r\n  },\r\n  61: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const li = stagger(g, i, Array.from(a.text).length, 0.5);\r\n            return {transform: `scaleX(${li})`, transformOrigin: 'left', opacity: clamp01(li * 3)};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  62: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => {\r\n            const li = stagger(g, i, N, 0.5);\r\n            const dir = i % 2 === 0 ? 1 : -1;\r\n            return {opacity: li, transform: `translateX(${dir * (1 - li) * 40}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n};\r\n\r\nfunction withStagger(a: EffectVisualArgs, map: (li: number, i: number, N: number) => React.CSSProperties): EffectVisual {\r\n  const g = appear(a);\r\n  return {\r\n    content: (\r\n      <PerChar text={a.text} charStyle={(i, N) => map(stagger(g, i, N), i, N)} />\r\n    ),\r\n  };\r\n}\r\n\r\nconst G: Record<number, Builder> = {\r\n  63: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const clip = `inset(0 ${(1 - p) * 100}% 0 0)`;\r\n    return {wrapper: {clipPath: clip, WebkitClipPath: clip}};\r\n  },\r\n  64: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const e = p * 160 - 30;\r\n    const clip = `polygon(0 0, ${e}% 0, ${e - 60}% 100%, 0 100%)`;\r\n    return {wrapper: {clipPath: clip, WebkitClipPath: clip}};\r\n  },\r\n  65: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const clip = `circle(${p * 75}% at 50% 50%)`;\r\n    return {wrapper: {clipPath: clip, WebkitClipPath: clip}};\r\n  },\r\n  66: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => ({opacity: rand2(i, a.seed) < g ? 1 : 0})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  67: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const clip = `inset(0 0 ${(1 - p) * 100}% 0)`;\r\n    return {wrapper: {clipPath: clip, WebkitClipPath: clip}};\r\n  },\r\n  68: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const clip = `circle(${p * 95}% at 32% 36%)`;\r\n    return {wrapper: {clipPath: clip, WebkitClipPath: clip}};\r\n  },\r\n  69: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => {\r\n            const li = stagger(g, i, N, 0.35);\r\n            const clip = `inset(0 ${(1 - li) * 100}% 0 0)`;\r\n            return {clipPath: clip, WebkitClipPath: clip} as React.CSSProperties;\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  70: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const clip = `inset(${(1 - p) * 100}% 0 0 0)`;\r\n    return {wrapper: {clipPath: clip, WebkitClipPath: clip}};\r\n  },\r\n};\r\n\r\nconst H: Record<number, Builder> = {\r\n  71: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => ({transform: `translate(${noise1(a.frame * 0.4 + i * 7) * 26 * (1 - p)}px, ${noise1(a.frame * 0.4 + i * 7 + 99) * 26 * (1 - p)}px)`})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  72: (a) => {\r\n    const g = appear(a);\r\n    return {content: <Scramble text={a.text} a={g} frame={a.frame} seed={a.seed * 100} />};\r\n  },\r\n  73: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const li = clamp01((g - rand2(i, a.seed) * 0.4) / 0.6);\r\n            return {opacity: li, transform: `translate(${(1 - li) * (rand2(i, 3) - 0.5) * 80}px, ${(1 - li) * (rand2(i, 4) - 0.5) * 80}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  74: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar text={a.text} charStyle={(i) => ({opacity: rand2(i, a.seed) < g ? 1 : 0.06})} />\r\n      ),\r\n    };\r\n  },\r\n  75: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => ({transform: `translate(${randn(i + a.seed) * 40 * (1 - p)}px, ${randn(i + a.seed + 50) * 40 * (1 - p)}px)`})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  76: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const start = rand2(i, a.seed) * 0.6;\r\n            const li = clamp01((g - start) / 0.35);\r\n            return {opacity: li, transform: `translateY(${(li - 1) * 260}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  77: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => ({transform: `translate(${noise1(i * 0.5 + a.frame * 0.05) * 70 * (1 - p)}px, ${noise1(i * 0.5 + a.frame * 0.05 + 30) * 70 * (1 - p)}px)`})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  78: (a) => {\r\n    const g = appear(a);\r\n    return {content: <Scramble text={a.text} a={g} frame={a.frame} seed={a.seed * 50} scrambleColor=\"#7fd1c0\" />};\r\n  },\r\n  79: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar text={a.text} charStyle={(i) => ({opacity: rand2(i * 1.7, a.seed * 2.3) < g ? 1 : 0})} />\r\n      ),\r\n    };\r\n  },\r\n  80: (a) => {\r\n    const g = appear(a);\r\n    return {content: <Scramble text={a.text} a={g * g} frame={a.frame * 2} seed={a.seed * 13} scrambleColor=\"#c08bff\" />};\r\n  },\r\n};\r\n\r\nconst I: Record<number, Builder> = {\r\n  81: (a) => scatterChars(a, 220, true),\r\n  82: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const li = clamp01(g);\r\n            const ang = rand2(i, a.seed) * Math.PI * 2;\r\n            const d = (1 - li) * 200;\r\n            return {opacity: li, transform: `translate(${Math.cos(ang) * d}px, ${Math.sin(ang) * d}px) rotate(${(1 - li) * 220}deg)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  83: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => {\r\n            const dist = Math.abs(i - (N - 1) / 2);\r\n            const li = clamp01(g * (N + 2) - dist * 1.2);\r\n            return {opacity: li, transform: `scale(${li})`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  84: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => ({filter: `blur(${(1 - p) * 12}px)`, transform: `translate(${randn(i + a.seed) * 50 * (1 - p)}px, ${-(1 - p) * 40}px)`})}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  85: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const n = noise1(i * 0.9 + a.seed);\r\n            return {opacity: clamp01(p * 2), transform: `translateY(${n * 60 * (1 - p)}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  86: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const start = (rand2(i, a.seed) * 0.4 + (i % 3) * 0.1);\r\n            const li = clamp01((g - start) / 0.4);\r\n            return {opacity: li, transform: `translateY(${(1 - li) * 80}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  87: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => {\r\n            const li = clamp01(g);\r\n            const dir = i % 2 === 0 ? -1 : 1;\r\n            const order = Math.abs(i - (N - 1) / 2) / Math.max(N / 2, 1);\r\n            const lo = clamp01((li - order * 0.4) / 0.6);\r\n            return {opacity: lo, transform: `translateX(${dir * (1 - lo) * 200}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  88: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const steps = Math.pow(2, Math.floor(p * 3)) / 8;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `scale(${lerp(0.2, 1, clamp01(steps + p * 0.2))})`}};\r\n  },\r\n};\r\n\r\nfunction scatterChars(a: EffectVisualArgs, dist: number, fade: boolean): EffectVisual {\r\n  const g = appear(a);\r\n  return {\r\n    content: (\r\n      <PerChar\r\n        text={a.text}\r\n        charStyle={(i) => {\r\n          const li = clamp01(g);\r\n          const ang = rand2(i, a.seed) * Math.PI * 2;\r\n          const d = (1 - li) * dist;\r\n          return {opacity: fade ? li : 1, transform: `translate(${Math.cos(ang) * d}px, ${Math.sin(ang) * d}px)`};\r\n        }}\r\n      />\r\n    ),\r\n  };\r\n}\r\n\r\nconst J: Record<number, Builder> = {\r\n  89: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), filter: `hue-rotate(${(1 - p) * 360}deg) saturate(${lerp(2.5, 1, p)})`}};\r\n  },\r\n  90: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const pos = lerp(-120, 220, p);\r\n    return {\r\n      wrapper: {\r\n        opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2),\r\n        backgroundImage: 'linear-gradient(110deg, #6a7cff 0%, #ffffff 45%, #4ad9ff 55%, #6a7cff 100%)',\r\n        backgroundSize: '250% 100%',\r\n        backgroundPosition: `${pos}% 0`,\r\n        WebkitBackgroundClip: 'text',\r\n        backgroundClip: 'text',\r\n        color: 'transparent',\r\n      },\r\n    };\r\n  },\r\n  91: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), filter: `sepia(${(1 - p) * 0.8}) hue-rotate(${(1 - p) * -30}deg) saturate(${lerp(2, 1, p)})`}};\r\n  },\r\n  92: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const L = Math.round(lerp(28, 4, p));\r\n    const shadow = Array.from({length: L}, (_, k) => `${k + 1}px ${k + 1}px 0 rgba(0,0,0,0.35)`).join(', ');\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), textShadow: shadow}};\r\n  },\r\n  93: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const off = lerp(6, 1.5, p);\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2), textShadow: `${off}px ${off}px 0 rgba(255,255,255,0.25), ${-off}px ${-off}px 0 rgba(0,0,0,0.5)`}};\r\n  },\r\n  94: (a) => {\r\n    const g = appear(a);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i, N) => {\r\n            const li = stagger(g, i, N, 0.4);\r\n            const on = li > 0.5;\r\n            return {opacity: on ? 1 : 0.12, textShadow: on ? '0 0 10px #ff4df0, 0 0 22px #ff4df0' : 'none'};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n};\r\n\r\nconst K: Record<number, Builder> = {\r\n  95: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const o = (1 - p) * 18 + (rand2(Math.floor(a.frame / 2), a.seed) - 0.5) * (1 - p) * 30;\r\n    const sx = (rand2(Math.floor(a.frame / 3), a.seed + 1) - 0.5) * (1 - p) * 30;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `translateX(${sx}px)`, textShadow: `${o}px 0 #ff003c, ${-o}px 0 #00f0ff`}};\r\n  },\r\n  96: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2)},\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const start = rand2(i, a.seed) * 0.4;\r\n            const li = clamp01((appear(a) - start) / 0.5);\r\n            return {opacity: li, transform: `translateY(${(li - 1) * 300}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  97: (a) => {\r\n    const strobe = Math.sin(a.frame * 0.8) > 0 ? 1 : 0.18;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 2) * strobe}};\r\n  },\r\n};\r\n\r\nconst L: Record<number, Builder> = {\r\n  98: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    const lvl = Math.floor(p * 4) / 4;\r\n    return {wrapper: {opacity: clamp01((a.phase === 'in' ? a.t : 1 - a.t) * 3), transform: `scale(${lerp(0.2, 1, clamp01(lvl + p * 0.25))}) rotate(${(1 - p) * 45}deg)`}};\r\n  },\r\n  99: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            const n = noise1(i * 1.3 + a.seed + a.frame * 0.02);\r\n            const n2 = noise1(i * 1.3 + a.seed + 77 + a.frame * 0.02);\r\n            return {opacity: clamp01(p * 2), transform: `translate(${n * 120 * (1 - p)}px, ${n2 * 120 * (1 - p)}px)`};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n  100: (a) => {\r\n    const p = presence(a.phase, a.t);\r\n    return {\r\n      content: (\r\n        <PerChar\r\n          text={a.text}\r\n          charStyle={(i) => {\r\n            let x = 0.5 + (rand2(i, a.seed) - 0.5) * 0.3;\r\n            const r = lerp(3.9, 2.6, p);\r\n            for (let k = 0; k < 6; k++) x = r * x * (1 - x);\r\n            return {transform: `translateY(${(x - 0.5) * 120 * (1 - p)}px)`, opacity: clamp01(p * 2)};\r\n          }}\r\n        />\r\n      ),\r\n    };\r\n  },\r\n};\r\n\r\nconst BUILDERS: Record<number, Builder> = {...B, ...C, ...D, ...E, ...F, ...G, ...H, ...I, ...J, ...K, ...L};\r\n\r\nconst catFx = (cat: string, items: {id: number; name: string; enName: string; formula: string}[]): TextEffect[] =>\r\n  items.map((it) => ({\r\n    id: it.id,\r\n    category: cat,\r\n    name: it.name,\r\n    enName: it.enName,\r\n    formula: it.formula,\r\n    visual: BUILDERS[it.id],\r\n  }));\r\n\r\nconst A_FX: TextEffect[] = OPACITY_CURVES_A.map((c) => ({\r\n  id: c.id,\r\n  category: 'A',\r\n  name: c.name,\r\n  enName: c.enName,\r\n  formula: c.formula,\r\n  visual: (a: EffectVisualArgs): EffectVisual => {\r\n    const s = c.apply(a.phase === 'in' ? a.t : 1 - a.t);\r\n    return {wrapper: {opacity: s.opacity, transform: s.transform, filter: s.filter}};\r\n  },\r\n}));\r\n\r\nexport const EFFECTS: TextEffect[] = [\r\n  ...A_FX,\r\n  ...catFx('B', CATEGORY_B),\r\n  ...catFx('C', CATEGORY_C),\r\n  ...catFx('D', CATEGORY_D),\r\n  ...catFx('E', CATEGORY_E),\r\n  ...catFx('F', CATEGORY_F),\r\n  ...catFx('G', CATEGORY_G),\r\n  ...catFx('H', CATEGORY_H),\r\n  ...catFx('I', CATEGORY_I),\r\n  ...catFx('J', CATEGORY_J),\r\n  ...catFx('K', CATEGORY_K),\r\n  ...catFx('L', CATEGORY_L),\r\n];\r\n\r\nexport const EFFECT_BY_ID: Record<number, TextEffect> = Object.fromEntries(\r\n  EFFECTS.map((e) => [e.id, e])\r\n);\r\n\r\nexport const effectById = (id: number): TextEffect => EFFECT_BY_ID[id] ?? EFFECTS[0];\r\n","src/textfx/TextFx.tsx":"import React from 'react';\r\nimport {Phase, TextEffect} from './types';\r\n\r\n/**\r\n * 把一个「动效原子」渲染成一段文字。场景只负责定位/字号/配色（baseStyle），\r\n * 效果只负责进/出的视觉（wrapper + content）。两者在此组合。\r\n */\r\nexport const TextFx: React.FC<{\r\n  effect: TextEffect;\r\n  text: string;\r\n  phase: Phase;\r\n  t: number;\r\n  frame: number;\r\n  seed?: number;\r\n  baseStyle?: React.CSSProperties;\r\n}> = ({effect, text, phase, t, frame, seed = 1, baseStyle}) => {\r\n  const v = effect.visual({text, phase, t, frame, seed});\r\n  return (\r\n    <span style={{display: 'inline-block', whiteSpace: 'nowrap', ...baseStyle, ...v.wrapper}}>\r\n      {v.content ?? text}\r\n    </span>\r\n  );\r\n};\r\n","src/textfx/schemas.ts":"import {z} from 'zod';\r\n\r\n/**\r\n * 各场景的 props schema。其他 AI / 调用方可据此构造 `--props='{...}'` JSON，\r\n * 零改代码渲染任意文字 + 任意动效原子（effectId ∈ [1,100]）。\r\n */\r\n\r\nexport const effectIdSchema = z.number().int().min(1).max(100);\r\n\r\n/**\r\n * 一段文字引用的动效原子。`effectId` 为基准；可选 `inEffectId`/`outEffectId`\r\n * 分别覆盖入场/出场（缺省时两端都用 `effectId`）。这让主题/配置能独立切换进出。\r\n */\r\nexport const effectRefShape = {\r\n  effectId: effectIdSchema,\r\n  inEffectId: effectIdSchema.optional(),\r\n  outEffectId: effectIdSchema.optional(),\r\n};\r\n\r\nexport const alignSchema = z.enum(['left', 'center', 'right']);\r\nexport const vAlignSchema = z.enum(['top', 'center', 'bottom']);\r\n\r\n/**\r\n * 通用排版/位置参数（全部可选，缺省即用各场景的现有默认值）。\r\n * 让调用方零改代码即可定义字重 / 字体 / 字间距 / 对齐 / 位置偏移。\r\n */\r\nexport const styleSchema = z.object({\r\n  fontWeight: z.number().int().positive().optional(),\r\n  fontFamily: z.string().optional(),\r\n  letterSpacing: z.number().optional(),\r\n  align: alignSchema.optional(),\r\n  offsetX: z.number().optional(),\r\n  offsetY: z.number().optional(),\r\n  showLabel: z.boolean().optional(),\r\n});\r\nexport type StyleProps = z.infer<typeof styleSchema>;\r\n\r\nexport const timingSchema = z.object({\r\n  inF: z.number().int().positive(),\r\n  holdF: z.number().int().nonnegative(),\r\n  outF: z.number().int().positive(),\r\n});\r\nexport type Timing = z.infer<typeof timingSchema>;\r\n\r\nexport const heroSchema = z\r\n  .object({\r\n    entries: z.array(\r\n      z.object({text: z.string(), sub: z.string().optional(), ...effectRefShape})\r\n    ),\r\n    timing: timingSchema,\r\n    background: z.string(),\r\n    color: z.string(),\r\n    fontSize: z.number().positive(),\r\n  })\r\n  .merge(styleSchema)\r\n  .extend({\r\n    vAlign: vAlignSchema.optional(),\r\n    subSize: z.number().positive().optional(),\r\n    subColor: z.string().optional(),\r\n  });\r\nexport type HeroProps = z.infer<typeof heroSchema>;\r\n\r\nexport const captionSchema = z.object({\r\n  lines: z.array(z.object({text: z.string(), ...effectRefShape})),\r\n  timing: timingSchema,\r\n  background: z.string(),\r\n  barColor: z.string(),\r\n  color: z.string(),\r\n  fontSize: z.number().positive(),\r\n}).merge(styleSchema);\r\nexport type CaptionProps = z.infer<typeof captionSchema>;\r\n\r\nexport const listSchema = z.object({\r\n  title: z.string(),\r\n  items: z.array(z.object({text: z.string(), ...effectRefShape})),\r\n  stepFrames: z.number().int().positive(),\r\n  inFrames: z.number().int().positive(),\r\n  background: z.string(),\r\n  color: z.string(),\r\n  fontSize: z.number().positive(),\r\n}).merge(styleSchema);\r\nexport type ListProps = z.infer<typeof listSchema>;\r\n\r\nexport const lowerThirdSchema = z.object({\r\n  entries: z.array(\r\n    z.object({name: z.string(), role: z.string(), ...effectRefShape})\r\n  ),\r\n  timing: timingSchema,\r\n  background: z.string(),\r\n  accent: z.string(),\r\n}).merge(styleSchema);\r\nexport type LowerThirdProps = z.infer<typeof lowerThirdSchema>;\r\n\r\nexport const emphasisSchema = z.object({\r\n  lines: z.array(\r\n    z.object({\r\n      pre: z.string(),\r\n      token: z.string(),\r\n      post: z.string(),\r\n      ...effectRefShape,\r\n      accent: z.string().optional(),\r\n    })\r\n  ),\r\n  timing: timingSchema,\r\n  background: z.string(),\r\n  color: z.string(),\r\n  fontSize: z.number().positive(),\r\n}).merge(styleSchema);\r\nexport type EmphasisProps = z.infer<typeof emphasisSchema>;\r\n\r\nexport const gallerySchema = z.object({\r\n  effectIds: z.array(effectIdSchema),\r\n  background: z.string(),\r\n  color: z.string(),\r\n  fontSize: z.number().positive(),\r\n}).merge(styleSchema);\r\nexport type GalleryProps = z.infer<typeof gallerySchema>;\r\n\r\nexport const thumbSchema = z.object({\r\n  effectId: effectIdSchema,\r\n  background: z.string(),\r\n  color: z.string(),\r\n  fontSize: z.number().positive(),\r\n});\r\nexport type ThumbProps = z.infer<typeof thumbSchema>;\r\n\r\nexport const wallSchema = z.object({\r\n  effectIds: z.array(effectIdSchema),\r\n  columns: z.number().int().positive(),\r\n  loopFrames: z.number().int().positive(),\r\n  background: z.string(),\r\n  color: z.string(),\r\n});\r\nexport type WallProps = z.infer<typeof wallSchema>;\r\n\r\n/** 多场景串联成片：每个片段 = {type, props}。 */\r\nexport const segmentSchema = z.discriminatedUnion('type', [\r\n  z.object({type: z.literal('hero'), props: heroSchema}),\r\n  z.object({type: z.literal('caption'), props: captionSchema}),\r\n  z.object({type: z.literal('list'), props: listSchema}),\r\n  z.object({type: z.literal('lowerThird'), props: lowerThirdSchema}),\r\n  z.object({type: z.literal('emphasis'), props: emphasisSchema}),\r\n  z.object({type: z.literal('gallery'), props: gallerySchema}),\r\n]);\r\nexport type ReelSegment = z.infer<typeof segmentSchema>;\r\n\r\nexport const reelSchema = z.object({segments: z.array(segmentSchema)});\r\nexport type ReelProps = z.infer<typeof reelSchema>;\r\n\r\n/** 时长计算（帧）。供 Remotion calculateMetadata 使用。 */\r\nconst slot = (t: Timing): number => t.inF + t.holdF + t.outF;\r\n\r\nexport const heroFrames = (p: {entries: unknown[]; timing: Timing}): number =>\r\n  Math.max(1, p.entries.length) * slot(p.timing);\r\nexport const captionFrames = (p: {lines: unknown[]; timing: Timing}): number =>\r\n  Math.max(1, p.lines.length) * slot(p.timing);\r\nexport const lowerThirdFrames = (p: {entries: unknown[]; timing: Timing}): number =>\r\n  Math.max(1, p.entries.length) * slot(p.timing);\r\nexport const emphasisFrames = (p: {lines: unknown[]; timing: Timing}): number =>\r\n  Math.max(1, p.lines.length) * slot(p.timing);\r\nexport const listFrames = (p: {items: unknown[]; stepFrames: number; inFrames: number}): number =>\r\n  Math.max(0, p.items.length - 1) * p.stepFrames + p.inFrames + 30;\r\nexport const galleryFrames = (p: {effectIds: number[]}): number => (p.effectIds.length + 3) * 40;\r\nexport const wallFrames = (p: {loopFrames: number}): number => p.loopFrames * 2;\r\n\r\nexport const segmentFrames = (s: ReelSegment): number => {\r\n  switch (s.type) {\r\n    case 'hero':\r\n      return heroFrames(s.props);\r\n    case 'caption':\r\n      return captionFrames(s.props);\r\n    case 'list':\r\n      return listFrames(s.props);\r\n    case 'lowerThird':\r\n      return lowerThirdFrames(s.props);\r\n    case 'emphasis':\r\n      return emphasisFrames(s.props);\r\n    case 'gallery':\r\n      return galleryFrames(s.props);\r\n  }\r\n};\r\n\r\nexport const reelFrames = (p: {segments: ReelSegment[]}): number =>\r\n  Math.max(1, p.segments.reduce((acc, s) => acc + segmentFrames(s), 0));\r\n","src/textfx/themes.ts":"import {z} from 'zod';\r\nimport {effectIdSchema, timingSchema, Timing, ReelProps, ReelSegment, reelFrames} from './schemas';\r\n\r\n/**\r\n * 主题（Theme）= 一套\"协调的动效语言\"。\r\n *\r\n * 痛点：标题选了某个原子后，其他场景该配什么才\"成套\"？逐场景手挑很慢、还容易割裂。\r\n * 方案：主题把「每个场景角色用哪个入场/出场原子 + 共享配色/字体/节奏」一次性定义好。\r\n * 选一个主题名（如 `glitch`）即可一键生成整套协调的多场景成片（Reel）。\r\n *\r\n * 主题负责\"快速选出最接近想要的那套\"；之后可在 themeConfig 里逐场景覆盖来微调\r\n * （配置前端 P2 即基于此层）。\r\n *\r\n * 注意：原子的随机性（乱码/噪声）使用确定性种子，同样的配置每次渲染结果一致。\r\n */\r\n\r\n/** 主题覆盖到的场景角色（Gallery 是\"陈列整库\"的特定场景，不参与主题）。 */\r\nexport const themeRoles = ['hero', 'list', 'lowerThird', 'caption', 'emphasis'] as const;\r\nexport type ThemeRole = (typeof themeRoles)[number];\r\n\r\n/** 一个场景角色的入场/出场原子选择。 */\r\nexport type EffectChoice = {inEffectId: number; outEffectId: number};\r\n\r\n/** 主题的共享视觉语言（配色 / 字体 / 字重 / 字间距）。 */\r\nexport type ThemeStyle = {\r\n  background: string;\r\n  color: string;\r\n  accent: string;\r\n  barColor: string;\r\n  fontFamily: string;\r\n  fontWeight: number;\r\n  letterSpacing: number;\r\n};\r\n\r\nexport type Theme = {\r\n  id: string;\r\n  name: string;\r\n  enName: string;\r\n  description: string;\r\n  /** 该主题主要取材的原子家族（A–L），便于人/AI 理解风格来源。 */\r\n  families: string[];\r\n  style: ThemeStyle;\r\n  timing: Timing;\r\n  /** 每个场景角色默认的入场/出场原子。 */\r\n  effects: Record<ThemeRole, EffectChoice>;\r\n};\r\n\r\nconst FONT_DEFAULT = 'Arial, \"PingFang SC\", \"Microsoft YaHei\", sans-serif';\r\nconst FONT_MONO = 'Menlo, Consolas, \"Courier New\", \"PingFang SC\", \"Microsoft YaHei\", monospace';\r\nconst FONT_SERIF = 'Georgia, \"Times New Roman\", \"Songti SC\", SimSun, serif';\r\n\r\nconst c = (inEffectId: number, outEffectId: number): EffectChoice => ({inEffectId, outEffectId});\r\n\r\n/** 五套预设主题。每套都从一两个原子家族里取材，保证整片视觉同源。 */\r\nexport const THEMES: Record<string, Theme> = {\r\n  glitch: {\r\n    id: 'glitch',\r\n    name: '故障赛博',\r\n    enName: 'Glitch / Cyber',\r\n    description: '数字故障风：乱码解码登场、RGB 撕裂离场；等宽字体、青色高亮、深色背景。',\r\n    families: ['H', 'K'],\r\n    style: {\r\n      background: 'radial-gradient(circle at 50% 42%, #0a1320 0%, #060a12 60%, #03050a 100%)',\r\n      color: '#eafcff',\r\n      accent: '#38e0ff',\r\n      barColor: 'rgba(6,14,20,0.78)',\r\n      fontFamily: FONT_MONO,\r\n      fontWeight: 800,\r\n      letterSpacing: 1,\r\n    },\r\n    timing: {inF: 20, holdF: 40, outF: 16},\r\n    effects: {\r\n      hero: c(72, 95),\r\n      list: c(74, 74),\r\n      lowerThird: c(72, 95),\r\n      caption: c(78, 79),\r\n      emphasis: c(95, 72),\r\n    },\r\n  },\r\n\r\n  soft: {\r\n    id: 'soft',\r\n    name: '柔和优雅',\r\n    enName: 'Soft / Focus',\r\n    description: '柔和聚焦风：从模糊对焦浮现、墨水晕染淡出；轻字重、蓝白配色，适合解说/科普。',\r\n    families: ['D', 'B'],\r\n    style: {\r\n      background: 'linear-gradient(180deg, #0c1426 0%, #0e1830 100%)',\r\n      color: '#f2f6ff',\r\n      accent: '#7aa2ff',\r\n      barColor: 'rgba(10,16,30,0.7)',\r\n      fontFamily: FONT_DEFAULT,\r\n      fontWeight: 600,\r\n      letterSpacing: 0,\r\n    },\r\n    timing: {inF: 22, holdF: 44, outF: 18},\r\n    effects: {\r\n      hero: c(31, 33),\r\n      list: c(11, 11),\r\n      lowerThird: c(31, 33),\r\n      caption: c(31, 31),\r\n      emphasis: c(34, 31),\r\n    },\r\n  },\r\n\r\n  bouncy: {\r\n    id: 'bouncy',\r\n    name: '活力弹跳',\r\n    enName: 'Bouncy / Spring',\r\n    description: '弹性活泼风：弹簧弹出、旋转缩放螺入/出；橙色高亮、重字重，适合宣传/活动片。',\r\n    families: ['C', 'B'],\r\n    style: {\r\n      background: 'radial-gradient(circle at 50% 40%, #1c2350 0%, #0d1130 60%, #070920 100%)',\r\n      color: '#ffffff',\r\n      accent: '#ff7a3c',\r\n      barColor: 'rgba(12,16,40,0.72)',\r\n      fontFamily: FONT_DEFAULT,\r\n      fontWeight: 900,\r\n      letterSpacing: 0,\r\n    },\r\n    timing: {inF: 20, holdF: 38, outF: 16},\r\n    effects: {\r\n      hero: c(21, 23),\r\n      list: c(13, 13),\r\n      lowerThird: c(12, 12),\r\n      caption: c(11, 11),\r\n      emphasis: c(21, 21),\r\n    },\r\n  },\r\n\r\n  minimal: {\r\n    id: 'minimal',\r\n    name: '极简打字',\r\n    enName: 'Minimal / Type',\r\n    description: '极简打字风：打字机逐字登场、字距收拢离场；近黑背景、细字重，适合代码/技术向。',\r\n    families: ['F'],\r\n    style: {\r\n      background: 'linear-gradient(180deg, #0a0c12 0%, #0c0f16 100%)',\r\n      color: '#f5f7fb',\r\n      accent: '#9aa7bd',\r\n      barColor: 'rgba(8,10,16,0.8)',\r\n      fontFamily: FONT_MONO,\r\n      fontWeight: 500,\r\n      letterSpacing: 1,\r\n    },\r\n    timing: {inF: 24, holdF: 42, outF: 14},\r\n    effects: {\r\n      hero: c(51, 58),\r\n      list: c(52, 52),\r\n      lowerThird: c(11, 11),\r\n      caption: c(51, 51),\r\n      emphasis: c(51, 58),\r\n    },\r\n  },\r\n\r\n  elegant: {\r\n    id: 'elegant',\r\n    name: '优雅衬线',\r\n    enName: 'Elegant / Serif',\r\n    description: '优雅衬线风：螺旋极坐标归位、辉光绽放强调；衬线字体、金色高亮，适合品牌/片头。',\r\n    families: ['E', 'G', 'D'],\r\n    style: {\r\n      background: 'radial-gradient(circle at 50% 40%, #20182a 0%, #120c18 60%, #0a060e 100%)',\r\n      color: '#f6efe2',\r\n      accent: '#d9b46a',\r\n      barColor: 'rgba(18,12,18,0.74)',\r\n      fontFamily: FONT_SERIF,\r\n      fontWeight: 600,\r\n      letterSpacing: 2,\r\n    },\r\n    timing: {inF: 24, holdF: 46, outF: 18},\r\n    effects: {\r\n      hero: c(47, 40),\r\n      list: c(11, 11),\r\n      lowerThird: c(69, 63),\r\n      caption: c(11, 11),\r\n      emphasis: c(34, 31),\r\n    },\r\n  },\r\n};\r\n\r\nexport const themeIds = Object.keys(THEMES);\r\n\r\nexport const getTheme = (id: string): Theme => {\r\n  const t = THEMES[id];\r\n  if (!t) throw new Error(`Unknown theme \"${id}\". Available: ${themeIds.join(', ')}`);\r\n  return t;\r\n};\r\n\r\n/** 各场景角色的默认主字号（可被 style 不影响；后续可扩展为主题级覆盖）。 */\r\nconst SCENE_SIZE: Record<ThemeRole, number> = {\r\n  hero: 180,\r\n  list: 70,\r\n  lowerThird: 88,\r\n  caption: 64,\r\n  emphasis: 88,\r\n};\r\n\r\n/* ----------------------------- 内容（文字） ----------------------------- */\r\n\r\nconst effectChoiceSchema = z.object({inEffectId: effectIdSchema, outEffectId: effectIdSchema});\r\n\r\n/** 主题内容：只填文字，动效/配色/字体由主题决定。某个角色缺省即不出现在成片里。 */\r\nexport const themeContentSchema = z.object({\r\n  hero: z\r\n    .object({entries: z.array(z.object({text: z.string(), sub: z.string().optional()}))})\r\n    .optional(),\r\n  list: z\r\n    .object({title: z.string().optional(), items: z.array(z.object({text: z.string()}))})\r\n    .optional(),\r\n  lowerThird: z\r\n    .object({entries: z.array(z.object({name: z.string(), role: z.string()}))})\r\n    .optional(),\r\n  caption: z.object({lines: z.array(z.object({text: z.string()}))}).optional(),\r\n  emphasis: z\r\n    .object({\r\n      lines: z.array(\r\n        z.object({pre: z.string(), token: z.string(), post: z.string(), accent: z.string().optional()})\r\n      ),\r\n    })\r\n    .optional(),\r\n});\r\nexport type ThemeContent = z.infer<typeof themeContentSchema>;\r\n\r\nconst themeStyleOverrideSchema = z\r\n  .object({\r\n    background: z.string(),\r\n    color: z.string(),\r\n    accent: z.string(),\r\n    barColor: z.string(),\r\n    fontFamily: z.string(),\r\n    fontWeight: z.number().int().positive(),\r\n    letterSpacing: z.number(),\r\n  })\r\n  .partial();\r\n\r\n/**\r\n * 主题配置 —— 这就是\"单一事实源\"：配置前端读写它、AI 拼它、`applyTheme` 解析它。\r\n * 解析结果是一份标准的 Reel props，可直接 `npx remotion render SceneReel --props`。\r\n */\r\nexport const themeConfigSchema = z.object({\r\n  theme: z.string(),\r\n  /** 成片里场景出现的顺序（缺省 hero→list→lowerThird→caption→emphasis）。 */\r\n  order: z.array(z.enum(themeRoles)).optional(),\r\n  /** 覆盖主题的共享配色/字体（微调用）。 */\r\n  style: themeStyleOverrideSchema.optional(),\r\n  /** 覆盖时序。 */\r\n  timing: timingSchema.optional(),\r\n  /** 逐场景覆盖入场/出场原子（在项目范围内细调）。 */\r\n  effects: z\r\n    .object({\r\n      hero: effectChoiceSchema.optional(),\r\n      list: effectChoiceSchema.optional(),\r\n      lowerThird: effectChoiceSchema.optional(),\r\n      caption: effectChoiceSchema.optional(),\r\n      emphasis: effectChoiceSchema.optional(),\r\n    })\r\n    .optional(),\r\n  content: themeContentSchema,\r\n});\r\nexport type ThemeConfig = z.infer<typeof themeConfigSchema>;\r\n\r\n/* ----------------------------- 解析为 Reel ----------------------------- */\r\n\r\nconst buildSegment = (\r\n  role: ThemeRole,\r\n  content: ThemeContent,\r\n  style: ThemeStyle,\r\n  timing: Timing,\r\n  eff: EffectChoice\r\n): ReelSegment | null => {\r\n  const ref = {effectId: eff.inEffectId, inEffectId: eff.inEffectId, outEffectId: eff.outEffectId};\r\n  const base = {\r\n    background: style.background,\r\n    fontFamily: style.fontFamily,\r\n    fontWeight: style.fontWeight,\r\n    letterSpacing: style.letterSpacing,\r\n  };\r\n  switch (role) {\r\n    case 'hero': {\r\n      if (!content.hero) return null;\r\n      return {\r\n        type: 'hero',\r\n        props: {\r\n          entries: content.hero.entries.map((e) => ({text: e.text, sub: e.sub, ...ref})),\r\n          timing,\r\n          color: style.color,\r\n          fontSize: SCENE_SIZE.hero,\r\n          ...base,\r\n        },\r\n      };\r\n    }\r\n    case 'list': {\r\n      if (!content.list) return null;\r\n      return {\r\n        type: 'list',\r\n        props: {\r\n          title: content.list.title ?? '',\r\n          items: content.list.items.map((it) => ({text: it.text, ...ref})),\r\n          stepFrames: 22,\r\n          inFrames: 18,\r\n          color: style.color,\r\n          fontSize: SCENE_SIZE.list,\r\n          ...base,\r\n        },\r\n      };\r\n    }\r\n    case 'lowerThird': {\r\n      if (!content.lowerThird) return null;\r\n      return {\r\n        type: 'lowerThird',\r\n        props: {\r\n          entries: content.lowerThird.entries.map((e) => ({name: e.name, role: e.role, ...ref})),\r\n          timing,\r\n          accent: style.accent,\r\n          ...base,\r\n        },\r\n      };\r\n    }\r\n    case 'caption': {\r\n      if (!content.caption) return null;\r\n      return {\r\n        type: 'caption',\r\n        props: {\r\n          lines: content.caption.lines.map((l) => ({text: l.text, ...ref})),\r\n          timing,\r\n          barColor: style.barColor,\r\n          color: style.color,\r\n          fontSize: SCENE_SIZE.caption,\r\n          ...base,\r\n        },\r\n      };\r\n    }\r\n    case 'emphasis': {\r\n      if (!content.emphasis) return null;\r\n      return {\r\n        type: 'emphasis',\r\n        props: {\r\n          lines: content.emphasis.lines.map((l) => ({\r\n            pre: l.pre,\r\n            token: l.token,\r\n            post: l.post,\r\n            accent: l.accent ?? style.accent,\r\n            ...ref,\r\n          })),\r\n          timing,\r\n          color: style.color,\r\n          fontSize: SCENE_SIZE.emphasis,\r\n          ...base,\r\n        },\r\n      };\r\n    }\r\n  }\r\n};\r\n\r\nconst DEFAULT_ORDER: ThemeRole[] = ['hero', 'list', 'lowerThird', 'caption', 'emphasis'];\r\n\r\n/** 把一份主题配置解析成标准 Reel props（多场景串联成片）。 */\r\nexport const resolveThemeConfig = (config: ThemeConfig): ReelProps => {\r\n  const theme = getTheme(config.theme);\r\n  const style: ThemeStyle = {...theme.style, ...config.style};\r\n  const timing = config.timing ?? theme.timing;\r\n  const order = config.order ?? DEFAULT_ORDER;\r\n  const segments: ReelSegment[] = [];\r\n  for (const role of order) {\r\n    const eff = config.effects?.[role] ?? theme.effects[role];\r\n    const seg = buildSegment(role, config.content, style, timing, eff);\r\n    if (seg) segments.push(seg);\r\n  }\r\n  return {segments};\r\n};\r\n\r\n/** 便捷封装：给定主题名 + 内容，直接得到 Reel props。 */\r\nexport const applyTheme = (\r\n  themeId: string,\r\n  content: ThemeContent,\r\n  overrides?: Omit<ThemeConfig, 'theme' | 'content'>\r\n): ReelProps => resolveThemeConfig({theme: themeId, content, ...overrides});\r\n\r\n/** 主题配置的总时长（帧），供 Remotion calculateMetadata 使用。 */\r\nexport const themeConfigFrames = (config: ThemeConfig): number =>\r\n  reelFrames(resolveThemeConfig(config));\r\n\r\n/** 演示内容：未提供内容时用它生成一段可直接预览的成片。 */\r\nexport const DEMO_CONTENT: ThemeContent = {\r\n  hero: {entries: [{text: '主题成套动效', sub: 'One theme · consistent motion'}]},\r\n  list: {\r\n    title: '一个主题搞定整片',\r\n    items: [\r\n      {text: '标题、列表、字幕…自动协调'},\r\n      {text: '入场/出场可分别切换'},\r\n      {text: '配色/字体/节奏全主题统一'},\r\n      {text: '导出即一份配置 JSON'},\r\n    ],\r\n  },\r\n  lowerThird: {entries: [{name: '林述白', role: '动态设计师 / Motion Designer'}]},\r\n  caption: {lines: [{text: '选一个主题，整片风格一键成套。'}, {text: '再逐场景微调入场与出场。'}]},\r\n  emphasis: {lines: [{pre: '只需 ', token: '一个主题', post: ' 即可统一全片。'}]},\r\n};\r\n\r\n/** SceneTheme 合成的默认配置（Studio 初始值 / AI 调用范例）。 */\r\nexport const THEME_CONFIG_DEFAULT: ThemeConfig = {theme: 'glitch', content: DEMO_CONTENT};\r\n\r\n/** 主题清单（供机读 / 配置前端列出可选项）。 */\r\nexport const THEME_MANIFEST = themeIds.map((id) => {\r\n  const t = THEMES[id];\r\n  return {\r\n    id: t.id,\r\n    name: t.name,\r\n    enName: t.enName,\r\n    description: t.description,\r\n    families: t.families,\r\n    effects: t.effects,\r\n  };\r\n});\r\n","src/textfx/scenes/sequence.ts":"import {Phase} from '../types';\r\n\r\n/**\r\n * 顺序场景的时间编排：每条内容占一个 slot = 入场 + 停留 + 出场。\r\n * 用于\"一次只有一条在台上\"的场景（Hero / Caption / Lower-third）。\r\n */\r\nexport type SeqTiming = {inF: number; holdF: number; outF: number};\r\n\r\nexport const slotLen = (s: SeqTiming): number => s.inF + s.holdF + s.outF;\r\n\r\nexport const seqAt = (\r\n  frame: number,\r\n  s: SeqTiming\r\n): {active: number; phase: Phase; t: number; local: number} => {\r\n  const slot = slotLen(s);\r\n  const active = Math.floor(frame / slot);\r\n  const local = frame - active * slot;\r\n  if (local < s.inF) return {active, phase: 'in', t: local / s.inF, local};\r\n  if (local < s.inF + s.holdF) return {active, phase: 'in', t: 1, local};\r\n  return {active, phase: 'out', t: (local - s.inF - s.holdF) / s.outF, local};\r\n};\r\n\r\nexport const seqTotalFrames = (count: number, s: SeqTiming): number => count * slotLen(s);\r\n","src/textfx/scenes/ThemeScene.tsx":"import React from 'react';\r\nimport {ReelScene} from './ReelScene';\r\nimport {ThemeConfig, resolveThemeConfig} from '../themes';\r\n\r\n/**\r\n * 场景 · Theme 主题成片\r\n *  输入一份\"主题配置\"（主题名 + 文字内容 + 可选逐场景覆盖），解析成多场景串联成片。\r\n *  这就是\"选一个主题即出整套协调动效\"的合成；其 props（ThemeConfig）即单一事实源。\r\n */\r\nexport const ThemeScene: React.FC<ThemeConfig> = (config) => {\r\n  const {segments} = resolveThemeConfig(config);\r\n  return <ReelScene segments={segments} />;\r\n};\r\n","src/textfx/scenes/ReelScene.tsx":"import React from 'react';\r\nimport {AbsoluteFill, Series} from 'remotion';\r\nimport {HeroScene} from './HeroScene';\r\nimport {CaptionScene} from './CaptionScene';\r\nimport {ListScene} from './ListScene';\r\nimport {LowerThirdScene} from './LowerThirdScene';\r\nimport {EmphasisScene} from './EmphasisScene';\r\nimport {GalleryScene} from './GalleryScene';\r\nimport {ReelSegment, segmentFrames} from '../schemas';\r\n\r\n/**\r\n * 场景 · Reel 串联成片\r\n *  把多个场景片段按顺序拼成一条完整成片（片头 → 字幕 → 角标 → 行内强调 → 结尾 …）。\r\n *  每个片段 = {type, props}，时长由各场景的 *Frames() 自动推算，用 <Series> 顺序播放。\r\n */\r\n\r\nconst renderSegment = (s: ReelSegment): React.ReactNode => {\r\n  switch (s.type) {\r\n    case 'hero':\r\n      return <HeroScene {...s.props} />;\r\n    case 'caption':\r\n      return <CaptionScene {...s.props} />;\r\n    case 'list':\r\n      return <ListScene {...s.props} />;\r\n    case 'lowerThird':\r\n      return <LowerThirdScene {...s.props} />;\r\n    case 'emphasis':\r\n      return <EmphasisScene {...s.props} />;\r\n    case 'gallery':\r\n      return <GalleryScene {...s.props} />;\r\n  }\r\n};\r\n\r\nexport const ReelScene: React.FC<{segments: ReelSegment[]}> = ({segments}) => {\r\n  return (\r\n    <AbsoluteFill style={{background: '#05060d'}}>\r\n      <Series>\r\n        {segments.map((s, i) => (\r\n          <Series.Sequence key={i} durationInFrames={segmentFrames(s)}>\r\n            {renderSegment(s)}\r\n          </Series.Sequence>\r\n        ))}\r\n      </Series>\r\n    </AbsoluteFill>\r\n  );\r\n};\r\n","src/textfx/scenes/HeroScene.tsx":"import React from 'react';\r\nimport {AbsoluteFill, useCurrentFrame} from 'remotion';\r\nimport {TextFx} from '../TextFx';\r\nimport {effectById} from '../library';\r\nimport {SeqTiming, seqAt} from './sequence';\r\nimport {clamp01, DEFAULT_FONT_FAMILY, alignToFlex, vAlignToFlex, pickPhaseEffectId} from '../shared';\r\n\r\n/**\r\n * 场景 · Hero 主标题\r\n *  单段超大文字居中，戏剧化入场 → 停留 → 戏剧化出场，**不堆叠**。\r\n *  适合：片头、章节大字报、kinetic typography 高光时刻。\r\n *\r\n *  排版/位置全部可由 props 定义（字号/字重/字体/对齐/垂直对齐/位置偏移/副标题样式）。\r\n */\r\nexport type HeroEntry = {text: string; sub?: string; effectId: number; inEffectId?: number; outEffectId?: number};\r\n\r\nexport const HeroScene: React.FC<{\r\n  entries: HeroEntry[];\r\n  timing?: SeqTiming;\r\n  background?: string;\r\n  color?: string;\r\n  fontSize?: number;\r\n  fontWeight?: number;\r\n  fontFamily?: string;\r\n  letterSpacing?: number;\r\n  align?: 'left' | 'center' | 'right';\r\n  vAlign?: 'top' | 'center' | 'bottom';\r\n  offsetX?: number;\r\n  offsetY?: number;\r\n  subSize?: number;\r\n  subColor?: string;\r\n  showLabel?: boolean;\r\n}> = ({\r\n  entries,\r\n  timing = {inF: 22, holdF: 40, outF: 18},\r\n  background = 'radial-gradient(circle at 50% 42%, #1b1f3a 0%, #0c0e1c 60%, #05060d 100%)',\r\n  color = '#ffffff',\r\n  fontSize = 200,\r\n  fontWeight = 900,\r\n  fontFamily = DEFAULT_FONT_FAMILY,\r\n  letterSpacing = 0,\r\n  align = 'center',\r\n  vAlign = 'center',\r\n  offsetX = 0,\r\n  offsetY = 0,\r\n  subSize = 34,\r\n  subColor = '#9fb2e6',\r\n  showLabel = true,\r\n}) => {\r\n  const frame = useCurrentFrame();\r\n  const {active, phase, t} = seqAt(frame, timing);\r\n  const entry = entries[Math.min(active, entries.length - 1)];\r\n  if (!entry) return <AbsoluteFill style={{background}} />;\r\n  const fx = effectById(pickPhaseEffectId(entry, phase));\r\n  const subOpacity = phase === 'in' ? clamp01((t - 0.4) / 0.5) : 1 - clamp01(t * 2);\r\n\r\n  return (\r\n    <AbsoluteFill style={{background, color, fontFamily}}>\r\n      <AbsoluteFill\r\n        style={{\r\n          alignItems: alignToFlex(align),\r\n          justifyContent: vAlignToFlex(vAlign),\r\n          flexDirection: 'column',\r\n          padding: '64px 80px',\r\n          transform: `translate(${offsetX}px, ${offsetY}px)`,\r\n        }}\r\n      >\r\n        <TextFx\r\n          key={active}\r\n          effect={fx}\r\n          text={entry.text}\r\n          phase={phase}\r\n          t={t}\r\n          frame={frame}\r\n          seed={active + 1}\r\n          baseStyle={{fontSize, fontWeight, letterSpacing, lineHeight: 1, textAlign: align}}\r\n        />\r\n        {entry.sub ? (\r\n          <div style={{marginTop: 36, fontSize: subSize, letterSpacing: 6, color: subColor, opacity: subOpacity}}>\r\n            {entry.sub}\r\n          </div>\r\n        ) : null}\r\n      </AbsoluteFill>\r\n      {showLabel ? (\r\n        <div style={{position: 'absolute', left: 60, top: 48, fontSize: 24, letterSpacing: 4, color: '#5b6688'}}>\r\n          HERO · {fx.category}{String(fx.id).padStart(2, '0')} · {fx.enName}\r\n        </div>\r\n      ) : null}\r\n    </AbsoluteFill>\r\n  );\r\n};\r\n","src/textfx/scenes/CaptionScene.tsx":"import React from 'react';\r\nimport {AbsoluteFill, useCurrentFrame} from 'remotion';\r\nimport {TextFx} from '../TextFx';\r\nimport {effectById} from '../library';\r\nimport {SeqTiming, seqAt} from './sequence';\r\nimport {DEFAULT_FONT_FAMILY, alignToFlex, pickPhaseEffectId} from '../shared';\r\n\r\n/**\r\n * 场景 · Caption 字幕\r\n *  下三分之一、可读性优先：快速进出、原地替换，停留时长占多数。\r\n *  适合：对白字幕、解说词、轻量说明。同一时刻只有一条，不堆叠。\r\n */\r\nexport type CaptionLine = {text: string; effectId: number; inEffectId?: number; outEffectId?: number};\r\n\r\nexport const CaptionScene: React.FC<{\r\n  lines: CaptionLine[];\r\n  timing?: SeqTiming;\r\n  background?: string;\r\n  barColor?: string;\r\n  color?: string;\r\n  fontSize?: number;\r\n  fontWeight?: number;\r\n  fontFamily?: string;\r\n  letterSpacing?: number;\r\n  align?: 'left' | 'center' | 'right';\r\n  offsetX?: number;\r\n  offsetY?: number;\r\n  showLabel?: boolean;\r\n}> = ({\r\n  lines,\r\n  timing = {inF: 10, holdF: 44, outF: 8},\r\n  background = 'linear-gradient(180deg, #0a1020 0%, #0d1426 100%)',\r\n  barColor = 'rgba(10,14,26,0.72)',\r\n  color = '#f2f6ff',\r\n  fontSize = 64,\r\n  fontWeight = 700,\r\n  fontFamily = DEFAULT_FONT_FAMILY,\r\n  letterSpacing = 0,\r\n  align = 'center',\r\n  offsetX = 0,\r\n  offsetY = 0,\r\n  showLabel = true,\r\n}) => {\r\n  const frame = useCurrentFrame();\r\n  const {active, phase, t} = seqAt(frame, timing);\r\n  const line = lines[Math.min(active, lines.length - 1)];\r\n  const fx = line ? effectById(pickPhaseEffectId(line, phase)) : null;\r\n\r\n  return (\r\n    <AbsoluteFill style={{background, fontFamily}}>\r\n      {showLabel ? (\r\n        <div style={{position: 'absolute', left: 60, top: 48, fontSize: 24, letterSpacing: 4, color: '#5b6688'}}>\r\n          CAPTION · 下三分之一字幕\r\n        </div>\r\n      ) : null}\r\n      <div\r\n        style={{\r\n          position: 'absolute',\r\n          left: 0,\r\n          right: 0,\r\n          bottom: 110 + offsetY * -1,\r\n          display: 'flex',\r\n          justifyContent: alignToFlex(align),\r\n          padding: '0 80px',\r\n          transform: `translateX(${offsetX}px)`,\r\n        }}\r\n      >\r\n        <div\r\n          style={{\r\n            background: barColor,\r\n            padding: '20px 48px',\r\n            borderRadius: 14,\r\n            maxWidth: 1500,\r\n            textAlign: align,\r\n            boxShadow: '0 18px 60px rgba(0,0,0,0.4)',\r\n          }}\r\n        >\r\n          {fx && line ? (\r\n            <TextFx\r\n              key={active}\r\n              effect={fx}\r\n              text={line.text}\r\n              phase={phase}\r\n              t={t}\r\n              frame={frame}\r\n              seed={active + 1}\r\n              baseStyle={{fontSize, fontWeight, letterSpacing, color, lineHeight: 1.2, whiteSpace: 'normal'}}\r\n            />\r\n          ) : null}\r\n        </div>\r\n      </div>\r\n    </AbsoluteFill>\r\n  );\r\n};\r\n","src/textfx/scenes/ListScene.tsx":"import React from 'react';\r\nimport {AbsoluteFill, useCurrentFrame} from 'remotion';\r\nimport {TextFx} from '../TextFx';\r\nimport {effectById} from '../library';\r\nimport {clamp01, DEFAULT_FONT_FAMILY, pickPhaseEffectId} from '../shared';\r\n\r\n/**\r\n * 场景 · List 逐条列表（Build）\r\n *  条目依次入场并**持续累积**（不出场），强调\"逐条建立\"。\r\n *  适合：要点列表、排行榜、清单、功能罗列。\r\n */\r\nexport type ListItem = {text: string; effectId: number; inEffectId?: number; outEffectId?: number};\r\n\r\nexport const ListScene: React.FC<{\r\n  title?: string;\r\n  items: ListItem[];\r\n  stepFrames?: number;\r\n  inFrames?: number;\r\n  background?: string;\r\n  color?: string;\r\n  fontSize?: number;\r\n  fontWeight?: number;\r\n  fontFamily?: string;\r\n  letterSpacing?: number;\r\n  showLabel?: boolean;\r\n}> = ({\r\n  title = '逐条列表',\r\n  items,\r\n  stepFrames = 22,\r\n  inFrames = 18,\r\n  background = 'linear-gradient(135deg, #101a33 0%, #0a1020 100%)',\r\n  color = '#eaf0ff',\r\n  fontSize = 70,\r\n  fontWeight = 700,\r\n  fontFamily = DEFAULT_FONT_FAMILY,\r\n  letterSpacing = 0,\r\n  showLabel = true,\r\n}) => {\r\n  const frame = useCurrentFrame();\r\n  return (\r\n    <AbsoluteFill style={{background, color, fontFamily}}>\r\n      {showLabel ? (\r\n        <div style={{position: 'absolute', left: 140, top: 110, fontSize: 40, fontWeight: 800, letterSpacing: 4, color: '#6fa0ff'}}>\r\n          {title}\r\n        </div>\r\n      ) : null}\r\n      <div style={{position: 'absolute', left: 140, top: 230, right: 140, display: 'flex', flexDirection: 'column', gap: 28}}>\r\n        {items.map((it, i) => {\r\n          const start = i * stepFrames;\r\n          if (frame < start) return null;\r\n          const t = clamp01((frame - start) / inFrames);\r\n          const fx = effectById(pickPhaseEffectId(it, 'in'));\r\n          return (\r\n            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 28}}>\r\n              <span\r\n                style={{\r\n                  width: 16,\r\n                  height: 16,\r\n                  borderRadius: 8,\r\n                  background: '#4aa3ff',\r\n                  opacity: t,\r\n                  flex: '0 0 auto',\r\n                  boxShadow: '0 0 18px rgba(74,163,255,0.7)',\r\n                }}\r\n              />\r\n              <TextFx\r\n                effect={fx}\r\n                text={it.text}\r\n                phase=\"in\"\r\n                t={t}\r\n                frame={frame}\r\n                seed={i + 1}\r\n                baseStyle={{fontSize, fontWeight, letterSpacing, whiteSpace: 'normal'}}\r\n              />\r\n            </div>\r\n          );\r\n        })}\r\n      </div>\r\n    </AbsoluteFill>\r\n  );\r\n};\r\n\r\nexport const listTotalFrames = (count: number, stepFrames = 22, inFrames = 18, tail = 30): number =>\r\n  (count - 1) * stepFrames + inFrames + tail;\r\n","src/textfx/scenes/LowerThirdScene.tsx":"import React from 'react';\r\nimport {AbsoluteFill, useCurrentFrame} from 'remotion';\r\nimport {TextFx} from '../TextFx';\r\nimport {effectById} from '../library';\r\nimport {SeqTiming, seqAt} from './sequence';\r\nimport {clamp01, easeOutCubic, lerp, DEFAULT_FONT_FAMILY, pickPhaseEffectId} from '../shared';\r\n\r\n/**\r\n * 场景 · Lower-third 角标 / 署名\r\n *  带品牌底条，从左侧滑入 → 停留 → 滑出；主名用动效原子入场，副行说明淡入。\r\n *  适合：人物署名、地点角标、栏目标识。\r\n */\r\nexport type LowerThirdEntry = {name: string; role: string; effectId: number; inEffectId?: number; outEffectId?: number};\r\n\r\nexport const LowerThirdScene: React.FC<{\r\n  entries: LowerThirdEntry[];\r\n  timing?: SeqTiming;\r\n  background?: string;\r\n  accent?: string;\r\n  fontSize?: number;\r\n  fontWeight?: number;\r\n  fontFamily?: string;\r\n  letterSpacing?: number;\r\n  offsetX?: number;\r\n  offsetY?: number;\r\n  showLabel?: boolean;\r\n}> = ({\r\n  entries,\r\n  timing = {inF: 16, holdF: 40, outF: 14},\r\n  background = 'linear-gradient(120deg, #0b1530 0%, #0a0f1f 100%)',\r\n  accent = '#ff7a3c',\r\n  fontSize = 88,\r\n  fontWeight = 900,\r\n  fontFamily = DEFAULT_FONT_FAMILY,\r\n  letterSpacing = 0,\r\n  offsetX = 0,\r\n  offsetY = 0,\r\n  showLabel = true,\r\n}) => {\r\n  const frame = useCurrentFrame();\r\n  const {active, phase, t} = seqAt(frame, timing);\r\n  const entry = entries[Math.min(active, entries.length - 1)];\r\n  if (!entry) return <AbsoluteFill style={{background}} />;\r\n  const fx = effectById(pickPhaseEffectId(entry, phase));\r\n\r\n  const slide = phase === 'in' ? easeOutCubic(clamp01(t)) : 1 - easeOutCubic(clamp01(t));\r\n  const boxX = lerp(-120, 0, slide);\r\n  const roleOpacity = phase === 'in' ? clamp01((t - 0.4) / 0.5) : slide;\r\n\r\n  return (\r\n    <AbsoluteFill style={{background, fontFamily}}>\r\n      {showLabel ? (\r\n        <div style={{position: 'absolute', left: 60, top: 48, fontSize: 24, letterSpacing: 4, color: '#5b6688'}}>\r\n          LOWER-THIRD · 角标 / 署名\r\n        </div>\r\n      ) : null}\r\n      <div\r\n        style={{\r\n          position: 'absolute',\r\n          left: 150 + offsetX,\r\n          bottom: 170 - offsetY,\r\n          transform: `translateX(${boxX}px)`,\r\n          opacity: clamp01(slide * 1.3),\r\n          display: 'flex',\r\n          alignItems: 'stretch',\r\n        }}\r\n      >\r\n        <div style={{width: 10, background: accent, borderRadius: 4, marginRight: 26, boxShadow: `0 0 22px ${accent}`}} />\r\n        <div>\r\n          <div style={{fontSize, fontWeight, color: '#ffffff', lineHeight: 1.05}}>\r\n            <TextFx\r\n              key={active}\r\n              effect={fx}\r\n              text={entry.name}\r\n              phase={phase}\r\n              t={t}\r\n              frame={frame}\r\n              seed={active + 1}\r\n              baseStyle={{fontSize, fontWeight, letterSpacing, color: '#ffffff'}}\r\n            />\r\n          </div>\r\n          <div style={{fontSize: Math.round(fontSize * 0.41), color: accent, marginTop: 10, letterSpacing: 2, opacity: roleOpacity}}>\r\n            {entry.role}\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </AbsoluteFill>\r\n  );\r\n};\r\n","src/textfx/scenes/EmphasisScene.tsx":"import React from 'react';\r\nimport {AbsoluteFill, useCurrentFrame} from 'remotion';\r\nimport {TextFx} from '../TextFx';\r\nimport {effectById} from '../library';\r\nimport {SeqTiming, seqAt} from './sequence';\r\nimport {clamp01, DEFAULT_FONT_FAMILY, pickPhaseEffectId} from '../shared';\r\n\r\n/**\r\n * 场景 · Emphasis 行内强调\r\n *  一句话里某个词/数字被\"点出来\"：周边文字先淡入，强调词用动效原子登场并高亮。\r\n *  适合：关键词高亮、数字强调、解说重点。\r\n */\r\nexport type EmphasisLine = {pre: string; token: string; post: string; effectId: number; inEffectId?: number; outEffectId?: number; accent?: string};\r\n\r\nexport const EmphasisScene: React.FC<{\r\n  lines: EmphasisLine[];\r\n  timing?: SeqTiming;\r\n  background?: string;\r\n  color?: string;\r\n  fontSize?: number;\r\n  fontWeight?: number;\r\n  fontFamily?: string;\r\n  letterSpacing?: number;\r\n  align?: 'left' | 'center' | 'right';\r\n  showLabel?: boolean;\r\n}> = ({\r\n  lines,\r\n  timing = {inF: 16, holdF: 42, outF: 12},\r\n  background = 'radial-gradient(circle at 50% 50%, #161a2e 0%, #0a0c16 70%)',\r\n  color = '#e7ecff',\r\n  fontSize = 88,\r\n  fontWeight = 800,\r\n  fontFamily = DEFAULT_FONT_FAMILY,\r\n  letterSpacing = 0,\r\n  align = 'center',\r\n  showLabel = true,\r\n}) => {\r\n  const frame = useCurrentFrame();\r\n  const {active, phase, t} = seqAt(frame, timing);\r\n  const line = lines[Math.min(active, lines.length - 1)];\r\n  if (!line) return <AbsoluteFill style={{background}} />;\r\n  const fx = effectById(pickPhaseEffectId(line, phase));\r\n  const accent = line.accent ?? '#ffd23f';\r\n  const baseOpacity = phase === 'in' ? clamp01(t * 2) : 1 - clamp01(t * 2);\r\n\r\n  return (\r\n    <AbsoluteFill style={{background, color, fontFamily}}>\r\n      {showLabel ? (\r\n        <div style={{position: 'absolute', left: 60, top: 48, fontSize: 24, letterSpacing: 4, color: '#5b6688'}}>\r\n          EMPHASIS · 行内强调\r\n        </div>\r\n      ) : null}\r\n      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', padding: '0 160px'}}>\r\n        <div style={{fontSize, fontWeight, letterSpacing, lineHeight: 1.4, textAlign: align}}>\r\n          <span style={{opacity: baseOpacity}}>{line.pre}</span>\r\n          <span style={{color: accent, margin: '0 6px', display: 'inline-block'}}>\r\n            <TextFx\r\n              key={active}\r\n              effect={fx}\r\n              text={line.token}\r\n              phase={phase}\r\n              t={t}\r\n              frame={frame}\r\n              seed={active + 1}\r\n              baseStyle={{fontSize, fontWeight: Math.max(fontWeight, 900), letterSpacing, color: accent, whiteSpace: 'nowrap'}}\r\n            />\r\n          </span>\r\n          <span style={{opacity: baseOpacity}}>{line.post}</span>\r\n        </div>\r\n      </AbsoluteFill>\r\n    </AbsoluteFill>\r\n  );\r\n};\r\n"}</script>
+
 <script>
 // ============================================================
-//  Theme data (inlined from docs/effects.json themes array)
-// ============================================================
-const THEMES = [
-  {id:"glitch",name:"故障赛博",enName:"Glitch / Cyber",description:"数字故障风：乱码解码登场、RGB 撕裂离场；等宽字体、青色高亮、深色背景。",effects:{hero:{inEffectId:72,outEffectId:95},list:{inEffectId:74,outEffectId:74},lowerThird:{inEffectId:72,outEffectId:95},caption:{inEffectId:78,outEffectId:79},emphasis:{inEffectId:95,outEffectId:72}}},
-  {id:"soft",name:"柔和优雅",enName:"Soft / Focus",description:"柔和聚焦风：从模糊对焦浮现、墨水晕染淡出；轻字重、蓝白配色，适合解说/科普。",effects:{hero:{inEffectId:31,outEffectId:33},list:{inEffectId:11,outEffectId:11},lowerThird:{inEffectId:31,outEffectId:33},caption:{inEffectId:31,outEffectId:31},emphasis:{inEffectId:34,outEffectId:31}}},
-  {id:"bouncy",name:"活力弹跳",enName:"Bouncy / Spring",description:"弹性活泼风：弹簧弹出、旋转缩放螺入/出；橙色高亮、重字重，适合宣传/活动片。",effects:{hero:{inEffectId:21,outEffectId:23},list:{inEffectId:13,outEffectId:13},lowerThird:{inEffectId:12,outEffectId:12},caption:{inEffectId:11,outEffectId:11},emphasis:{inEffectId:21,outEffectId:21}}},
-  {id:"minimal",name:"极简打字",enName:"Minimal / Type",description:"极简打字风：打字机逐字登场、字距收拢离场；近黑背景、细字重，适合代码/技术向。",effects:{hero:{inEffectId:51,outEffectId:58},list:{inEffectId:52,outEffectId:52},lowerThird:{inEffectId:11,outEffectId:11},caption:{inEffectId:51,outEffectId:51},emphasis:{inEffectId:51,outEffectId:58}}},
-  {id:"elegant",name:"优雅衬线",enName:"Elegant / Serif",description:"优雅衬线风：螺旋极坐标归位、辉光绽放强调；衬线字体、金色高亮，适合品牌/片头。",effects:{hero:{inEffectId:47,outEffectId:40},list:{inEffectId:11,outEffectId:11},lowerThird:{inEffectId:69,outEffectId:63},caption:{inEffectId:11,outEffectId:11},emphasis:{inEffectId:34,outEffectId:31}}},
-];
-
-const DEMO_CONTENT = {
-  hero: {entries: [{text: "主题成套动效", sub: "One theme · consistent motion"}]},
-  list: {title: "一个主题搞定整片", items: [
-    {text: "标题、列表、字幕…自动协调"},
-    {text: "入场/出场可分别切换"},
-    {text: "配色/字体/节奏全主题统一"},
-    {text: "导出即一份配置 JSON"},
-  ]},
-  lowerThird: {entries: [{name: "林述白", role: "动态设计师 / Motion Designer"}]},
-  caption: {lines: [
-    {text: "选一个主题，整片风格一键成套。"},
-    {text: "再逐场景微调入场与出场。"},
-  ]},
-  emphasis: {lines: [{pre: "只需 ", token: "一个主题", post: " 即可统一全片。"}]},
+const TH = {
+  glitch:{id:'glitch',name:'故障赛博',en:'Glitch',families:['H','K'],desc:'数字故障风：乱码解码登场、RGB 撕裂离场；等宽字体、青色高亮。',
+    style:{background:'radial-gradient(circle at 50% 42%,#0a1320 0%,#060a12 60%,#03050a 100%)',color:'#eafcff',accent:'#38e0ff',fontFamily:'Menlo,Consolas,"Courier New","PingFang SC",monospace',fontWeight:800,letterSpacing:1},
+    timing:{inF:20,holdF:40,outF:16},
+    effects:{hero:{i:72,o:95},list:{i:74,o:74},lowerThird:{i:72,o:95},caption:{i:78,o:79},emphasis:{i:95,o:72}},
+    sw:['#0a1320','#eafcff','#38e0ff']},
+  soft:{id:'soft',name:'柔和聚焦',en:'Soft',families:['D','B'],desc:'柔和聚焦风：模糊浮现、墨水淡出；蓝白配色。',
+    style:{background:'linear-gradient(180deg,#0c1426 0%,#0e1830 100%)',color:'#f2f6ff',accent:'#7aa2ff',fontFamily:'Arial,"PingFang SC","Microsoft YaHei",sans-serif',fontWeight:600,letterSpacing:0},
+    timing:{inF:22,holdF:44,outF:18},
+    effects:{hero:{i:31,o:33},list:{i:11,o:11},lowerThird:{i:31,o:33},caption:{i:31,o:31},emphasis:{i:34,o:31}},
+    sw:['#0c1426','#f2f6ff','#7aa2ff']},
+  bouncy:{id:'bouncy',name:'活力弹跳',en:'Bouncy',families:['C','B'],desc:'弹性活泼风：弹簧弹出、旋转缩放；橙色高亮。',
+    style:{background:'radial-gradient(circle at 50% 40%,#1c2350 0%,#0d1130 60%,#070920 100%)',color:'#ffffff',accent:'#ff7a3c',fontFamily:'Arial,"PingFang SC","Microsoft YaHei",sans-serif',fontWeight:900,letterSpacing:0},
+    timing:{inF:20,holdF:38,outF:16},
+    effects:{hero:{i:21,o:23},list:{i:13,o:13},lowerThird:{i:12,o:12},caption:{i:11,o:11},emphasis:{i:21,o:21}},
+    sw:['#1c2350','#ffffff','#ff7a3c']},
+  minimal:{id:'minimal',name:'极简打字',en:'Minimal',families:['F'],desc:'极简打字风：打字机逐字登场；近黑背景、细字重。',
+    style:{background:'linear-gradient(180deg,#0a0c12 0%,#0c0f16 100%)',color:'#f5f7fb',accent:'#9aa7bd',fontFamily:'Menlo,Consolas,"Courier New","PingFang SC",monospace',fontWeight:500,letterSpacing:1},
+    timing:{inF:24,holdF:42,outF:14},
+    effects:{hero:{i:51,o:58},list:{i:52,o:52},lowerThird:{i:11,o:11},caption:{i:51,o:51},emphasis:{i:51,o:58}},
+    sw:['#0a0c12','#f5f7fb','#9aa7bd']},
+  elegant:{id:'elegant',name:'优雅衬线',en:'Elegant',families:['E','G','D'],desc:'优雅衬线风：螺旋归位、辉光绽放；金色高亮。',
+    style:{background:'radial-gradient(circle at 50% 40%,#20182a 0%,#120c18 60%,#0a060e 100%)',color:'#f6efe2',accent:'#d9b46a',fontFamily:'Georgia,"Times New Roman","Songti SC",serif',fontWeight:600,letterSpacing:2},
+    timing:{inF:24,holdF:46,outF:18},
+    effects:{hero:{i:47,o:40},list:{i:11,o:11},lowerThird:{i:69,o:63},caption:{i:11,o:11},emphasis:{i:34,o:31}},
+    sw:['#20182a','#f6efe2','#d9b46a']},
 };
+const CAT={A:'透明度',B:'缓动',C:'缩放3D',D:'模糊',E:'波动',F:'逐字',G:'遮罩',H:'噪声',I:'粒子',J:'光影',K:'故障',L:'分形'};
+const DEMO={hero:{entries:[{text:'主题成套动效',sub:'One theme · consistent motion'}]},list:{title:'一个主题搞定整片',items:[{text:'标题、列表、字幕…自动协调'},{text:'入场/出场可分别切换'},{text:'配色/字体/节奏全主题统一'},{text:'导出即一份配置 JSON'}]},lowerThird:{entries:[{name:'林述白',role:'动态设计师'}]},caption:{lines:[{text:'选一个主题，整片风格一键成套。'},{text:'再逐场景微调入场与出场。'}]},emphasis:{lines:[{pre:'只需 ',token:'一个主题',post:' 即可统一全片。'}]}};
+const LB={hero:'主标题',list:'列表',lowerThird:'角标',caption:'字幕',emphasis:'强调'};
+const ORD=['hero','list','lowerThird','caption','emphasis'];
 
-// ============================================================
-//  State
-// ============================================================
-let state = {
-  theme: "glitch",
-  content: JSON.parse(JSON.stringify(DEMO_CONTENT)),
-};
+let S={theme:'glitch',content:structuredClone(DEMO)};
+let curTab='hero',timOv=false;
 
-// ============================================================
-//  Init
-// ============================================================
-function init() {
-  const sel = document.getElementById('themeSelect');
-  THEMES.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t.id;
-    opt.textContent = `${t.name} · ${t.enName}`;
-    sel.appendChild(opt);
-  });
-  sel.value = state.theme;
-  sel.onchange = () => { state.theme = sel.value; updateThemeDesc(); updateConfig(); };
-  updateThemeDesc();
-  renderAllSections();
-  updateConfig();
+// === Init ===
+function init(){renderPills();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
+
+// === Theme pills ===
+function renderPills(){
+  const c=document.getElementById('themePills');c.innerHTML='';
+  for(const[id,t]of Object.entries(TH)){
+    const b=document.createElement('button');
+    b.className='tp'+(id===S.theme?' on':'');
+    b.setAttribute('data-id',id);
+    b.onclick=()=>selTheme(id);
+    b.innerHTML=`<span class="dot" style="background:${t.sw[2]}"></span>${t.name}`;
+    c.appendChild(b);
+  }
 }
-
-function updateThemeDesc() {
-  const t = THEMES.find(x => x.id === state.theme);
-  document.getElementById('themeDesc').textContent = t ? t.description : '';
+function selTheme(id){
+  S.theme=id;
+  document.querySelectorAll('.tp').forEach(b=>b.classList.toggle('on',b.getAttribute('data-id')===id));
+  if(!timOv)syncTim();uc();
 }
-
-// ============================================================
-//  Section toggle
-// ============================================================
-function toggleSection(id) {
-  document.getElementById(id).classList.toggle('collapsed');
+function syncTim(){
+  const t=TH[S.theme].timing;
+  const a=document.getElementById('inF'),b=document.getElementById('holdF'),c=document.getElementById('outF');
+  a.value=t.inF;b.value=t.holdF;c.value=t.outF;
+  sSync(a,'iv');sSync(b,'hv');sSync(c,'ov');
 }
+function sSync(el,id){document.getElementById(id).textContent=el.value+'f';timOv=true;}
+function cSync(cId,tId){document.getElementById(tId).value=document.getElementById(cId).value;}
 
-// ============================================================
-//  Content editors
-// ============================================================
-function renderAllSections() {
-  renderHeroEntries();
-  renderListItems();
-  renderLowerThirdEntries();
-  renderCaptionLines();
-  renderEmphasisLines();
-}
-
-function renderHeroEntries() {
-  const c = document.getElementById('heroEntries');
-  c.innerHTML = '';
-  (state.content.hero?.entries || []).forEach((e, i) => {
-    const row = document.createElement('div');
-    row.className = 'entry-row';
-    row.innerHTML = `
-      <input type="text" placeholder="标题 / text" value="${esc(e.text)}" oninput="editHeroEntry(${i},'text',this.value)">
-      <input type="text" placeholder="副标题 / sub" value="${esc(e.sub||'')}" oninput="editHeroEntry(${i},'sub',this.value)">
-      <button class="btn-mini danger" onclick="removeHeroEntry(${i})">✕</button>
-    `;
-    c.appendChild(row);
+// === Scene tabs ===
+function renderSceneTabs(){
+  const c=document.getElementById('sceneTabs');c.innerHTML='';
+  ORD.forEach(r=>{
+    const b=document.createElement('button');
+    b.className='st'+(r===curTab?' on':'');
+    b.setAttribute('data-r',r);
+    b.onclick=()=>{curTab=r;renderSceneTabs();renderEditor();};
+    const cnt=getCnt(r);
+    b.innerHTML=`<span class="sd ${cnt?'has':'no'}"></span>${LB[r]}`;
+    c.appendChild(b);
   });
 }
-function addHeroEntry() {
-  if (!state.content.hero) state.content.hero = {entries: []};
-  state.content.hero.entries.push({text: "新标题", sub: ""});
-  renderHeroEntries(); updateConfig();
-}
-function editHeroEntry(i, field, val) {
-  state.content.hero.entries[i][field] = val;
-  updateConfig();
-}
-function removeHeroEntry(i) {
-  state.content.hero.entries.splice(i, 1);
-  renderHeroEntries(); updateConfig();
+function getCnt(r){
+  const c=S.content[r];
+  if(!c)return 0;
+  if(r==='hero')return c.entries?.length||0;
+  if(r==='list')return c.items?.length||0;
+  if(r==='lowerThird')return c.entries?.length||0;
+  if(r==='caption')return c.lines?.length||0;
+  if(r==='emphasis')return c.lines?.length||0;
+  return 0;
 }
 
-function renderListItems() {
-  const c = document.getElementById('listItems');
-  c.innerHTML = '';
-  document.getElementById('listTitle').value = state.content.list?.title || '';
-  (state.content.list?.items || []).forEach((it, i) => {
-    const row = document.createElement('div');
-    row.className = 'entry-row';
-    row.innerHTML = `
-      <input type="text" placeholder="条目 / item" value="${esc(it.text)}" oninput="editListItem(${i},this.value)">
-      <button class="btn-mini danger" onclick="removeListItem(${i})">✕</button>
-    `;
-    c.appendChild(row);
+// === Editor ===
+function renderEditor(){
+  const c=document.getElementById('editorArea');c.innerHTML='';
+  const r=curTab;
+  if(r==='hero')renderHero(c);
+  else if(r==='list')renderList(c);
+  else if(r==='lowerThird')renderLT(c);
+  else if(r==='caption')renderCap(c);
+  else if(r==='emphasis')renderEmp(c);
+}
+
+function renderHero(c){
+  const ent=S.content.hero?.entries||[];
+  if(!ent.length){c.innerHTML='<div class="empty-msg">暂无标题</div>';addBtn(c,()=>{if(!S.content.hero)S.content.hero={entries:[]};S.content.hero.entries.push({text:'新标题',sub:''});refresh();});return;}
+  ent.forEach((e,i)=>{
+    const d=mk('div','ed-row');
+    d.innerHTML=`<input placeholder="标题" value="${esc(e.text)}" oninput="S.content.hero.entries[${i}].text=this.value;uc()"><input class="narrow" placeholder="副标题" value="${esc(e.sub||'')}" oninput="S.content.hero.entries[${i}].sub=this.value;uc()"><button class="x-btn" onclick="S.content.hero.entries.splice(${i},1);refresh()">&#10005;</button>`;
+    c.appendChild(d);
   });
+  addBtn(c,()=>{S.content.hero.entries.push({text:'新标题',sub:''});refresh();});
 }
-function addListItem() {
-  if (!state.content.list) state.content.list = {title: "", items: []};
-  state.content.list.items.push({text: "新条目"});
-  renderListItems(); updateConfig();
-}
-function editListItem(i, val) {
-  state.content.list.items[i].text = val;
-  updateConfig();
-}
-function removeListItem(i) {
-  state.content.list.items.splice(i, 1);
-  renderListItems(); updateConfig();
-}
-
-function renderLowerThirdEntries() {
-  const c = document.getElementById('lowerThirdEntries');
-  c.innerHTML = '';
-  (state.content.lowerThird?.entries || []).forEach((e, i) => {
-    const row = document.createElement('div');
-    row.className = 'entry-row';
-    row.innerHTML = `
-      <input type="text" placeholder="姓名 / name" value="${esc(e.name)}" oninput="editLowerThird(${i},'name',this.value)">
-      <input type="text" placeholder="角色 / role" value="${esc(e.role)}" oninput="editLowerThird(${i},'role',this.value)">
-      <button class="btn-mini danger" onclick="removeLowerThird(${i})">✕</button>
-    `;
-    c.appendChild(row);
+function renderList(c){
+  const d1=mk('div','ed-row');
+  d1.innerHTML=`<input placeholder="列表标题" value="${esc(S.content.list?.title||'')}" oninput="if(!S.content.list)S.content.list={title:'',items:[]};S.content.list.title=this.value;uc()">`;
+  c.appendChild(d1);
+  const items=S.content.list?.items||[];
+  if(!items.length){c.innerHTML+='<div class="empty-msg">暂无条目</div>';}
+  items.forEach((it,i)=>{
+    const d=mk('div','ed-row');
+    d.innerHTML=`<input placeholder="条目" value="${esc(it.text)}" oninput="S.content.list.items[${i}].text=this.value;uc()"><button class="x-btn" onclick="S.content.list.items.splice(${i},1);refresh()">&#10005;</button>`;
+    c.appendChild(d);
   });
+  addBtn(c,()=>{if(!S.content.list)S.content.list={title:'',items:[]};S.content.list.items.push({text:'新条目'});refresh();});
 }
-function addLowerThirdEntry() {
-  if (!state.content.lowerThird) state.content.lowerThird = {entries: []};
-  state.content.lowerThird.entries.push({name: "姓名", role: "角色"});
-  renderLowerThirdEntries(); updateConfig();
-}
-function editLowerThird(i, field, val) {
-  state.content.lowerThird.entries[i][field] = val;
-  updateConfig();
-}
-function removeLowerThird(i) {
-  state.content.lowerThird.entries.splice(i, 1);
-  renderLowerThirdEntries(); updateConfig();
-}
-
-function renderCaptionLines() {
-  const c = document.getElementById('captionLines');
-  c.innerHTML = '';
-  (state.content.caption?.lines || []).forEach((l, i) => {
-    const row = document.createElement('div');
-    row.className = 'entry-row';
-    row.innerHTML = `
-      <input type="text" placeholder="字幕 / caption" value="${esc(l.text)}" oninput="editCaption(${i},this.value)">
-      <button class="btn-mini danger" onclick="removeCaption(${i})">✕</button>
-    `;
-    c.appendChild(row);
+function renderLT(c){
+  const ent=S.content.lowerThird?.entries||[];
+  if(!ent.length){c.innerHTML='<div class="empty-msg">暂无角标</div>';}
+  ent.forEach((e,i)=>{
+    const d=mk('div','ed-row');
+    d.innerHTML=`<input placeholder="姓名" value="${esc(e.name)}" oninput="S.content.lowerThird.entries[${i}].name=this.value;uc()"><input placeholder="角色" value="${esc(e.role)}" oninput="S.content.lowerThird.entries[${i}].role=this.value;uc()"><button class="x-btn" onclick="S.content.lowerThird.entries.splice(${i},1);refresh()">&#10005;</button>`;
+    c.appendChild(d);
   });
+  addBtn(c,()=>{if(!S.content.lowerThird)S.content.lowerThird={entries:[]};S.content.lowerThird.entries.push({name:'姓名',role:'角色'});refresh();});
 }
-function addCaptionLine() {
-  if (!state.content.caption) state.content.caption = {lines: []};
-  state.content.caption.lines.push({text: "新字幕"});
-  renderCaptionLines(); updateConfig();
-}
-function editCaption(i, val) {
-  state.content.caption.lines[i].text = val;
-  updateConfig();
-}
-function removeCaption(i) {
-  state.content.caption.lines.splice(i, 1);
-  renderCaptionLines(); updateConfig();
-}
-
-function renderEmphasisLines() {
-  const c = document.getElementById('emphasisLines');
-  c.innerHTML = '';
-  (state.content.emphasis?.lines || []).forEach((l, i) => {
-    const div = document.createElement('div');
-    div.style.marginBottom = '8px';
-    div.innerHTML = `
-      <div class="entry-row">
-        <input type="text" placeholder="前 / pre" value="${esc(l.pre)}" oninput="editEmphasis(${i},'pre',this.value)">
-        <input type="text" placeholder="强调词 / token" value="${esc(l.token)}" oninput="editEmphasis(${i},'token',this.value)">
-        <input type="text" placeholder="后 / post" value="${esc(l.post)}" oninput="editEmphasis(${i},'post',this.value)">
-        <button class="btn-mini danger" onclick="removeEmphasis(${i})">✕</button>
-      </div>
-    `;
-    c.appendChild(div);
+function renderCap(c){
+  const lines=S.content.caption?.lines||[];
+  if(!lines.length){c.innerHTML='<div class="empty-msg">暂无字幕</div>';}
+  lines.forEach((l,i)=>{
+    const d=mk('div','ed-row');
+    d.innerHTML=`<input placeholder="字幕" value="${esc(l.text)}" oninput="S.content.caption.lines[${i}].text=this.value;uc()"><button class="x-btn" onclick="S.content.caption.lines.splice(${i},1);refresh()">&#10005;</button>`;
+    c.appendChild(d);
   });
+  addBtn(c,()=>{if(!S.content.caption)S.content.caption={lines:[]};S.content.caption.lines.push({text:'新字幕'});refresh();});
 }
-function addEmphasisLine() {
-  if (!state.content.emphasis) state.content.emphasis = {lines: []};
-  state.content.emphasis.lines.push({pre: "", token: "强调", post: ""});
-  renderEmphasisLines(); updateConfig();
-}
-function editEmphasis(i, field, val) {
-  state.content.emphasis.lines[i][field] = val;
-  updateConfig();
-}
-function removeEmphasis(i) {
-  state.content.emphasis.lines.splice(i, 1);
-  renderEmphasisLines(); updateConfig();
+function renderEmp(c){
+  const lines=S.content.emphasis?.lines||[];
+  if(!lines.length){c.innerHTML='<div class="empty-msg">暂无强调</div>';}
+  lines.forEach((l,i)=>{
+    const d=mk('div','ed-row');
+    d.innerHTML=`<input class="narrow" placeholder="前" value="${esc(l.pre)}" oninput="S.content.emphasis.lines[${i}].pre=this.value;uc()"><input class="em" placeholder="强调词" value="${esc(l.token)}" oninput="S.content.emphasis.lines[${i}].token=this.value;uc()"><input class="narrow" placeholder="后" value="${esc(l.post)}" oninput="S.content.emphasis.lines[${i}].post=this.value;uc()"><button class="x-btn" onclick="S.content.emphasis.lines.splice(${i},1);refresh()">&#10005;</button>`;
+    c.appendChild(d);
+  });
+  addBtn(c,()=>{if(!S.content.emphasis)S.content.emphasis={lines:[]};S.content.emphasis.lines.push({pre:'',token:'强调',post:''});refresh();});
 }
 
-// ============================================================
-//  Build config from state + overrides
-// ============================================================
-function buildConfig() {
-  const config = {theme: state.theme, content: {}};
+function refresh(){renderSceneTabs();renderEditor();uc();}
+function addBtn(c,fn){const b=document.createElement('button');b.className='add-btn';b.textContent='+ 添加';b.onclick=fn;c.appendChild(b);}
+function mk(tag,cls){const e=document.createElement(tag);e.className=cls;return e;}
 
-  // Copy non-empty content
-  if (state.content.hero?.entries.length) config.content.hero = state.content.hero;
-  if (state.content.list?.items.length) {
-    config.content.list = {items: state.content.list.items};
-    if (state.content.list.title) config.content.list.title = state.content.list.title;
-  }
-  if (state.content.lowerThird?.entries.length) config.content.lowerThird = state.content.lowerThird;
-  if (state.content.caption?.lines.length) config.content.caption = state.content.caption;
-  if (state.content.emphasis?.lines.length) config.content.emphasis = state.content.emphasis;
-
-  // Order override
-  const orderVal = document.getElementById('orderInput').value.trim();
-  if (orderVal) {
-    const parts = orderVal.split(',').map(s => s.trim()).filter(Boolean);
-    if (parts.length) config.order = parts;
-  }
-
-  // Timing override
-  const inF = parseInt(document.getElementById('inF').value);
-  const holdF = parseInt(document.getElementById('holdF').value);
-  const outF = parseInt(document.getElementById('outF').value);
-  if (inF > 0 && holdF >= 0 && outF > 0) {
-    config.timing = {inF, holdF, outF};
-  }
-
-  // Style override
-  const style = {};
-  const bg = document.getElementById('bgOverride').value.trim();
-  const color = document.getElementById('colorOverride').value.trim();
-  const accent = document.getElementById('accentOverride').value.trim();
-  if (bg) style.background = bg;
-  if (color) style.color = color;
-  if (accent) style.accent = accent;
-  if (Object.keys(style).length) config.style = style;
-
-  return config;
+// === Build config ===
+function buildCfg(){
+  const cfg={theme:S.theme,content:{}};
+  if(S.content.hero?.entries?.length) cfg.content.hero=S.content.hero;
+  if(S.content.list?.items?.length){cfg.content.list={items:S.content.list.items};if(S.content.list.title)cfg.content.list.title=S.content.list.title;}
+  if(S.content.lowerThird?.entries?.length) cfg.content.lowerThird=S.content.lowerThird;
+  if(S.content.caption?.lines?.length) cfg.content.caption=S.content.caption;
+  if(S.content.emphasis?.lines?.length) cfg.content.emphasis=S.content.emphasis;
+  if(timOv){cfg.timing={inF:+document.getElementById('inF').value,holdF:+document.getElementById('holdF').value,outF:+document.getElementById('outF').value};}
+  const st={};
+  const bg=document.getElementById('bgT').value.trim(),fg=document.getElementById('fgT').value.trim(),ac=document.getElementById('acT').value.trim();
+  if(bg)st.background=bg;if(fg)st.color=fg;if(ac)st.accent=ac;
+  if(Object.keys(st).length)cfg.style=st;
+  const eff={};
+  for(const r of ORD){const i=+document.getElementById(`eo-${r}-in`).value,o=+document.getElementById(`eo-${r}-out`).value;if(i>=1&&i<=100&&o>=1&&o<=100)eff[r]={inEffectId:i,outEffectId:o};}
+  if(Object.keys(eff).length)cfg.effects=eff;
+  return cfg;
 }
 
-// ============================================================
-//  README generation (mirrors src/textfx/themeExport.ts)
-// ============================================================
-function generateReadme(config) {
-  const theme = THEMES.find(t => t.id === config.theme);
-  if (!theme) return 'Error: theme not found';
+// === Update ===
+function uc(){
+  const cfg=buildCfg();const json=JSON.stringify(cfg,null,2);
+  document.getElementById('oJson').textContent=json;
+  document.getElementById('oReadme').textContent=genRm(cfg);
+  document.getElementById('oCmd').textContent=`npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`;
+  const total=ORD.reduce((a,r)=>a+getCnt(r),0);
+  document.getElementById('botInfo').textContent=`${total} 项 · ${TH[S.theme].name}`;
+  restartPv();
+}
+function genRm(cfg){
+  const th=TH[cfg.theme];if(!th)return'';
+  const json=JSON.stringify(cfg,null,2);
+  const cmd=`npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`;
+  const sl={hero:['主标题','Hero'],list:['列表','List'],lowerThird:['角标','Lower-third'],caption:['字幕','Caption'],emphasis:['强调','Emphasis']};
+  const order=cfg.order||ORD;const active=order.filter(r=>cfg.content[r]);
+  const list=active.map(r=>`${sl[r][0]}(${sl[r][1]})`).join('→');
+  const t=cfg.timing||th.timing;const slot=t.inF+t.holdF+t.outF;
+  let f=0;if(cfg.content.hero)f+=(cfg.content.hero.entries.length||1)*slot;if(cfg.content.list)f+=Math.max(0,(cfg.content.list.items.length-1))*22+48;if(cfg.content.lowerThird)f+=(cfg.content.lowerThird.entries.length||1)*slot;if(cfg.content.caption)f+=(cfg.content.caption.lines.length||1)*slot;if(cfg.content.emphasis)f+=(cfg.content.emphasis.lines.length||1)*slot;if(!f)f=slot;
+  return`# ${th.name} / ${th.en}\n> ${th.desc}\n\n\`\`\`bash\n${cmd}\n\`\`\`\n\nScenes: ${list}\nDuration: ${f}f (${(f/30).toFixed(1)}s)\nTiming: in=${t.inF}f hold=${t.holdF}f out=${t.outF}f`;
+}
+function stab(n,el){document.querySelectorAll('.ot').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.getElementById('t-'+n).classList.add('on');}
 
-  const themeJson = JSON.stringify(config, null, 2);
-  const renderCmd = `npx remotion render src/index.ts SceneTheme out.mp4 --props='${themeJson.trim()}'`;
+// === Preview ===
+let an=null,playing=true,si=0,ph='in',pT=0,lTs=0,speed=1;
+const SP=[0.5,1,1.5,2];let spi=1;
+function cycleSpeed(){spi=(spi+1)%SP.length;speed=SP[spi];document.getElementById('spBtn').textContent=speed+'x';}
 
-  const sceneLabels = {hero:['主标题','Hero'],list:['列表','List'],lowerThird:['角标','Lower-third'],caption:['字幕','Caption'],emphasis:['强调','Emphasis']};
-  const order = config.order || ['hero','list','lowerThird','caption','emphasis'];
-  const activeScenes = order.filter(r => config.content[r]);
-  const sceneList = activeScenes.map(r => `${sceneLabels[r][0]} (${sceneLabels[r][1]})`).join(' → ');
-
-  // Estimate frames (simplified)
-  const t = config.timing || {inF:20,holdF:40,outF:16};
-  const slot = t.inF + t.holdF + t.outF;
-  let totalFrames = 0;
-  if (config.content.hero) totalFrames += (config.content.hero.entries.length || 1) * slot;
-  if (config.content.list) totalFrames += Math.max(0, (config.content.list.items.length-1)) * 22 + 18 + 30;
-  if (config.content.lowerThird) totalFrames += (config.content.lowerThird.entries.length || 1) * slot;
-  if (config.content.caption) totalFrames += (config.content.caption.lines.length || 1) * slot;
-  if (config.content.emphasis) totalFrames += (config.content.emphasis.lines.length || 1) * slot;
-  if (totalFrames === 0) totalFrames = slot;
-  const seconds = (totalFrames / 30).toFixed(1);
-
-  const sections = [];
-  if (config.content.hero) {
-    sections.push('### 主标题 / Hero\n' + config.content.hero.entries.map(e => `- **${e.text}**${e.sub ? ' — ' + e.sub : ''}`).join('\n'));
+function getScenes(){
+  const cfg=buildCfg();const order=cfg.order||ORD;const sc=[];
+  for(const r of order){
+    const c=cfg.content[r];if(!c)continue;
+    const th=TH[S.theme];const ef=cfg.effects?.[r]?{i:cfg.effects[r].inEffectId,o:cfg.effects[r].outEffectId}:th.effects[r];
+    const st={...th.style,...(cfg.style||{})};const tm=cfg.timing||th.timing;
+    if(r==='hero'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.text,sub:e.sub||'',ef,st,tm,fs:24,fw:st.fontWeight});
+    else if(r==='list'&&c.items?.length)for(const it of c.items)sc.push({r,text:it.text,sub:'',ef,st,tm,fs:14,fw:st.fontWeight});
+    else if(r==='lowerThird'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.name,sub:e.role,ef,st,tm,fs:18,fw:st.fontWeight});
+    else if(r==='caption'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.text,sub:'',ef,st,tm,fs:14,fw:st.fontWeight});
+    else if(r==='emphasis'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.pre,token:l.token,post:l.post,sub:'',ef,st,tm,fs:18,fw:st.fontWeight,accent:st.accent});
   }
-  if (config.content.list) {
-    sections.push('### 列表 / List\n' + (config.content.list.title ? '*'+config.content.list.title+'*\n' : '') + config.content.list.items.map(it => '- '+it.text).join('\n'));
+  if(!sc.length){const th=TH[S.theme];sc.push({r:'hero',text:'预览',sub:'',ef:th.effects.hero,st:th.style,tm:th.timing,fs:24,fw:800});}
+  return sc;
+}
+
+function renderChips(sc){
+  const c=document.getElementById('pvChips');c.innerHTML='';
+  sc.forEach((s,i)=>{const b=document.createElement('button');b.className='chip'+(i===si?' on':'');b.textContent=LB[s.r]||s.r;b.onclick=()=>{si=i;pT=0;ph='in';lTs=0;renderChips(sc);};c.appendChild(b);});
+}
+
+function simFx(id,ph,t){
+  const cat=Math.ceil(id/10);const ez=t=>1-Math.pow(1-t,3);const p=ph==='in'?ez(Math.min(1,Math.max(0,t))):1-ez(Math.min(1,Math.max(0,t)));const s={};
+  switch(cat){
+    case 1:s.opacity=p;break;
+    case 2:s.opacity=Math.min(1,p*2);s.transform=`translateY(${(1-p)*35}px)`;break;
+    case 3:s.opacity=Math.min(1,p*1.5);s.transform=`scale(${.3+p*.7}) rotate(${(ph==='in'?-1:1)*(1-p)*15}deg)`;break;
+    case 4:s.opacity=p;s.filter=`blur(${(1-p)*8}px)`;break;
+    case 5:s.opacity=p;s.transform=`translateY(${Math.sin(t*Math.PI*3)*(1-p)*10}px) rotate(${(1-p)*8}deg)`;break;
+    case 6:s.opacity=1;s.clipPath=`inset(0 ${(1-p)*100}% 0 0)`;s.transform=`translateX(${(1-p)*-8}px)`;break;
+    case 7:s.opacity=1;s.clipPath=id%2?`inset(${(1-p)*50}% 0 ${(1-p)*50}% 0)`:`inset(0 ${(1-p)*50}% 0 ${(1-p)*50}%)`;break;
+    case 8:s.opacity=Math.min(1,p*1.5);s.transform=`translate(${(1-p)*Math.sin(t*37)*6}px,${(1-p)*Math.cos(t*53)*3}px)`;s.filter=`brightness(${1+(1-p)*.5})`;break;
+    case 9:s.opacity=p;s.transform=`scale(${.2+p*.8}) rotate(${(1-p)*180}deg)`;s.filter=`blur(${(1-p)*3}px)`;break;
+    case 10:s.opacity=p;s.filter=`brightness(${1+(1-p)*1.5}) saturate(${.5+p*.5})`;s.transform=`scale(${.95+p*.05})`;break;
+    case 11:s.opacity=Math.min(1,p*2);s.transform=`translateX(${(1-p)*Math.sin(t*100)*5}px) skewX(${(1-p)*8}deg)`;s.filter=`hue-rotate(${(1-p)*90}deg) brightness(${1+(1-p)*.8})`;break;
+    case 12:s.opacity=p;s.transform=`translate(${(1-p)*Math.sin(t*23)*12}px,${(1-p)*Math.cos(t*31)*6}px) rotate(${(1-p)*Math.sin(t*17)*18}deg) scale(${.5+p*.5})`;break;
+    default:s.opacity=p;
   }
-  if (config.content.lowerThird) {
-    sections.push('### 角标 / Lower-third\n' + config.content.lowerThird.entries.map(e => `- **${e.name}** — ${e.role}`).join('\n'));
-  }
-  if (config.content.caption) {
-    sections.push('### 字幕 / Caption\n' + config.content.caption.lines.map(l => '- '+l.text).join('\n'));
-  }
-  if (config.content.emphasis) {
-    sections.push('### 强调 / Emphasis\n' + config.content.emphasis.lines.map(l => `- ${l.pre}**${l.token}**${l.post}`).join('\n'));
-  }
+  return s;
+}
 
-  const hasStyleOverride = !!config.style;
-  const hasTimingOverride = !!config.timing;
-  const hasEffectOverride = !!config.effects;
+const GL='アカサタナ01XΞΨ#%&@王金木水火土';
+function scr(text,prog){return Array.from(text).map((ch,i)=>{const l=(i/Math.max(text.length,1))*.85;return prog>l+.15?ch:GL[Math.floor(Math.random()*GL.length)];}).join('');}
 
-  return `# 主题包 / Theme Package: ${theme.name} · ${theme.enName}
+function tick(ts){
+  if(!playing){an=requestAnimationFrame(tick);return;}
+  const sc=getScenes();if(!sc.length){an=requestAnimationFrame(tick);return;}
+  const dt=lTs?(ts-lTs)/1000*speed:0;lTs=ts;
+  const s=sc[Math.min(si,sc.length-1)];
+  const fps=30,iD=s.tm.inF/fps,hD=s.tm.holdF/fps,oD=s.tm.outF/fps,tot=iD+hD+oD;
+  pT+=dt;
+  let p,t;
+  if(pT<iD){p='in';t=pT/iD;}else if(pT<iD+hD){p='hold';t=1;}else if(pT<tot){p='out';t=(pT-iD-hD)/oD;}else{si=(si+1)%sc.length;pT=0;p='in';t=0;renderChips(sc);}
+  ph=p;
+  const eid=p==='out'?s.ef.o:s.ef.i;
+  const fx=p==='hold'?{opacity:1,transform:'none',filter:'none',clipPath:'none'}:simFx(eid,p,t);
+  const stage=document.getElementById('pvStage'),inner=document.getElementById('pvInner');
+  const txt=document.getElementById('pvText'),sub=document.getElementById('pvSub'),tag=document.getElementById('pvTag');
+  const sty=s.st;
+  stage.style.background=sty.background;inner.style.color=sty.color;inner.style.fontFamily=sty.fontFamily;
+  let disp=s.text;const cat=Math.ceil(eid/10);
+  if(cat===8&&p!=='hold')disp=scr(s.text,p==='in'?t:1-t);
+  if(s.r==='emphasis'&&s.token){const to=p==='hold'?1:(p==='in'?Math.min(1,t*1.5):Math.max(0,1-t*1.5));txt.innerHTML=`${esc(s.text)}<span style="color:${s.accent};font-weight:900;opacity:${to}">${esc(s.token)}</span>${esc(s.post||'')}`;}else txt.textContent=disp;
+  txt.style.fontSize=s.fs+'px';txt.style.fontWeight=s.fw;txt.style.letterSpacing=(sty.letterSpacing||0)+'px';
+  txt.style.opacity=fx.opacity??1;txt.style.transform=fx.transform||'none';txt.style.filter=fx.filter||'none';txt.style.clipPath=fx.clipPath||'none';
+  sub.textContent=s.sub||'';sub.style.opacity=p==='hold'?.5:(p==='in'?Math.max(0,(t-.5)*1.2):Math.max(0,(1-t*2)*.5));sub.style.color=sty.color;
+  const cl=String.fromCharCode(64+Math.ceil(eid/10));
+  tag.textContent=`${(LB[s.r]||s.r).toUpperCase()} · ${cl}${String(eid).padStart(2,'0')}`;tag.style.color=sty.color;
+  document.getElementById('tlP').style.width=(Math.min(1,pT/tot)*100)+'%';
+  const pl={in:'入场',hold:'停留',out:'出场'};
+  document.getElementById('tlI').textContent=`${pl[p]||p} ${pT.toFixed(1)}s/${tot.toFixed(1)}s`;
+  an=requestAnimationFrame(tick);
+}
+function startPv(){si=0;ph='in';pT=0;lTs=0;renderChips(getScenes());if(an)cancelAnimationFrame(an);an=requestAnimationFrame(tick);}
+function restartPv(){const sc=getScenes();if(si>=sc.length)si=0;pT=0;ph='in';lTs=0;renderChips(sc);}
+function togglePlay(){playing=!playing;lTs=0;document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';}
 
-> ${theme.description}
+// === Export ===
+let _srcBundle=null;
+function loadSrcBundle(){
+  if(_srcBundle)return _srcBundle;
+  try{_srcBundle=JSON.parse(document.getElementById('srcBundle').textContent);}catch(e){_srcBundle=null;}
+  return _srcBundle;
+}
+function getActiveRoles(cfg){
+  const roles=[];
+  if(cfg.content.hero?.entries?.length)roles.push('hero');
+  if(cfg.content.list?.items?.length)roles.push('list');
+  if(cfg.content.lowerThird?.entries?.length)roles.push('lowerThird');
+  if(cfg.content.caption?.lines?.length)roles.push('caption');
+  if(cfg.content.emphasis?.lines?.length)roles.push('emphasis');
+  return roles;
+}
+function genPkgJson(){return JSON.stringify({name:'remotion-theme-render',version:'1.0.0',private:true,scripts:{render:'remotion render src/index.ts SceneTheme out.mp4 --props=@theme.json',dev:'remotion studio src/index.ts'},dependencies:{'@remotion/cli':'4.0.240','@remotion/zod-types':'4.0.240',react:'^18.3.1','react-dom':'^18.3.1',remotion:'4.0.240',zod:'^3.22.3'},devDependencies:{'@types/react':'^18.3.1','@types/web':'^0.0.139',typescript:'^5.5.4'}},null,2)+'\n';}
+function genTsConfig(){return JSON.stringify({compilerOptions:{target:'ES2020',module:'commonjs',jsx:'react-jsx',strict:true,esModuleInterop:true,skipLibCheck:true,forceConsistentCasingInFileNames:true,resolveJsonModule:true,outDir:'dist'},include:['src']},null,2)+'\n';}
+function genRemotionCfg(){return"import {Config} from '@remotion/cli/config';\n\nConfig.setVideoImageFormat('jpeg');\nConfig.setOverwriteOutput(true);\n";}
+function genIndexTs(){return"import {registerRoot} from 'remotion';\nimport {RemotionRoot} from './Root';\n\nregisterRoot(RemotionRoot);\n";}
+function genRootTsx(roles){
+  const imports=["import React from 'react';","import {Composition} from 'remotion';","import {ThemeScene} from './textfx/scenes/ThemeScene';","import {themeConfigSchema, themeConfigFrames, THEME_CONFIG_DEFAULT} from './textfx/themes';"];
+  return imports.join('\n')+`
 
-## 渲染命令 / Render Command
+const COMMON = {fps: 30, width: 1920, height: 1080} as const;
 
-\`\`\`bash
-${renderCmd}
-\`\`\`
-
-> 也可用 \`--props=@theme.json\` 从文件读取。
-> Alternatively, use \`--props=@theme.json\` to read from file.
-
-## 配置摘要 / Config Summary
-
-| 项目 / Item | 值 / Value |
-|---|---|
-| 主题 / Theme | \`${theme.id}\` — ${theme.name} / ${theme.enName} |
-| 场景顺序 / Scenes | ${sceneList} |
-| 时序 / Timing | 入场 ${t.inF}f · 停留 ${t.holdF}f · 出场 ${t.outF}f${hasTimingOverride ? ' (已覆盖 / overridden)' : ''} |
-| 总时长 / Duration | ${totalFrames}f (${seconds}s @ 30fps) |
-| 动效覆盖 / Effect overrides | ${hasEffectOverride ? '是 / yes' : '否 / no'} |
-
-## 内容 / Content
-
-${sections.join('\n\n')}
-
-## 文件 / Files
-
-- \`theme.json\` — 单一事实源 / Single source of truth (the ThemeConfig)
-- \`README.md\` — 本文件 / This file
-
-## 用法 / Usage
-
-1. **命令行渲染 / CLI render:**
-   \`\`\`bash
-   npx remotion render src/index.ts SceneTheme out.mp4 --props=@theme.json
-   \`\`\`
-
-2. **Remotion Studio:**
-   \`npm run dev\` → 选择 \`SceneTheme\` 合成 → 在 props 面板粘贴 \`theme.json\` 内容。
-
-3. **AI / 脚本调用 / AI / script usage:**
-   \`\`\`bash
-   npm run export:theme -- --config theme.json --out theme-package.zip
-   \`\`\`
+export const RemotionRoot: React.FC = () => (
+  <>
+    <Composition
+      id="SceneTheme"
+      component={ThemeScene}
+      schema={themeConfigSchema}
+      defaultProps={THEME_CONFIG_DEFAULT}
+      durationInFrames={themeConfigFrames(THEME_CONFIG_DEFAULT)}
+      calculateMetadata={({props}) => ({durationInFrames: themeConfigFrames(props)})}
+      {...COMMON}
+    />
+  </>
+);
 `;
 }
-
-// ============================================================
-//  Update preview
-// ============================================================
-function updateConfig() {
-  const config = buildConfig();
-  const json = JSON.stringify(config, null, 2);
-  document.getElementById('jsonPreview').textContent = json;
-  document.getElementById('readmePreview').textContent = generateReadme(config);
-  document.getElementById('cmdPreview').textContent =
-    `npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`;
-}
-
-// ============================================================
-//  Tabs
-// ============================================================
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-}
-
-// ============================================================
-//  Export / Copy
-// ============================================================
-function exportZip() {
-  const config = buildConfig();
-  const themeJson = JSON.stringify(config, null, 2) + '\n';
-  const readmeMd = generateReadme(config);
-  const files = {'theme.json': themeJson, 'README.md': readmeMd};
-  downloadZip(files, `theme-${config.theme}.zip`);
-  showToast('主题包已下载 / Theme package downloaded');
-}
-
-function copyJson() {
-  const config = buildConfig();
-  navigator.clipboard.writeText(JSON.stringify(config, null, 2));
-  showToast('JSON 已复制 / JSON copied');
-}
-
-function copyRenderCmd() {
-  const config = buildConfig();
-  const json = JSON.stringify(config, null, 2);
-  navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`);
-  showToast('渲染命令已复制 / Render command copied');
-}
-
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2000);
-}
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ============================================================
-//  Minimal ZIP builder (STORE, no compression)
-// ============================================================
-function crc32(data) {
-  let crc = 0xFFFFFFFF;
-  for (let i = 0; i < data.length; i++) {
-    crc = (crc >>> 8) ^ crcTable[(crc ^ data[i]) & 0xFF];
+function genReelTsx(roles){
+  const sceneMap={hero:'HeroScene',list:'ListScene',lowerThird:'LowerThirdScene',caption:'CaptionScene',emphasis:'EmphasisScene'};
+  const imports=["import React from 'react';","import {AbsoluteFill, Series} from 'remotion';"];
+  for(const r of roles)imports.push(`import {${sceneMap[r]}} from './${sceneMap[r]}';`);
+  imports.push("import {ReelSegment, segmentFrames} from '../schemas';");
+  let sw='const renderSegment = (s: ReelSegment): React.ReactNode => {\n  switch (s.type) {\n';
+  for(const r of roles){
+    if(r==='hero')sw+="    case 'hero': return <HeroScene {...s.props} />;\n";
+    else if(r==='list')sw+="    case 'list': return <ListScene {...s.props} />;\n";
+    else if(r==='lowerThird')sw+="    case 'lowerThird': return <LowerThirdScene {...s.props} />;\n";
+    else if(r==='caption')sw+="    case 'caption': return <CaptionScene {...s.props} />;\n";
+    else if(r==='emphasis')sw+="    case 'emphasis': return <EmphasisScene {...s.props} />;\n";
   }
-  return (crc ^ 0xFFFFFFFF) >>> 0;
+  sw+="    default: return null;\n  }\n};";
+  return imports.join('\n')+'\n\n'+sw+`
+
+export const ReelScene: React.FC<{segments: ReelSegment[]}> = ({segments}) => (
+  <AbsoluteFill style={{background: '#05060d'}}>
+    <Series>
+      {segments.map((s, i) => (
+        <Series.Sequence key={i} durationInFrames={segmentFrames(s)}>
+          {renderSegment(s)}
+        </Series.Sequence>
+      ))}
+    </Series>
+  </AbsoluteFill>
+);
+`;
 }
-const crcTable = new Uint32Array(256);
-for (let i = 0; i < 256; i++) {
-  let c = i;
-  for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
-  crcTable[i] = c;
+function genAiMd(cfg,roles){
+  const th=TH[cfg.theme];if(!th)return'';
+  const t=cfg.timing||th.timing;
+  const roleLabel={hero:'主标题 (Hero)',list:'列表 (List)',lowerThird:'角标 (Lower-third)',caption:'字幕 (Caption)',emphasis:'强调 (Emphasis)'};
+  const sceneList=roles.map(r=>roleLabel[r]||r).join(' → ');
+  let md=`# AI Instructions — RemotionMG Theme Render Kit
+
+## Quick Start
+
+\`\`\`bash
+npm install
+npx remotion render src/index.ts SceneTheme out.mp4 --props=@theme.json
+\`\`\`
+
+The above command renders the configured theme into \`out.mp4\` (1920x1080, 30fps).
+
+## What's in this package
+
+| File | Purpose |
+|------|---------|
+| \`theme.json\` | Theme configuration (single source of truth) |
+| \`package.json\` | Dependencies (Remotion, React, Zod) |
+| \`src/\` | Remotion source code for rendering |
+| \`AI_INSTRUCTIONS.md\` | This file |
+| \`README.md\` | Human-readable summary |
+
+## Environment
+
+- **Node.js 18+** required
+- \`npm install\` downloads ~200MB of dependencies (Remotion + Chromium)
+- Rendering takes 10-60 seconds depending on duration
+
+## Configuration (theme.json)
+
+Theme: **${th.name}** (${th.en})
+Active scenes: ${sceneList}
+Timing: in=${t.inF}f, hold=${t.holdF}f, out=${t.outF}f (30fps)
+
+### How to modify
+
+1. **Change text content** — Edit \`content\` in theme.json:
+`;
+  if(roles.includes('hero'))md+=`   - \`content.hero.entries[]\` — Each entry: \`{text, sub?}\`\n`;
+  if(roles.includes('list'))md+=`   - \`content.list.items[]\` — Each item: \`{text}\`, optional \`title\`\n`;
+  if(roles.includes('lowerThird'))md+=`   - \`content.lowerThird.entries[]\` — Each entry: \`{name, role}\`\n`;
+  if(roles.includes('caption'))md+=`   - \`content.caption.lines[]\` — Each line: \`{text}\`\n`;
+  if(roles.includes('emphasis'))md+=`   - \`content.emphasis.lines[]\` — Each line: \`{pre, token, post}\`\n`;
+  md+=`
+2. **Switch theme** — Change \`"theme"\` to: glitch, soft, bouncy, minimal, elegant
+
+3. **Override timing** — Add \`"timing": {"inF": 20, "holdF": 40, "outF": 16}\`
+
+4. **Override colors** — Add \`"style": {"background": "#...", "color": "#...", "accent": "#..."}\`
+
+5. **Override effects per scene** — Add \`"effects": {"hero": {"inEffectId": 72, "outEffectId": 95}}\`
+
+## Effect Library (effectId 1-100)
+
+| Range | Category | Description |
+|-------|----------|-------------|
+| 1-10 | A: Opacity | Fade curves (linear, quadratic, exponential, etc.) |
+| 11-20 | B: Motion | Slide, bounce, elastic, gravity, magnetic snap |
+| 21-30 | C: Scale/3D | Spring pop, rotate-zoom, perspective, 3D flip |
+| 31-38 | D: Blur | Focus, ink bleed, glow bloom, chromatic aberration |
+| 39-50 | E: Wave | Sine wave, pendulum, Lissajous, polar spiral |
+| 51-62 | F: Per-char | Typewriter, stagger, domino, word pop |
+| 63-70 | G: Mask | Wipe, iris, diagonal reveal, scanline |
+| 71-80 | H: Noise | Jitter, scramble/decode, sand reform, Brownian |
+| 81-88 | I: Particle | Assemble, shatter, shockwave, voxel stack |
+| 89-94 | J: Color | Hue-rotate, gradient sweep, neon sequential |
+| 95-97 | K: Glitch | RGB tear, datamosh, square-wave strobe |
+| 98-100 | L: Fractal | Fractal unfold, attractor settle, logistic bifurcation |
+
+## Remotion Studio (interactive preview)
+
+\`\`\`bash
+npm run dev
+\`\`\`
+Opens browser at localhost:3000 with the SceneTheme composition. Edit props interactively.
+
+## Advanced: Render specific format
+
+\`\`\`bash
+# MP4 (default)
+npx remotion render src/index.ts SceneTheme out.mp4 --props=@theme.json
+
+# GIF
+npx remotion render src/index.ts SceneTheme out.gif --props=@theme.json
+
+# PNG sequence
+npx remotion render src/index.ts SceneTheme frames/ --image-format=png --props=@theme.json
+\`\`\`
+`;
+  return md;
 }
 
-function createZip(files) {
-  const enc = new TextEncoder();
-  const entries = [];
-  const parts = [];
-  let offset = 0;
-
-  for (const [name, content] of Object.entries(files)) {
-    const data = enc.encode(content);
-    const crc = crc32(data);
-    const nameBytes = enc.encode(name);
-    const local = [
-      0x50,0x4B,0x03,0x04,  // signature
-      20,0, 0,0, 0,0,       // version, flags, compression
-      0,0, 0,0,             // mod time, mod date
-      crc&0xFF,(crc>>>8)&0xFF,(crc>>>16)&0xFF,(crc>>>24)&0xFF,
-      data.length&0xFF,(data.length>>>8)&0xFF,(data.length>>>16)&0xFF,(data.length>>>24)&0xFF,
-      data.length&0xFF,(data.length>>>8)&0xFF,(data.length>>>16)&0xFF,(data.length>>>24)&0xFF,
-      nameBytes.length&0xFF,(nameBytes.length>>>8)&0xFF,
-      0,0,                  // extra field length
-      ...nameBytes,
-      ...data,
-    ];
-    parts.push(...local);
-    entries.push({name, data, crc, offset});
-    offset += local.length;
+function exportZip(){
+  const cfg=buildCfg();
+  const roles=getActiveRoles(cfg);
+  if(!roles.length){toast('请先添加内容');return;}
+  const src=loadSrcBundle();
+  const files={};
+  // Config
+  files['theme.json']=JSON.stringify(cfg,null,2)+'\n';
+  files['README.md']=genRm(cfg);
+  files['AI_INSTRUCTIONS.md']=genAiMd(cfg,roles);
+  // Project files
+  files['package.json']=genPkgJson();
+  files['tsconfig.json']=genTsConfig();
+  files['remotion.config.ts']=genRemotionCfg();
+  // Source entry
+  files['src/index.ts']=genIndexTs();
+  files['src/Root.tsx']=genRootTsx(roles);
+  if(src){
+    // Core (always needed)
+    const core=['src/effects/showcaseKit.ts','src/effects/opacityCurves.ts','src/effects/categories.ts','src/textfx/types.ts','src/textfx/shared.tsx','src/textfx/library.tsx','src/textfx/TextFx.tsx','src/textfx/schemas.ts','src/textfx/themes.ts','src/textfx/scenes/sequence.ts','src/textfx/scenes/ThemeScene.tsx'];
+    for(const f of core){if(src[f])files[f]=src[f].replace(/\r\n/g,'\n');}
+    // ReelScene (generated with only needed imports)
+    files['src/textfx/scenes/ReelScene.tsx']=genReelTsx(roles);
+    // Scene components (only active scenes)
+    const sceneFile={hero:'src/textfx/scenes/HeroScene.tsx',list:'src/textfx/scenes/ListScene.tsx',lowerThird:'src/textfx/scenes/LowerThirdScene.tsx',caption:'src/textfx/scenes/CaptionScene.tsx',emphasis:'src/textfx/scenes/EmphasisScene.tsx'};
+    for(const r of roles){if(src[sceneFile[r]])files[sceneFile[r]]=src[sceneFile[r]].replace(/\r\n/g,'\n');}
   }
+  downloadZip(files,`theme-${cfg.theme}.zip`);
+  const sceneCnt=roles.length,fileCnt=Object.keys(files).length;
+  toast(`已下载 (${sceneCnt}场景, ${fileCnt}文件)`);
+}
+function copyJson(){navigator.clipboard.writeText(JSON.stringify(buildCfg(),null,2));toast('JSON 已复制');}
+function copyRenderCmd(){const j=JSON.stringify(buildCfg(),null,2);navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${j.trim()}'`);toast('命令已复制');}
+function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;renderPills();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');ORD.forEach(r=>{document.getElementById(`eo-${r}-in`).value='';document.getElementById(`eo-${r}-out`).value='';});uc();toast('已重置');}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-  const central = [];
-  let centralSize = 0;
-  for (const e of entries) {
-    const nameBytes = enc.encode(e.name);
-    const ch = [
-      0x50,0x4B,0x01,0x02,  // signature
-      20,0, 20,0,           // version made/needed
-      0,0, 0,0, 0,0, 0,0,   // flags, compression, time, date
-      e.crc&0xFF,(e.crc>>>8)&0xFF,(e.crc>>>16)&0xFF,(e.crc>>>24)&0xFF,
-      e.data.length&0xFF,(e.data.length>>>8)&0xFF,(e.data.length>>>16)&0xFF,(e.data.length>>>24)&0xFF,
-      e.data.length&0xFF,(e.data.length>>>8)&0xFF,(e.data.length>>>16)&0xFF,(e.data.length>>>24)&0xFF,
-      nameBytes.length&0xFF,(nameBytes.length>>>8)&0xFF,
-      0,0, 0,0, 0,0, 0,0, 0,0,  // extra, comment, disk, internal, external
-      e.offset&0xFF,(e.offset>>>8)&0xFF,(e.offset>>>16)&0xFF,(e.offset>>>24)&0xFF,
-      ...nameBytes,
-    ];
-    central.push(...ch);
-    centralSize += ch.length;
+// === ZIP ===
+const cT=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;cT[i]=c;}
+function crc32(d){let c=0xFFFFFFFF;for(let i=0;i<d.length;i++)c=(c>>>8)^cT[(c^d[i])&0xFF];return(c^0xFFFFFFFF)>>>0;}
+function w16(v,a,o){a[o]=v&0xFF;a[o+1]=(v>>>8)&0xFF;}
+function w32(v,a,o){a[o]=v&0xFF;a[o+1]=(v>>>8)&0xFF;a[o+2]=(v>>>16)&0xFF;a[o+3]=(v>>>24)&0xFF;}
+function createZip(files){
+  const enc=new TextEncoder();const entries=[];const chunks=[];let offset=0;
+  for(const[name,content]of Object.entries(files)){
+    const data=enc.encode(content);const crc=crc32(data);const nb=enc.encode(name);
+    const hdr=new Uint8Array(30+nb.length);
+    hdr[0]=0x50;hdr[1]=0x4B;hdr[2]=0x03;hdr[3]=0x04;hdr[4]=20;
+    w32(crc,hdr,14);w32(data.length,hdr,18);w32(data.length,hdr,22);w16(nb.length,hdr,26);
+    hdr.set(nb,30);
+    chunks.push(hdr,data);
+    entries.push({name,nb,data,crc,offset});
+    offset+=hdr.length+data.length;
   }
-
-  const eocd = [
-    0x50,0x4B,0x05,0x06,  // signature
-    0,0, 0,0,              // disk numbers
-    entries.length&0xFF,(entries.length>>>8)&0xFF,
-    entries.length&0xFF,(entries.length>>>8)&0xFF,
-    centralSize&0xFF,(centralSize>>>8)&0xFF,(centralSize>>>16)&0xFF,(centralSize>>>24)&0xFF,
-    offset&0xFF,(offset>>>8)&0xFF,(offset>>>16)&0xFF,(offset>>>24)&0xFF,
-    0,0,                  // comment length
-  ];
-
-  return new Uint8Array([...parts, ...central, ...eocd]);
+  const cdChunks=[];let cdSize=0;
+  for(const e of entries){
+    const nb=enc.encode(e.name);
+    const cd=new Uint8Array(46+nb.length);
+    cd[0]=0x50;cd[1]=0x4B;cd[2]=0x01;cd[3]=0x02;cd[4]=20;cd[6]=20;
+    w32(e.crc,cd,16);w32(e.data.length,cd,20);w32(e.data.length,cd,24);
+    w16(nb.length,cd,28);
+    w32(e.offset,cd,42);
+    cd.set(nb,46);
+    cdChunks.push(cd);cdSize+=cd.length;
+  }
+  const eocd=new Uint8Array(22);
+  eocd[0]=0x50;eocd[1]=0x4B;eocd[2]=0x05;eocd[3]=0x06;
+  w16(entries.length,eocd,8);w16(entries.length,eocd,10);
+  w32(cdSize,eocd,12);w32(offset,eocd,16);
+  const total=offset+cdSize+22;const result=new Uint8Array(total);let pos=0;
+  for(const c of chunks){result.set(c,pos);pos+=c.length;}
+  for(const c of cdChunks){result.set(c,pos);pos+=c.length;}
+  result.set(eocd,pos);
+  return result;
 }
+function downloadZip(files,name){const z=createZip(files);const b=new Blob([z.buffer],{type:'application/zip'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
 
-function downloadZip(files, zipName) {
-  const zipBytes = createZip(files);
-  const blob = new Blob([zipBytes.buffer], {type: 'application/zip'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = zipName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-// ============================================================
-//  Boot
-// ============================================================
 init();
 </script>
 </body>

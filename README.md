@@ -28,6 +28,60 @@ npx remotion render src/index.ts SceneHero out.mp4 \
 
 ---
 
+## 主题配置器 · 零代码出片
+
+打开 [`docs/configurator.html`](docs/configurator.html)（纯静态 HTML，浏览器直接打开即可），在可视化界面中完成所有配置：
+
+1. **选主题** — 5 个预设（故障赛博 / 柔和聚焦 / 活力弹跳 / 极简打字 / 优雅衬线），一键切换配色、字体、动效风格
+2. **编辑内容** — 按场景角色（主标题 / 列表 / 角标 / 字幕 / 强调）填写文字
+3. **调参数** — 时序滑块（入场/停留/出场帧数）、配色覆盖、逐场景动效 effectId 覆盖
+4. **实时预览** — 右侧画布同步播放动画效果
+5. **导出 ZIP** — 点击一个按钮，得到**自包含的 Remotion 项目**
+
+### 自包含 ZIP 导出
+
+导出的 ZIP 是一个**完整可运行的 Remotion 项目**，不需要克隆本仓库：
+
+```
+theme-glitch/
+├── theme.json              ← 主题配置（唯一需要修改的文件）
+├── AI_INSTRUCTIONS.md      ← AI 使用指南（含 effectId 速查表）
+├── README.md               ← 人类使用说明
+├── package.json            ← 依赖声明
+├── tsconfig.json / remotion.config.ts
+└── src/                    ← 完整渲染引擎源码
+    ├── index.ts, Root.tsx
+    ├── effects/            ← 100 个动效原子
+    └── textfx/             ← 场景组件 + 类型 + 主题定义
+```
+
+使用方式：
+
+```bash
+# 解压后
+npm install
+npx remotion render src/index.ts SceneTheme out.mp4 --props=@theme.json
+# 或启动交互式预览
+npm run dev
+```
+
+#### 智能场景裁剪
+
+ZIP 只包含你实际配置了内容的场景组件。例如只填了主标题和字幕 → ZIP 中不会出现 `ListScene.tsx`、`LowerThirdScene.tsx`、`EmphasisScene.tsx`，包体更小、结构更清晰。
+
+#### AI 友好
+
+导出的 `AI_INSTRUCTIONS.md` 包含：
+- 一键渲染命令
+- `theme.json` 配置项说明（改文字、换主题、调时序、覆盖配色/动效）
+- effectId 1-100 分类速查表（A-L 共 12 族）
+- Remotion Studio 交互预览方法
+- 高级渲染格式（MP4 / GIF / PNG 序列）
+
+将 ZIP 解压后整个文件夹丢给 AI，AI 读 `AI_INSTRUCTIONS.md` 即可理解如何使用和修改。
+
+---
+
 ## 架构：效果原子 × 场景模板
 
 ```
@@ -169,6 +223,7 @@ src/textfx/
   index.ts            统一 barrel 出口
   scenes/             9 个场景模板
 docs/
+  configurator.html              主题配置器（可视化配置 + 自包含 ZIP 导出）
   font-entrance-effects-100.md   100 法设计 + 数学公式参考
   ai-usage.md                    AI 调用指南（props 示例）
   effects.json                   机读清单（100 法 + 9 场景）

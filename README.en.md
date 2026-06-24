@@ -28,6 +28,60 @@ npx remotion render src/index.ts SceneHero out.mp4 \
 
 ---
 
+## Theme Configurator · Zero-code video production
+
+Open [`docs/configurator.html`](docs/configurator.html) (pure static HTML, works directly in browser) to configure everything visually:
+
+1. **Pick a theme** — 5 presets (Glitch / Soft / Bouncy / Minimal / Elegant), one click to switch colors, fonts, and motion style
+2. **Edit content** — Fill in text by scene role (Hero / List / LowerThird / Caption / Emphasis)
+3. **Tune parameters** — Timing sliders (in/hold/out frames), color overrides, per-scene effectId overrides
+4. **Live preview** — Right-side canvas plays the animation in real time
+5. **Export ZIP** — One button to get a **self-contained Remotion project**
+
+### Self-contained ZIP export
+
+The exported ZIP is a **fully runnable Remotion project** — no need to clone this repository:
+
+```
+theme-glitch/
+├── theme.json              ← Theme config (the only file you need to edit)
+├── AI_INSTRUCTIONS.md      ← AI usage guide (with effectId lookup table)
+├── README.md               ← Human-readable summary
+├── package.json            ← Dependencies
+├── tsconfig.json / remotion.config.ts
+└── src/                    ← Full rendering engine source
+    ├── index.ts, Root.tsx
+    ├── effects/            ← 100 effect atoms
+    └── textfx/             ← Scene components + types + theme definitions
+```
+
+Usage:
+
+```bash
+# After extracting
+npm install
+npx remotion render src/index.ts SceneTheme out.mp4 --props=@theme.json
+# Or launch interactive preview
+npm run dev
+```
+
+#### Smart scene pruning
+
+The ZIP only includes scene components for which you actually configured content. For example, if you only filled in Hero and Caption → the ZIP will not contain `ListScene.tsx`, `LowerThirdScene.tsx`, or `EmphasisScene.tsx`, resulting in a smaller and cleaner package.
+
+#### AI-friendly
+
+The exported `AI_INSTRUCTIONS.md` includes:
+- One-liner render command
+- `theme.json` config reference (change text, switch theme, adjust timing, override colors/effects)
+- effectId 1-100 category lookup table (A-L, 12 families)
+- Remotion Studio interactive preview instructions
+- Advanced render formats (MP4 / GIF / PNG sequence)
+
+Hand the extracted folder to any AI — it reads `AI_INSTRUCTIONS.md` and immediately knows how to use and modify the project.
+
+---
+
 ## Architecture: effect atoms × scene templates
 
 ```
@@ -169,6 +223,7 @@ src/textfx/
   index.ts            unified barrel export
   scenes/             9 scene templates
 docs/
+  configurator.html              theme configurator (visual config + self-contained ZIP export)
   font-entrance-effects-100.md   100-effect design + math reference
   ai-usage.md                    AI usage guide (props examples)
   effects.json                   machine-readable manifest (100 effects + 9 scenes)

@@ -6,268 +6,750 @@
 <title>主题配置器 / Theme Configurator — RemotionMG</title>
 <style>
   :root {
-    --bg: #0a0e1c;
-    --bg2: #0d1226;
-    --card: #111733;
-    --border: #1e2748;
+    --bg: #06080f;
+    --bg2: #0b0f1e;
+    --card: #10152a;
+    --card-hover: #151c36;
+    --border: #1c2544;
+    --border-active: #38e0ff;
     --text: #e8ecf5;
-    --muted: #8892b0;
+    --muted: #6b7a9e;
     --accent: #38e0ff;
     --accent2: #7aa2ff;
+    --accent-glow: rgba(56,224,255,0.15);
     --danger: #ff5d73;
     --ok: #4ad9a0;
-    --radius: 8px;
+    --warn: #f0c040;
+    --radius: 10px;
+    --radius-sm: 6px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
-    padding: 20px;
+    line-height: 1.55;
+    overflow-x: hidden;
   }
-  h1 { font-size: 1.4rem; margin-bottom: 4px; }
-  h1 small { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
-  .container { max-width: 1100px; margin: 0 auto; }
-  .header { margin-bottom: 24px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ===== Layout ===== */
+  .app { display: flex; min-height: 100vh; }
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px 60px;
+    max-width: 760px;
+  }
+  .sidebar {
+    width: 420px;
+    min-width: 360px;
+    border-left: 1px solid var(--border);
+    background: var(--bg2);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  @media (max-width: 960px) {
+    .app { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: static; border-left: none; border-top: 1px solid var(--border); }
+    .main { max-width: 100%; }
+  }
+
+  /* ===== Header ===== */
+  .header { margin-bottom: 28px; }
+  .header h1 { font-size: 1.3rem; font-weight: 700; }
+  .header h1 small { color: var(--muted); font-weight: 400; font-size: 0.78rem; margin-left: 8px; }
+  .header p { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+
+  /* ===== Cards ===== */
   .card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 16px;
+    padding: 18px;
+    margin-bottom: 18px;
   }
-  .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
-  label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; margin-top: 10px; }
-  label:first-child { margin-top: 0; }
+  .card-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .badge {
+    font-size: 0.65rem;
+    background: var(--accent-glow);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* ===== Theme selector cards ===== */
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+  .theme-card {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all .15s;
+    background: var(--bg2);
+    position: relative;
+  }
+  .theme-card:hover { border-color: var(--muted); background: var(--card-hover); }
+  .theme-card.active { border-color: var(--accent); background: var(--accent-glow); }
+  .theme-card .tc-name { font-weight: 700; font-size: 0.88rem; }
+  .theme-card .tc-en { color: var(--muted); font-size: 0.72rem; }
+  .theme-card .tc-families {
+    margin-top: 4px;
+    display: flex;
+    gap: 4px;
+  }
+  .theme-card .tc-families span {
+    font-size: 0.6rem;
+    background: rgba(255,255,255,0.06);
+    padding: 1px 6px;
+    border-radius: 8px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .theme-desc {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 10px 12px;
+    background: var(--bg2);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent);
+  }
+
+  /* ===== Sections ===== */
+  .section { margin-bottom: 12px; }
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: var(--radius-sm);
+    transition: background .1s;
+    border: 1px solid transparent;
+  }
+  .section-head:hover { background: rgba(255,255,255,0.03); }
+  .section-head .arrow {
+    font-size: 0.7rem;
+    color: var(--muted);
+    width: 16px;
+    text-align: center;
+    transition: transform .15s;
+  }
+  .section.open .arrow { transform: rotate(90deg); }
+  .section-head .s-label { font-weight: 600; font-size: 0.85rem; }
+  .section-head .s-count { color: var(--muted); font-size: 0.72rem; }
+  .section-head .s-indicator {
+    margin-left: auto;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ok);
+    flex-shrink: 0;
+  }
+  .section-head .s-indicator.empty { background: var(--border); }
+  .section-body {
+    display: none;
+    padding: 10px 14px 14px 38px;
+  }
+  .section.open .section-body { display: block; }
+
+  /* ===== Form controls ===== */
+  label.field-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 3px;
+    margin-top: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  label.field-label:first-child { margin-top: 0; }
   input, select, textarea {
     width: 100%;
-    background: var(--bg2);
+    background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     color: var(--text);
     padding: 8px 10px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-family: inherit;
+    transition: border-color .15s;
   }
-  textarea { resize: vertical; min-height: 60px; font-family: "Menlo", "Consolas", monospace; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+  textarea { resize: vertical; min-height: 50px; font-family: "Menlo", "Consolas", monospace; font-size: 0.78rem; }
+  input[type="number"] { -moz-appearance: textfield; }
+  input[type="number"]::-webkit-inner-spin-button { opacity: 1; }
+
   .row { display: flex; gap: 10px; }
-  .row > * { flex: 1; }
-  .scene-section { border-left: 3px solid var(--border); padding-left: 12px; margin-bottom: 12px; }
-  .scene-section h3 { font-size: 0.85rem; margin-bottom: 8px; cursor: pointer; user-select: none; }
-  .scene-section h3:hover { color: var(--accent); }
-  .scene-section.collapsed .scene-body { display: none; }
-  .scene-section.collapsed h3::after { content: " ▸"; }
-  .scene-section h3::after { content: " ▾"; color: var(--muted); }
-  .entry-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
-  .entry-row input { flex: 1; }
-  .btn-mini {
-    background: var(--border);
-    border: none;
-    color: var(--text);
-    border-radius: 4px;
-    padding: 4px 8px;
+  .row > * { flex: 1; min-width: 0; }
+
+  /* ===== Entry rows ===== */
+  .entry-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+    align-items: center;
+  }
+  .entry-row input { flex: 1; font-size: 0.8rem; padding: 6px 8px; }
+
+  /* ===== Buttons ===== */
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all .12s;
+    flex-shrink: 0;
+  }
+  .btn-icon:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  .btn-icon.danger:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,93,115,0.1); }
+
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border);
+    background: transparent;
+    color: var(--muted);
     cursor: pointer;
     font-size: 0.75rem;
-    white-space: nowrap;
+    transition: all .12s;
+    margin-top: 4px;
   }
-  .btn-mini:hover { background: var(--accent); color: var(--bg); }
-  .btn-mini.danger:hover { background: var(--danger); }
+  .btn-add:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
   .btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     padding: 10px 20px;
     border-radius: var(--radius);
     border: none;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    transition: opacity .15s;
+    transition: all .15s;
+    font-family: inherit;
   }
-  .btn:hover { opacity: 0.85; }
-  .btn-primary { background: var(--accent); color: var(--bg); }
-  .btn-secondary { background: var(--accent2); color: #fff; }
+  .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: linear-gradient(135deg, #38e0ff, #2a9fd6); color: #000; }
+  .btn-secondary { background: linear-gradient(135deg, #7aa2ff, #5580dd); color: #fff; }
   .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 7px 14px; font-size: 0.78rem; }
+
   .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  .json-preview {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px;
-    font-family: "Menlo", "Consolas", monospace;
-    font-size: 0.78rem;
-    max-height: 400px;
-    overflow: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
+
+  /* ===== Preview sidebar ===== */
+  .preview-box {
+    padding: 16px;
+    flex-shrink: 0;
   }
-  .readme-preview {
-    background: var(--bg2);
-    border: 1px solid var(--border);
+  .preview-stage {
+    width: 100%;
+    aspect-ratio: 16/9;
     border-radius: var(--radius);
-    padding: 12px;
-    font-size: 0.8rem;
-    max-height: 400px;
-    overflow: auto;
-    white-space: pre-wrap;
-    word-break: break-word;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
   }
-  .tabs { display: flex; gap: 4px; margin-bottom: 8px; }
-  .tab {
-    padding: 6px 14px;
-    border-radius: 6px 6px 0 0;
+  .preview-stage-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden;
+  }
+  .preview-text {
+    white-space: nowrap;
+    transition: none;
+    will-change: transform, opacity, filter;
+  }
+  .preview-sub {
+    font-size: 11px;
+    margin-top: 6px;
+    letter-spacing: 2px;
+    opacity: 0.6;
+  }
+  .preview-label {
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    opacity: 0.35;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .preview-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 0 4px;
+  }
+  .preview-controls .scene-chip {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.68rem;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 0.8rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    transition: all .12s;
+  }
+  .preview-controls .scene-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  .preview-controls .scene-chip:hover:not(.active) { border-color: var(--muted); }
+  .preview-timeline {
+    margin-top: 8px;
+    padding: 0 4px;
+  }
+  .preview-timeline .tl-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview-timeline .tl-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.05s linear;
+  }
+  .preview-timeline .tl-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .preview-play-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    transition: all .12s;
+  }
+  .preview-play-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
+
+  /* ===== JSON output (collapsible) ===== */
+  .output-section {
+    flex: 1;
+    min-height: 0;
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  .output-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 8px 0;
+    user-select: none;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .output-toggle:hover { color: var(--text); }
+  .output-toggle .arrow { font-size: 0.6rem; transition: transform .15s; }
+  .output-section.open .output-toggle .arrow { transform: rotate(90deg); }
+  .output-body {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+  }
+  .output-section.open .output-body { display: flex; }
+  .tabs { display: flex; gap: 2px; margin-bottom: 8px; }
+  .tab {
+    padding: 5px 12px;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 600;
     border: 1px solid var(--border);
     border-bottom: none;
-    background: var(--bg2);
+    background: var(--bg);
     color: var(--muted);
+    transition: all .1s;
   }
   .tab.active { background: var(--card); color: var(--accent); border-color: var(--accent); }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
+  .json-preview {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+    padding: 10px;
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 0.7rem;
+    max-height: 280px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  /* ===== Overrides section ===== */
+  .override-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .color-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .color-field input[type="color"] {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .color-field input[type="text"] { flex: 1; }
+
+  /* ===== Effect picker inline ===== */
+  .effect-picker {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 6px;
+  }
+  .effect-picker label.field-label { margin: 0; min-width: 50px; }
+  .effect-picker select { width: 90px; font-size: 0.75rem; padding: 4px 6px; }
+
+  /* ===== Toast ===== */
   .toast {
     position: fixed;
-    bottom: 20px;
+    bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--ok);
-    color: var(--bg);
-    padding: 10px 20px;
+    color: #000;
+    padding: 10px 24px;
     border-radius: var(--radius);
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     z-index: 999;
-    animation: fadeOut 2s forwards;
+    animation: slideUp .3s, fadeOut 2s .5s forwards;
+    box-shadow: 0 4px 20px rgba(74,217,160,0.3);
   }
-  @keyframes fadeOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
-  .hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
-  .toggle { display: flex; align-items: center; gap: 6px; }
-  .toggle input { width: auto; }
+  @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+  @keyframes fadeOut { 0%,60% { opacity: 1; } 100% { opacity: 0; } }
+
+  .hint { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
+  .separator { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* ===== Scrollbar ===== */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* ===== Effect override section ===== */
+  .effect-override-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .eo-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+  }
+  .eo-item .eo-label {
+    min-width: 44px;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+  }
+  .eo-item input[type="number"] {
+    width: 60px;
+    padding: 4px 6px;
+    font-size: 0.75rem;
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>主题配置器 <small>Theme Configurator — RemotionMG</small></h1>
-    <p style="color:var(--muted);font-size:.82rem">选主题 → 填文字 → 导出主题包（theme.json + README.md）</p>
-  </div>
+<div class="app">
+  <!-- ============ Main: Controls ============ -->
+  <div class="main">
+    <div class="header">
+      <h1>主题配置器<small>Theme Configurator</small></h1>
+      <p>选主题 / 填文字 / 调参数 / 实时预览 / 导出配置</p>
+    </div>
 
-  <div class="grid">
-    <!-- Left: Editor -->
-    <div>
-      <!-- Theme selection -->
-      <div class="card">
-        <h2>1. 主题 / Theme</h2>
-        <label>主题 / Theme</label>
-        <select id="themeSelect"></select>
-        <div id="themeDesc" style="margin-top:8px;font-size:.8rem;color:var(--muted)"></div>
-      </div>
+    <!-- Theme selection -->
+    <div class="card">
+      <div class="card-title">主题风格 <span class="badge">Theme</span></div>
+      <div class="theme-grid" id="themeGrid"></div>
+      <div class="theme-desc" id="themeDesc"></div>
+    </div>
 
-      <!-- Content editor -->
-      <div class="card">
-        <h2>2. 内容 / Content</h2>
+    <!-- Scene content editor -->
+    <div class="card">
+      <div class="card-title">场景内容 <span class="badge">Content</span></div>
 
-        <div class="scene-section" id="sec-hero">
-          <h3 onclick="toggleSection('sec-hero')">主标题 / Hero</h3>
-          <div class="scene-body">
-            <div id="heroEntries"></div>
-            <button class="btn-mini" onclick="addHeroEntry()">+ 添加 / Add</button>
-          </div>
+      <div class="section open" id="sec-hero">
+        <div class="section-head" onclick="toggleSection('sec-hero')">
+          <span class="arrow">&#9654;</span>
+          <span class="s-label">主标题 Hero</span>
+          <span class="s-count" id="count-hero"></span>
+          <span class="s-indicator" id="ind-hero"></span>
         </div>
-
-        <div class="scene-section" id="sec-list">
-          <h3 onclick="toggleSection('sec-list')">列表 / List</h3>
-          <div class="scene-body">
-            <label>标题 / Title</label>
-            <input id="listTitle" type="text" oninput="updateConfig()">
-            <label>条目 / Items</label>
-            <div id="listItems"></div>
-            <button class="btn-mini" onclick="addListItem()">+ 添加 / Add</button>
-          </div>
-        </div>
-
-        <div class="scene-section" id="sec-lowerThird">
-          <h3 onclick="toggleSection('sec-lowerThird')">角标 / Lower-third</h3>
-          <div class="scene-body">
-            <div id="lowerThirdEntries"></div>
-            <button class="btn-mini" onclick="addLowerThirdEntry()">+ 添加 / Add</button>
-          </div>
-        </div>
-
-        <div class="scene-section" id="sec-caption">
-          <h3 onclick="toggleSection('sec-caption')">字幕 / Caption</h3>
-          <div class="scene-body">
-            <div id="captionLines"></div>
-            <button class="btn-mini" onclick="addCaptionLine()">+ 添加 / Add</button>
-          </div>
-        </div>
-
-        <div class="scene-section" id="sec-emphasis">
-          <h3 onclick="toggleSection('sec-emphasis')">强调 / Emphasis</h3>
-          <div class="scene-body">
-            <div id="emphasisLines"></div>
-            <button class="btn-mini" onclick="addEmphasisLine()">+ 添加 / Add</button>
-          </div>
+        <div class="section-body">
+          <div id="heroEntries"></div>
+          <button class="btn-add" onclick="addHeroEntry()">+ 添加标题</button>
         </div>
       </div>
 
-      <!-- Advanced overrides -->
-      <div class="card">
-        <h2>3. 高级覆盖 / Advanced Overrides <span style="font-size:.7rem;color:var(--muted)">(可选 / optional)</span></h2>
-        <label>场景顺序 / Scene Order (逗号分隔)</label>
-        <input id="orderInput" type="text" placeholder="hero,list,lowerThird,caption,emphasis" oninput="updateConfig()">
-        <div class="hint">默认: hero → list → lowerThird → caption → emphasis</div>
-
-        <div class="row">
-          <div>
-            <label>入场帧 / In frames</label>
-            <input id="inF" type="number" oninput="updateConfig()">
-          </div>
-          <div>
-            <label>停留帧 / Hold frames</label>
-            <input id="holdF" type="number" oninput="updateConfig()">
-          </div>
-          <div>
-            <label>出场帧 / Out frames</label>
-            <input id="outF" type="number" oninput="updateConfig()">
-          </div>
+      <div class="section" id="sec-list">
+        <div class="section-head" onclick="toggleSection('sec-list')">
+          <span class="arrow">&#9654;</span>
+          <span class="s-label">列表 List</span>
+          <span class="s-count" id="count-list"></span>
+          <span class="s-indicator" id="ind-list"></span>
         </div>
-        <div class="hint">留空即用主题默认时序</div>
-
-        <label>背景 / Background</label>
-        <input id="bgOverride" type="text" placeholder="覆盖主题背景 (CSS)" oninput="updateConfig()">
-        <label>前景色 / Foreground</label>
-        <input id="colorOverride" type="text" placeholder="覆盖主题前景色" oninput="updateConfig()">
-        <label>强调色 / Accent</label>
-        <input id="accentOverride" type="text" placeholder="覆盖主题强调色" oninput="updateConfig()">
+        <div class="section-body">
+          <label class="field-label">标题</label>
+          <input id="listTitle" type="text" oninput="updateConfig()">
+          <label class="field-label">条目</label>
+          <div id="listItems"></div>
+          <button class="btn-add" onclick="addListItem()">+ 添加条目</button>
+        </div>
       </div>
 
-      <!-- Actions -->
-      <div class="card">
-        <div class="actions">
-          <button class="btn btn-primary" onclick="exportZip()">📦 导出主题包 / Export ZIP</button>
-          <button class="btn btn-secondary" onclick="copyJson()">📋 复制 JSON / Copy JSON</button>
-          <button class="btn btn-ghost" onclick="copyRenderCmd()">⌨️ 复制渲染命令 / Copy Render Cmd</button>
+      <div class="section" id="sec-lowerThird">
+        <div class="section-head" onclick="toggleSection('sec-lowerThird')">
+          <span class="arrow">&#9654;</span>
+          <span class="s-label">角标 Lower-third</span>
+          <span class="s-count" id="count-lowerThird"></span>
+          <span class="s-indicator" id="ind-lowerThird"></span>
+        </div>
+        <div class="section-body">
+          <div id="lowerThirdEntries"></div>
+          <button class="btn-add" onclick="addLowerThirdEntry()">+ 添加角标</button>
+        </div>
+      </div>
+
+      <div class="section" id="sec-caption">
+        <div class="section-head" onclick="toggleSection('sec-caption')">
+          <span class="arrow">&#9654;</span>
+          <span class="s-label">字幕 Caption</span>
+          <span class="s-count" id="count-caption"></span>
+          <span class="s-indicator" id="ind-caption"></span>
+        </div>
+        <div class="section-body">
+          <div id="captionLines"></div>
+          <button class="btn-add" onclick="addCaptionLine()">+ 添加字幕</button>
+        </div>
+      </div>
+
+      <div class="section" id="sec-emphasis">
+        <div class="section-head" onclick="toggleSection('sec-emphasis')">
+          <span class="arrow">&#9654;</span>
+          <span class="s-label">强调 Emphasis</span>
+          <span class="s-count" id="count-emphasis"></span>
+          <span class="s-indicator" id="ind-emphasis"></span>
+        </div>
+        <div class="section-body">
+          <div id="emphasisLines"></div>
+          <button class="btn-add" onclick="addEmphasisLine()">+ 添加强调</button>
         </div>
       </div>
     </div>
 
-    <!-- Right: Preview -->
-    <div>
-      <div class="card">
+    <!-- Overrides -->
+    <div class="card">
+      <div class="card-title">参数调整 <span class="badge">Overrides</span></div>
+
+      <label class="field-label">时序 Timing (帧数)</label>
+      <div class="row">
+        <div>
+          <label class="field-label" style="font-size:.65rem">入场 In</label>
+          <input id="inF" type="number" min="1" placeholder="默认" oninput="updateConfig()">
+        </div>
+        <div>
+          <label class="field-label" style="font-size:.65rem">停留 Hold</label>
+          <input id="holdF" type="number" min="0" placeholder="默认" oninput="updateConfig()">
+        </div>
+        <div>
+          <label class="field-label" style="font-size:.65rem">出场 Out</label>
+          <input id="outF" type="number" min="1" placeholder="默认" oninput="updateConfig()">
+        </div>
+      </div>
+
+      <label class="field-label" style="margin-top:14px">配色覆盖</label>
+      <div class="override-grid">
+        <div>
+          <label class="field-label" style="font-size:.65rem">背景</label>
+          <input id="bgOverride" type="text" placeholder="CSS" oninput="updateConfig()">
+        </div>
+        <div>
+          <label class="field-label" style="font-size:.65rem">前景</label>
+          <input id="colorOverride" type="text" placeholder="CSS" oninput="updateConfig()">
+        </div>
+        <div>
+          <label class="field-label" style="font-size:.65rem">强调</label>
+          <input id="accentOverride" type="text" placeholder="CSS" oninput="updateConfig()">
+        </div>
+      </div>
+
+      <label class="field-label" style="margin-top:14px">场景顺序</label>
+      <input id="orderInput" type="text" placeholder="hero,list,lowerThird,caption,emphasis" oninput="updateConfig()">
+      <div class="hint">拖动调整或手动输入场景顺序，逗号分隔</div>
+
+      <label class="field-label" style="margin-top:14px">逐场景动效覆盖 (effectId 1-100)</label>
+      <div class="effect-override-grid">
+        <div class="eo-item">
+          <span class="eo-label">Hero 入</span>
+          <input id="eo-hero-in" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">Hero 出</span>
+          <input id="eo-hero-out" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">List 入</span>
+          <input id="eo-list-in" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">List 出</span>
+          <input id="eo-list-out" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">L-3rd 入</span>
+          <input id="eo-lowerThird-in" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">L-3rd 出</span>
+          <input id="eo-lowerThird-out" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">字幕 入</span>
+          <input id="eo-caption-in" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">字幕 出</span>
+          <input id="eo-caption-out" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">强调 入</span>
+          <input id="eo-emphasis-in" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+        <div class="eo-item">
+          <span class="eo-label">强调 出</span>
+          <input id="eo-emphasis-out" type="number" min="1" max="100" placeholder="-" oninput="updateConfig()">
+        </div>
+      </div>
+
+      <div class="separator"></div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="exportZip()">导出主题包 ZIP</button>
+        <button class="btn btn-secondary btn-sm" onclick="copyJson()">复制 JSON</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyRenderCmd()">复制渲染命令</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetConfig()">重置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Sidebar: Preview ============ -->
+  <div class="sidebar">
+    <div class="preview-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:.8rem;font-weight:700;color:var(--accent)">实时预览</span>
+        <button class="preview-play-btn" id="playBtn" onclick="togglePlay()" title="播放/暂停">&#9654;</button>
+      </div>
+      <div class="preview-stage" id="previewStage">
+        <div class="preview-stage-inner" id="previewInner">
+          <div class="preview-label" id="previewLabel">HERO</div>
+          <div class="preview-text" id="previewText" style="font-size:28px;font-weight:800">主题成套动效</div>
+          <div class="preview-sub" id="previewSub"></div>
+        </div>
+      </div>
+      <div class="preview-controls" id="previewSceneChips"></div>
+      <div class="preview-timeline">
+        <div class="tl-bar"><div class="tl-progress" id="tlProgress"></div></div>
+        <div class="tl-labels">
+          <span id="tlPhase">入场</span>
+          <span id="tlTime">0.0s</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="output-section" id="outputSection">
+      <div class="output-toggle" onclick="toggleOutput()">
+        <span class="arrow">&#9654;</span>
+        配置输出
+      </div>
+      <div class="output-body">
         <div class="tabs">
-          <div class="tab active" onclick="switchTab('json')">theme.json</div>
-          <div class="tab" onclick="switchTab('readme')">README.md</div>
-          <div class="tab" onclick="switchTab('cmd')">渲染命令 / Render Cmd</div>
+          <div class="tab active" onclick="switchTab('json',this)">theme.json</div>
+          <div class="tab" onclick="switchTab('readme',this)">README</div>
+          <div class="tab" onclick="switchTab('cmd',this)">渲染命令</div>
         </div>
         <div id="tab-json" class="tab-content active">
           <div class="json-preview" id="jsonPreview"></div>
         </div>
         <div id="tab-readme" class="tab-content">
-          <div class="readme-preview" id="readmePreview"></div>
+          <div class="json-preview" id="readmePreview"></div>
         </div>
         <div id="tab-cmd" class="tab-content">
           <div class="json-preview" id="cmdPreview"></div>
@@ -279,37 +761,64 @@
 
 <script>
 // ============================================================
-//  Theme data (inlined from docs/effects.json themes array)
+//  Theme + effect data
 // ============================================================
-const THEMES = [
-  {id:"glitch",name:"故障赛博",enName:"Glitch / Cyber",description:"数字故障风：乱码解码登场、RGB 撕裂离场；等宽字体、青色高亮、深色背景。",effects:{hero:{inEffectId:72,outEffectId:95},list:{inEffectId:74,outEffectId:74},lowerThird:{inEffectId:72,outEffectId:95},caption:{inEffectId:78,outEffectId:79},emphasis:{inEffectId:95,outEffectId:72}}},
-  {id:"soft",name:"柔和优雅",enName:"Soft / Focus",description:"柔和聚焦风：从模糊对焦浮现、墨水晕染淡出；轻字重、蓝白配色，适合解说/科普。",effects:{hero:{inEffectId:31,outEffectId:33},list:{inEffectId:11,outEffectId:11},lowerThird:{inEffectId:31,outEffectId:33},caption:{inEffectId:31,outEffectId:31},emphasis:{inEffectId:34,outEffectId:31}}},
-  {id:"bouncy",name:"活力弹跳",enName:"Bouncy / Spring",description:"弹性活泼风：弹簧弹出、旋转缩放螺入/出；橙色高亮、重字重，适合宣传/活动片。",effects:{hero:{inEffectId:21,outEffectId:23},list:{inEffectId:13,outEffectId:13},lowerThird:{inEffectId:12,outEffectId:12},caption:{inEffectId:11,outEffectId:11},emphasis:{inEffectId:21,outEffectId:21}}},
-  {id:"minimal",name:"极简打字",enName:"Minimal / Type",description:"极简打字风：打字机逐字登场、字距收拢离场；近黑背景、细字重，适合代码/技术向。",effects:{hero:{inEffectId:51,outEffectId:58},list:{inEffectId:52,outEffectId:52},lowerThird:{inEffectId:11,outEffectId:11},caption:{inEffectId:51,outEffectId:51},emphasis:{inEffectId:51,outEffectId:58}}},
-  {id:"elegant",name:"优雅衬线",enName:"Elegant / Serif",description:"优雅衬线风：螺旋极坐标归位、辉光绽放强调；衬线字体、金色高亮，适合品牌/片头。",effects:{hero:{inEffectId:47,outEffectId:40},list:{inEffectId:11,outEffectId:11},lowerThird:{inEffectId:69,outEffectId:63},caption:{inEffectId:11,outEffectId:11},emphasis:{inEffectId:34,outEffectId:31}}},
-];
+const THEMES_DATA = {
+  glitch: {
+    id:'glitch', name:'故障赛博', enName:'Glitch / Cyber', families:['H','K'],
+    description:'数字故障风：乱码解码登场、RGB 撕裂离场；等宽字体、青色高亮、深色背景。',
+    style:{background:'radial-gradient(circle at 50% 42%, #0a1320 0%, #060a12 60%, #03050a 100%)',color:'#eafcff',accent:'#38e0ff',barColor:'rgba(6,14,20,0.78)',fontFamily:'Menlo, Consolas, "Courier New", "PingFang SC", monospace',fontWeight:800,letterSpacing:1},
+    timing:{inF:20,holdF:40,outF:16},
+    effects:{hero:{inEffectId:72,outEffectId:95},list:{inEffectId:74,outEffectId:74},lowerThird:{inEffectId:72,outEffectId:95},caption:{inEffectId:78,outEffectId:79},emphasis:{inEffectId:95,outEffectId:72}}
+  },
+  soft: {
+    id:'soft', name:'柔和优雅', enName:'Soft / Focus', families:['D','B'],
+    description:'柔和聚焦风：从模糊对焦浮现、墨水晕染淡出；轻字重、蓝白配色，适合解说/科普。',
+    style:{background:'linear-gradient(180deg, #0c1426 0%, #0e1830 100%)',color:'#f2f6ff',accent:'#7aa2ff',barColor:'rgba(10,16,30,0.7)',fontFamily:'Arial, "PingFang SC", "Microsoft YaHei", sans-serif',fontWeight:600,letterSpacing:0},
+    timing:{inF:22,holdF:44,outF:18},
+    effects:{hero:{inEffectId:31,outEffectId:33},list:{inEffectId:11,outEffectId:11},lowerThird:{inEffectId:31,outEffectId:33},caption:{inEffectId:31,outEffectId:31},emphasis:{inEffectId:34,outEffectId:31}}
+  },
+  bouncy: {
+    id:'bouncy', name:'活力弹跳', enName:'Bouncy / Spring', families:['C','B'],
+    description:'弹性活泼风：弹簧弹出、旋转缩放螺入/出；橙色高亮、重字重，适合宣传/活动片。',
+    style:{background:'radial-gradient(circle at 50% 40%, #1c2350 0%, #0d1130 60%, #070920 100%)',color:'#ffffff',accent:'#ff7a3c',barColor:'rgba(12,16,40,0.72)',fontFamily:'Arial, "PingFang SC", "Microsoft YaHei", sans-serif',fontWeight:900,letterSpacing:0},
+    timing:{inF:20,holdF:38,outF:16},
+    effects:{hero:{inEffectId:21,outEffectId:23},list:{inEffectId:13,outEffectId:13},lowerThird:{inEffectId:12,outEffectId:12},caption:{inEffectId:11,outEffectId:11},emphasis:{inEffectId:21,outEffectId:21}}
+  },
+  minimal: {
+    id:'minimal', name:'极简打字', enName:'Minimal / Type', families:['F'],
+    description:'极简打字风：打字机逐字登场、字距收拢离场；近黑背景、细字重，适合代码/技术向。',
+    style:{background:'linear-gradient(180deg, #0a0c12 0%, #0c0f16 100%)',color:'#f5f7fb',accent:'#9aa7bd',barColor:'rgba(8,10,16,0.8)',fontFamily:'Menlo, Consolas, "Courier New", "PingFang SC", monospace',fontWeight:500,letterSpacing:1},
+    timing:{inF:24,holdF:42,outF:14},
+    effects:{hero:{inEffectId:51,outEffectId:58},list:{inEffectId:52,outEffectId:52},lowerThird:{inEffectId:11,outEffectId:11},caption:{inEffectId:51,outEffectId:51},emphasis:{inEffectId:51,outEffectId:58}}
+  },
+  elegant: {
+    id:'elegant', name:'优雅衬线', enName:'Elegant / Serif', families:['E','G','D'],
+    description:'优雅衬线风：螺旋极坐标归位、辉光绽放强调；衬线字体、金色高亮，适合品牌/片头。',
+    style:{background:'radial-gradient(circle at 50% 40%, #20182a 0%, #120c18 60%, #0a060e 100%)',color:'#f6efe2',accent:'#d9b46a',barColor:'rgba(18,12,18,0.74)',fontFamily:'Georgia, "Times New Roman", "Songti SC", serif',fontWeight:600,letterSpacing:2},
+    timing:{inF:24,holdF:46,outF:18},
+    effects:{hero:{inEffectId:47,outEffectId:40},list:{inEffectId:11,outEffectId:11},lowerThird:{inEffectId:69,outEffectId:63},caption:{inEffectId:11,outEffectId:11},emphasis:{inEffectId:34,outEffectId:31}}
+  },
+};
+
+const EFFECT_CATEGORIES = {A:'透明度',B:'缓动位移',C:'缩放3D',D:'模糊滤镜',E:'波动',F:'逐字符',G:'裁剪遮罩',H:'噪声随机',I:'粒子重组',J:'颜色光影',K:'故障信号',L:'分形混沌'};
 
 const DEMO_CONTENT = {
-  hero: {entries: [{text: "主题成套动效", sub: "One theme · consistent motion"}]},
-  list: {title: "一个主题搞定整片", items: [
-    {text: "标题、列表、字幕…自动协调"},
-    {text: "入场/出场可分别切换"},
-    {text: "配色/字体/节奏全主题统一"},
-    {text: "导出即一份配置 JSON"},
-  ]},
-  lowerThird: {entries: [{name: "林述白", role: "动态设计师 / Motion Designer"}]},
-  caption: {lines: [
-    {text: "选一个主题，整片风格一键成套。"},
-    {text: "再逐场景微调入场与出场。"},
-  ]},
-  emphasis: {lines: [{pre: "只需 ", token: "一个主题", post: " 即可统一全片。"}]},
+  hero:{entries:[{text:'主题成套动效',sub:'One theme · consistent motion'}]},
+  list:{title:'一个主题搞定整片',items:[{text:'标题、列表、字幕…自动协调'},{text:'入场/出场可分别切换'},{text:'配色/字体/节奏全主题统一'},{text:'导出即一份配置 JSON'}]},
+  lowerThird:{entries:[{name:'林述白',role:'动态设计师 / Motion Designer'}]},
+  caption:{lines:[{text:'选一个主题，整片风格一键成套。'},{text:'再逐场景微调入场与出场。'}]},
+  emphasis:{lines:[{pre:'只需 ',token:'一个主题',post:' 即可统一全片。'}]},
 };
+
+const SCENE_LABELS = {hero:'主标题',list:'列表',lowerThird:'角标',caption:'字幕',emphasis:'强调'};
+const DEFAULT_ORDER = ['hero','list','lowerThird','caption','emphasis'];
 
 // ============================================================
 //  State
 // ============================================================
 let state = {
-  theme: "glitch",
+  theme: 'glitch',
   content: JSON.parse(JSON.stringify(DEMO_CONTENT)),
 };
 
@@ -317,22 +826,42 @@ let state = {
 //  Init
 // ============================================================
 function init() {
-  const sel = document.getElementById('themeSelect');
-  THEMES.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t.id;
-    opt.textContent = `${t.name} · ${t.enName}`;
-    sel.appendChild(opt);
-  });
-  sel.value = state.theme;
-  sel.onchange = () => { state.theme = sel.value; updateThemeDesc(); updateConfig(); };
-  updateThemeDesc();
+  renderThemeGrid();
   renderAllSections();
+  updateConfig();
+  startPreview();
+}
+
+// ============================================================
+//  Theme grid
+// ============================================================
+function renderThemeGrid() {
+  const grid = document.getElementById('themeGrid');
+  grid.innerHTML = '';
+  for (const [id, t] of Object.entries(THEMES_DATA)) {
+    const card = document.createElement('div');
+    card.className = 'theme-card' + (id === state.theme ? ' active' : '');
+    card.onclick = () => selectTheme(id);
+    card.innerHTML = `
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-en">${t.enName}</div>
+      <div class="tc-families">${t.families.map(f => `<span>${f}·${EFFECT_CATEGORIES[f]||f}</span>`).join('')}</div>
+    `;
+    grid.appendChild(card);
+  }
+  updateThemeDesc();
+}
+
+function selectTheme(id) {
+  state.theme = id;
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  updateThemeDesc();
   updateConfig();
 }
 
 function updateThemeDesc() {
-  const t = THEMES.find(x => x.id === state.theme);
+  const t = THEMES_DATA[state.theme];
   document.getElementById('themeDesc').textContent = t ? t.description : '';
 }
 
@@ -340,7 +869,7 @@ function updateThemeDesc() {
 //  Section toggle
 // ============================================================
 function toggleSection(id) {
-  document.getElementById(id).classList.toggle('collapsed');
+  document.getElementById(id).classList.toggle('open');
 }
 
 // ============================================================
@@ -352,6 +881,27 @@ function renderAllSections() {
   renderLowerThirdEntries();
   renderCaptionLines();
   renderEmphasisLines();
+  updateCounts();
+}
+
+function updateCounts() {
+  const hc = state.content.hero?.entries?.length || 0;
+  const lc = state.content.list?.items?.length || 0;
+  const ltc = state.content.lowerThird?.entries?.length || 0;
+  const cc = state.content.caption?.lines?.length || 0;
+  const ec = state.content.emphasis?.lines?.length || 0;
+
+  document.getElementById('count-hero').textContent = hc ? `${hc} 条` : '';
+  document.getElementById('count-list').textContent = lc ? `${lc} 条` : '';
+  document.getElementById('count-lowerThird').textContent = ltc ? `${ltc} 条` : '';
+  document.getElementById('count-caption').textContent = cc ? `${cc} 条` : '';
+  document.getElementById('count-emphasis').textContent = ec ? `${ec} 条` : '';
+
+  document.getElementById('ind-hero').className = 's-indicator' + (hc ? '' : ' empty');
+  document.getElementById('ind-list').className = 's-indicator' + (lc ? '' : ' empty');
+  document.getElementById('ind-lowerThird').className = 's-indicator' + (ltc ? '' : ' empty');
+  document.getElementById('ind-caption').className = 's-indicator' + (cc ? '' : ' empty');
+  document.getElementById('ind-emphasis').className = 's-indicator' + (ec ? '' : ' empty');
 }
 
 function renderHeroEntries() {
@@ -361,17 +911,17 @@ function renderHeroEntries() {
     const row = document.createElement('div');
     row.className = 'entry-row';
     row.innerHTML = `
-      <input type="text" placeholder="标题 / text" value="${esc(e.text)}" oninput="editHeroEntry(${i},'text',this.value)">
-      <input type="text" placeholder="副标题 / sub" value="${esc(e.sub||'')}" oninput="editHeroEntry(${i},'sub',this.value)">
-      <button class="btn-mini danger" onclick="removeHeroEntry(${i})">✕</button>
+      <input type="text" placeholder="标题" value="${esc(e.text)}" oninput="editHeroEntry(${i},'text',this.value)">
+      <input type="text" placeholder="副标题" value="${esc(e.sub||'')}" oninput="editHeroEntry(${i},'sub',this.value)" style="max-width:140px">
+      <button class="btn-icon danger" onclick="removeHeroEntry(${i})" title="删除">&#10005;</button>
     `;
     c.appendChild(row);
   });
 }
 function addHeroEntry() {
   if (!state.content.hero) state.content.hero = {entries: []};
-  state.content.hero.entries.push({text: "新标题", sub: ""});
-  renderHeroEntries(); updateConfig();
+  state.content.hero.entries.push({text: '新标题', sub: ''});
+  renderHeroEntries(); updateCounts(); updateConfig();
 }
 function editHeroEntry(i, field, val) {
   state.content.hero.entries[i][field] = val;
@@ -379,7 +929,7 @@ function editHeroEntry(i, field, val) {
 }
 function removeHeroEntry(i) {
   state.content.hero.entries.splice(i, 1);
-  renderHeroEntries(); updateConfig();
+  renderHeroEntries(); updateCounts(); updateConfig();
 }
 
 function renderListItems() {
@@ -390,25 +940,19 @@ function renderListItems() {
     const row = document.createElement('div');
     row.className = 'entry-row';
     row.innerHTML = `
-      <input type="text" placeholder="条目 / item" value="${esc(it.text)}" oninput="editListItem(${i},this.value)">
-      <button class="btn-mini danger" onclick="removeListItem(${i})">✕</button>
+      <input type="text" placeholder="条目" value="${esc(it.text)}" oninput="editListItem(${i},this.value)">
+      <button class="btn-icon danger" onclick="removeListItem(${i})" title="删除">&#10005;</button>
     `;
     c.appendChild(row);
   });
 }
 function addListItem() {
-  if (!state.content.list) state.content.list = {title: "", items: []};
-  state.content.list.items.push({text: "新条目"});
-  renderListItems(); updateConfig();
+  if (!state.content.list) state.content.list = {title:'',items:[]};
+  state.content.list.items.push({text: '新条目'});
+  renderListItems(); updateCounts(); updateConfig();
 }
-function editListItem(i, val) {
-  state.content.list.items[i].text = val;
-  updateConfig();
-}
-function removeListItem(i) {
-  state.content.list.items.splice(i, 1);
-  renderListItems(); updateConfig();
-}
+function editListItem(i, val) { state.content.list.items[i].text = val; updateConfig(); }
+function removeListItem(i) { state.content.list.items.splice(i,1); renderListItems(); updateCounts(); updateConfig(); }
 
 function renderLowerThirdEntries() {
   const c = document.getElementById('lowerThirdEntries');
@@ -417,26 +961,20 @@ function renderLowerThirdEntries() {
     const row = document.createElement('div');
     row.className = 'entry-row';
     row.innerHTML = `
-      <input type="text" placeholder="姓名 / name" value="${esc(e.name)}" oninput="editLowerThird(${i},'name',this.value)">
-      <input type="text" placeholder="角色 / role" value="${esc(e.role)}" oninput="editLowerThird(${i},'role',this.value)">
-      <button class="btn-mini danger" onclick="removeLowerThird(${i})">✕</button>
+      <input type="text" placeholder="姓名" value="${esc(e.name)}" oninput="editLowerThird(${i},'name',this.value)">
+      <input type="text" placeholder="角色" value="${esc(e.role)}" oninput="editLowerThird(${i},'role',this.value)">
+      <button class="btn-icon danger" onclick="removeLowerThird(${i})" title="删除">&#10005;</button>
     `;
     c.appendChild(row);
   });
 }
 function addLowerThirdEntry() {
-  if (!state.content.lowerThird) state.content.lowerThird = {entries: []};
-  state.content.lowerThird.entries.push({name: "姓名", role: "角色"});
-  renderLowerThirdEntries(); updateConfig();
+  if (!state.content.lowerThird) state.content.lowerThird = {entries:[]};
+  state.content.lowerThird.entries.push({name:'姓名',role:'角色'});
+  renderLowerThirdEntries(); updateCounts(); updateConfig();
 }
-function editLowerThird(i, field, val) {
-  state.content.lowerThird.entries[i][field] = val;
-  updateConfig();
-}
-function removeLowerThird(i) {
-  state.content.lowerThird.entries.splice(i, 1);
-  renderLowerThirdEntries(); updateConfig();
-}
+function editLowerThird(i, field, val) { state.content.lowerThird.entries[i][field] = val; updateConfig(); }
+function removeLowerThird(i) { state.content.lowerThird.entries.splice(i,1); renderLowerThirdEntries(); updateCounts(); updateConfig(); }
 
 function renderCaptionLines() {
   const c = document.getElementById('captionLines');
@@ -445,89 +983,68 @@ function renderCaptionLines() {
     const row = document.createElement('div');
     row.className = 'entry-row';
     row.innerHTML = `
-      <input type="text" placeholder="字幕 / caption" value="${esc(l.text)}" oninput="editCaption(${i},this.value)">
-      <button class="btn-mini danger" onclick="removeCaption(${i})">✕</button>
+      <input type="text" placeholder="字幕" value="${esc(l.text)}" oninput="editCaption(${i},this.value)">
+      <button class="btn-icon danger" onclick="removeCaption(${i})" title="删除">&#10005;</button>
     `;
     c.appendChild(row);
   });
 }
 function addCaptionLine() {
-  if (!state.content.caption) state.content.caption = {lines: []};
-  state.content.caption.lines.push({text: "新字幕"});
-  renderCaptionLines(); updateConfig();
+  if (!state.content.caption) state.content.caption = {lines:[]};
+  state.content.caption.lines.push({text:'新字幕'});
+  renderCaptionLines(); updateCounts(); updateConfig();
 }
-function editCaption(i, val) {
-  state.content.caption.lines[i].text = val;
-  updateConfig();
-}
-function removeCaption(i) {
-  state.content.caption.lines.splice(i, 1);
-  renderCaptionLines(); updateConfig();
-}
+function editCaption(i, val) { state.content.caption.lines[i].text = val; updateConfig(); }
+function removeCaption(i) { state.content.caption.lines.splice(i,1); renderCaptionLines(); updateCounts(); updateConfig(); }
 
 function renderEmphasisLines() {
   const c = document.getElementById('emphasisLines');
   c.innerHTML = '';
   (state.content.emphasis?.lines || []).forEach((l, i) => {
     const div = document.createElement('div');
-    div.style.marginBottom = '8px';
+    div.className = 'entry-row';
     div.innerHTML = `
-      <div class="entry-row">
-        <input type="text" placeholder="前 / pre" value="${esc(l.pre)}" oninput="editEmphasis(${i},'pre',this.value)">
-        <input type="text" placeholder="强调词 / token" value="${esc(l.token)}" oninput="editEmphasis(${i},'token',this.value)">
-        <input type="text" placeholder="后 / post" value="${esc(l.post)}" oninput="editEmphasis(${i},'post',this.value)">
-        <button class="btn-mini danger" onclick="removeEmphasis(${i})">✕</button>
-      </div>
+      <input type="text" placeholder="前" value="${esc(l.pre)}" oninput="editEmphasis(${i},'pre',this.value)" style="max-width:80px">
+      <input type="text" placeholder="强调词" value="${esc(l.token)}" oninput="editEmphasis(${i},'token',this.value)" style="border-color:var(--warn)">
+      <input type="text" placeholder="后" value="${esc(l.post)}" oninput="editEmphasis(${i},'post',this.value)" style="max-width:80px">
+      <button class="btn-icon danger" onclick="removeEmphasis(${i})" title="删除">&#10005;</button>
     `;
     c.appendChild(div);
   });
 }
 function addEmphasisLine() {
-  if (!state.content.emphasis) state.content.emphasis = {lines: []};
-  state.content.emphasis.lines.push({pre: "", token: "强调", post: ""});
-  renderEmphasisLines(); updateConfig();
+  if (!state.content.emphasis) state.content.emphasis = {lines:[]};
+  state.content.emphasis.lines.push({pre:'',token:'强调',post:''});
+  renderEmphasisLines(); updateCounts(); updateConfig();
 }
-function editEmphasis(i, field, val) {
-  state.content.emphasis.lines[i][field] = val;
-  updateConfig();
-}
-function removeEmphasis(i) {
-  state.content.emphasis.lines.splice(i, 1);
-  renderEmphasisLines(); updateConfig();
-}
+function editEmphasis(i, field, val) { state.content.emphasis.lines[i][field] = val; updateConfig(); }
+function removeEmphasis(i) { state.content.emphasis.lines.splice(i,1); renderEmphasisLines(); updateCounts(); updateConfig(); }
 
 // ============================================================
-//  Build config from state + overrides
+//  Build config
 // ============================================================
 function buildConfig() {
   const config = {theme: state.theme, content: {}};
-
-  // Copy non-empty content
-  if (state.content.hero?.entries.length) config.content.hero = state.content.hero;
-  if (state.content.list?.items.length) {
+  if (state.content.hero?.entries?.length) config.content.hero = state.content.hero;
+  if (state.content.list?.items?.length) {
     config.content.list = {items: state.content.list.items};
     if (state.content.list.title) config.content.list.title = state.content.list.title;
   }
-  if (state.content.lowerThird?.entries.length) config.content.lowerThird = state.content.lowerThird;
-  if (state.content.caption?.lines.length) config.content.caption = state.content.caption;
-  if (state.content.emphasis?.lines.length) config.content.emphasis = state.content.emphasis;
+  if (state.content.lowerThird?.entries?.length) config.content.lowerThird = state.content.lowerThird;
+  if (state.content.caption?.lines?.length) config.content.caption = state.content.caption;
+  if (state.content.emphasis?.lines?.length) config.content.emphasis = state.content.emphasis;
 
-  // Order override
   const orderVal = document.getElementById('orderInput').value.trim();
   if (orderVal) {
     const parts = orderVal.split(',').map(s => s.trim()).filter(Boolean);
     if (parts.length) config.order = parts;
   }
 
-  // Timing override
   const inF = parseInt(document.getElementById('inF').value);
   const holdF = parseInt(document.getElementById('holdF').value);
   const outF = parseInt(document.getElementById('outF').value);
-  if (inF > 0 && holdF >= 0 && outF > 0) {
-    config.timing = {inF, holdF, outF};
-  }
+  if (inF > 0 && holdF >= 0 && outF > 0) config.timing = {inF, holdF, outF};
 
-  // Style override
   const style = {};
   const bg = document.getElementById('bgOverride').value.trim();
   const color = document.getElementById('colorOverride').value.trim();
@@ -537,108 +1054,23 @@ function buildConfig() {
   if (accent) style.accent = accent;
   if (Object.keys(style).length) config.style = style;
 
+  // Effect overrides
+  const effects = {};
+  const roles = ['hero','list','lowerThird','caption','emphasis'];
+  for (const role of roles) {
+    const inId = parseInt(document.getElementById(`eo-${role}-in`).value);
+    const outId = parseInt(document.getElementById(`eo-${role}-out`).value);
+    if (inId >= 1 && inId <= 100 && outId >= 1 && outId <= 100) {
+      effects[role] = {inEffectId: inId, outEffectId: outId};
+    }
+  }
+  if (Object.keys(effects).length) config.effects = effects;
+
   return config;
 }
 
 // ============================================================
-//  README generation (mirrors src/textfx/themeExport.ts)
-// ============================================================
-function generateReadme(config) {
-  const theme = THEMES.find(t => t.id === config.theme);
-  if (!theme) return 'Error: theme not found';
-
-  const themeJson = JSON.stringify(config, null, 2);
-  const renderCmd = `npx remotion render src/index.ts SceneTheme out.mp4 --props='${themeJson.trim()}'`;
-
-  const sceneLabels = {hero:['主标题','Hero'],list:['列表','List'],lowerThird:['角标','Lower-third'],caption:['字幕','Caption'],emphasis:['强调','Emphasis']};
-  const order = config.order || ['hero','list','lowerThird','caption','emphasis'];
-  const activeScenes = order.filter(r => config.content[r]);
-  const sceneList = activeScenes.map(r => `${sceneLabels[r][0]} (${sceneLabels[r][1]})`).join(' → ');
-
-  // Estimate frames (simplified)
-  const t = config.timing || {inF:20,holdF:40,outF:16};
-  const slot = t.inF + t.holdF + t.outF;
-  let totalFrames = 0;
-  if (config.content.hero) totalFrames += (config.content.hero.entries.length || 1) * slot;
-  if (config.content.list) totalFrames += Math.max(0, (config.content.list.items.length-1)) * 22 + 18 + 30;
-  if (config.content.lowerThird) totalFrames += (config.content.lowerThird.entries.length || 1) * slot;
-  if (config.content.caption) totalFrames += (config.content.caption.lines.length || 1) * slot;
-  if (config.content.emphasis) totalFrames += (config.content.emphasis.lines.length || 1) * slot;
-  if (totalFrames === 0) totalFrames = slot;
-  const seconds = (totalFrames / 30).toFixed(1);
-
-  const sections = [];
-  if (config.content.hero) {
-    sections.push('### 主标题 / Hero\n' + config.content.hero.entries.map(e => `- **${e.text}**${e.sub ? ' — ' + e.sub : ''}`).join('\n'));
-  }
-  if (config.content.list) {
-    sections.push('### 列表 / List\n' + (config.content.list.title ? '*'+config.content.list.title+'*\n' : '') + config.content.list.items.map(it => '- '+it.text).join('\n'));
-  }
-  if (config.content.lowerThird) {
-    sections.push('### 角标 / Lower-third\n' + config.content.lowerThird.entries.map(e => `- **${e.name}** — ${e.role}`).join('\n'));
-  }
-  if (config.content.caption) {
-    sections.push('### 字幕 / Caption\n' + config.content.caption.lines.map(l => '- '+l.text).join('\n'));
-  }
-  if (config.content.emphasis) {
-    sections.push('### 强调 / Emphasis\n' + config.content.emphasis.lines.map(l => `- ${l.pre}**${l.token}**${l.post}`).join('\n'));
-  }
-
-  const hasStyleOverride = !!config.style;
-  const hasTimingOverride = !!config.timing;
-  const hasEffectOverride = !!config.effects;
-
-  return `# 主题包 / Theme Package: ${theme.name} · ${theme.enName}
-
-> ${theme.description}
-
-## 渲染命令 / Render Command
-
-\`\`\`bash
-${renderCmd}
-\`\`\`
-
-> 也可用 \`--props=@theme.json\` 从文件读取。
-> Alternatively, use \`--props=@theme.json\` to read from file.
-
-## 配置摘要 / Config Summary
-
-| 项目 / Item | 值 / Value |
-|---|---|
-| 主题 / Theme | \`${theme.id}\` — ${theme.name} / ${theme.enName} |
-| 场景顺序 / Scenes | ${sceneList} |
-| 时序 / Timing | 入场 ${t.inF}f · 停留 ${t.holdF}f · 出场 ${t.outF}f${hasTimingOverride ? ' (已覆盖 / overridden)' : ''} |
-| 总时长 / Duration | ${totalFrames}f (${seconds}s @ 30fps) |
-| 动效覆盖 / Effect overrides | ${hasEffectOverride ? '是 / yes' : '否 / no'} |
-
-## 内容 / Content
-
-${sections.join('\n\n')}
-
-## 文件 / Files
-
-- \`theme.json\` — 单一事实源 / Single source of truth (the ThemeConfig)
-- \`README.md\` — 本文件 / This file
-
-## 用法 / Usage
-
-1. **命令行渲染 / CLI render:**
-   \`\`\`bash
-   npx remotion render src/index.ts SceneTheme out.mp4 --props=@theme.json
-   \`\`\`
-
-2. **Remotion Studio:**
-   \`npm run dev\` → 选择 \`SceneTheme\` 合成 → 在 props 面板粘贴 \`theme.json\` 内容。
-
-3. **AI / 脚本调用 / AI / script usage:**
-   \`\`\`bash
-   npm run export:theme -- --config theme.json --out theme-package.zip
-   \`\`\`
-`;
-}
-
-// ============================================================
-//  Update preview
+//  Update outputs + restart preview
 // ============================================================
 function updateConfig() {
   const config = buildConfig();
@@ -647,16 +1079,336 @@ function updateConfig() {
   document.getElementById('readmePreview').textContent = generateReadme(config);
   document.getElementById('cmdPreview').textContent =
     `npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`;
+  restartPreview();
+}
+
+// ============================================================
+//  README generation
+// ============================================================
+function generateReadme(config) {
+  const theme = THEMES_DATA[config.theme];
+  if (!theme) return 'Error: theme not found';
+  const themeJson = JSON.stringify(config, null, 2);
+  const renderCmd = `npx remotion render src/index.ts SceneTheme out.mp4 --props='${themeJson.trim()}'`;
+  const sceneLabels = {hero:['主标题','Hero'],list:['列表','List'],lowerThird:['角标','Lower-third'],caption:['字幕','Caption'],emphasis:['强调','Emphasis']};
+  const order = config.order || DEFAULT_ORDER;
+  const activeScenes = order.filter(r => config.content[r]);
+  const sceneList = activeScenes.map(r => `${sceneLabels[r][0]} (${sceneLabels[r][1]})`).join(' \u2192 ');
+  const t = config.timing || theme.timing;
+  const slot = t.inF + t.holdF + t.outF;
+  let totalFrames = 0;
+  if (config.content.hero) totalFrames += (config.content.hero.entries.length||1)*slot;
+  if (config.content.list) totalFrames += Math.max(0,(config.content.list.items.length-1))*22+18+30;
+  if (config.content.lowerThird) totalFrames += (config.content.lowerThird.entries.length||1)*slot;
+  if (config.content.caption) totalFrames += (config.content.caption.lines.length||1)*slot;
+  if (config.content.emphasis) totalFrames += (config.content.emphasis.lines.length||1)*slot;
+  if (totalFrames===0) totalFrames = slot;
+  const seconds = (totalFrames/30).toFixed(1);
+
+  return `# Theme: ${theme.name} / ${theme.enName}\n\n> ${theme.description}\n\n## Render\n\`\`\`bash\n${renderCmd}\n\`\`\`\n\nScenes: ${sceneList}\nDuration: ${totalFrames}f (${seconds}s @ 30fps)\nTiming: in=${t.inF}f hold=${t.holdF}f out=${t.outF}f`;
 }
 
 // ============================================================
 //  Tabs
 // ============================================================
-function switchTab(name) {
+function switchTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  el.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
+}
+
+function toggleOutput() {
+  document.getElementById('outputSection').classList.toggle('open');
+}
+
+// ============================================================
+//  Live animation preview engine
+// ============================================================
+let previewAnim = null;
+let previewPlaying = true;
+let previewSceneIdx = 0;
+let previewPhase = 'in'; // 'in' | 'hold' | 'out'
+let previewT = 0;
+let lastTimestamp = 0;
+
+function getActiveScenes() {
+  const config = buildConfig();
+  const order = config.order || DEFAULT_ORDER;
+  const scenes = [];
+  for (const role of order) {
+    const c = config.content[role];
+    if (!c) continue;
+    const theme = THEMES_DATA[state.theme];
+    const eff = config.effects?.[role] || theme.effects[role];
+    const style = {...theme.style, ...config.style};
+    const timing = config.timing || theme.timing;
+
+    if (role === 'hero' && c.entries?.length) {
+      for (const e of c.entries) {
+        scenes.push({role, text: e.text, sub: e.sub || '', eff, style, timing, fontSize: 28, fontWeight: style.fontWeight});
+      }
+    } else if (role === 'list' && c.items?.length) {
+      for (const it of c.items) {
+        scenes.push({role, text: it.text, sub: '', eff, style, timing, fontSize: 16, fontWeight: style.fontWeight});
+      }
+    } else if (role === 'lowerThird' && c.entries?.length) {
+      for (const e of c.entries) {
+        scenes.push({role, text: e.name, sub: e.role, eff, style, timing, fontSize: 20, fontWeight: style.fontWeight});
+      }
+    } else if (role === 'caption' && c.lines?.length) {
+      for (const l of c.lines) {
+        scenes.push({role, text: l.text, sub: '', eff, style, timing, fontSize: 16, fontWeight: style.fontWeight});
+      }
+    } else if (role === 'emphasis' && c.lines?.length) {
+      for (const l of c.lines) {
+        scenes.push({role, text: l.pre, token: l.token, post: l.post, sub: '', eff, style, timing, fontSize: 20, fontWeight: style.fontWeight, accent: l.accent || style.accent});
+      }
+    }
+  }
+  if (!scenes.length) {
+    const theme = THEMES_DATA[state.theme];
+    scenes.push({role:'hero', text:'预览', sub:'', eff:theme.effects.hero, style:theme.style, timing:theme.timing, fontSize:28, fontWeight:800});
+  }
+  return scenes;
+}
+
+function renderSceneChips(scenes) {
+  const container = document.getElementById('previewSceneChips');
+  container.innerHTML = '';
+  scenes.forEach((s, i) => {
+    const chip = document.createElement('button');
+    chip.className = 'scene-chip' + (i === previewSceneIdx ? ' active' : '');
+    chip.textContent = SCENE_LABELS[s.role] || s.role;
+    chip.onclick = () => jumpToScene(i);
+    container.appendChild(chip);
+  });
+}
+
+function jumpToScene(idx) {
+  const scenes = getActiveScenes();
+  previewSceneIdx = Math.min(idx, scenes.length - 1);
+  previewPhase = 'in';
+  previewT = 0;
+  renderSceneChips(scenes);
+}
+
+// Effect simulation: given effectId, phase, and t, return CSS styles
+function simulateEffect(effectId, phase, t) {
+  const cat = Math.ceil(effectId / 10); // 1=A,2=B,...,10=J,11=K,12=L
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  const p = phase === 'in' ? easeOut(Math.min(1, Math.max(0, t))) : 1 - easeOut(Math.min(1, Math.max(0, t)));
+  const styles = {};
+
+  switch (cat) {
+    case 1: // A: opacity curves
+      styles.opacity = p;
+      break;
+    case 2: // B: easing + slide
+      styles.opacity = Math.min(1, p * 2);
+      styles.transform = `translateY(${(1 - p) * 40}px)`;
+      break;
+    case 3: // C: scale/rotate/3D
+      styles.opacity = Math.min(1, p * 1.5);
+      const s = 0.3 + p * 0.7;
+      const r = (1 - p) * 15;
+      styles.transform = `scale(${s}) rotate(${phase === 'in' ? -r : r}deg)`;
+      break;
+    case 4: // D: blur/filter
+      styles.opacity = p;
+      styles.filter = `blur(${(1 - p) * 8}px)`;
+      break;
+    case 5: // E: wave/trig
+      styles.opacity = p;
+      const wave = Math.sin(t * Math.PI * 3) * (1 - p) * 12;
+      styles.transform = `translateY(${wave}px) rotate(${(1 - p) * 8}deg)`;
+      break;
+    case 6: // F: per-char / typewriter
+      styles.opacity = 1;
+      styles.clipPath = `inset(0 ${(1 - p) * 100}% 0 0)`;
+      styles.transform = `translateX(${(1 - p) * -10}px)`;
+      break;
+    case 7: // G: clip mask
+      styles.opacity = 1;
+      if (effectId % 2 === 1) {
+        styles.clipPath = `inset(${(1-p)*50}% 0 ${(1-p)*50}% 0)`;
+      } else {
+        styles.clipPath = `inset(0 ${(1-p)*50}% 0 ${(1-p)*50}%)`;
+      }
+      break;
+    case 8: // H: noise/random/scramble
+      styles.opacity = Math.min(1, p * 1.5);
+      const nx = (1-p) * (Math.sin(t*37)*8);
+      const ny = (1-p) * (Math.cos(t*53)*4);
+      styles.transform = `translate(${nx}px, ${ny}px)`;
+      styles.filter = `brightness(${1 + (1-p)*0.5})`;
+      break;
+    case 9: // I: particle/scatter
+      styles.opacity = p;
+      const sp = 0.2 + p * 0.8;
+      styles.transform = `scale(${sp}) rotate(${(1-p)*180}deg)`;
+      styles.filter = `blur(${(1-p)*3}px)`;
+      break;
+    case 10: // J: color/glow
+      styles.opacity = p;
+      styles.filter = `brightness(${1 + (1-p)*1.5}) saturate(${0.5 + p*0.5})`;
+      styles.transform = `scale(${0.95 + p*0.05})`;
+      break;
+    case 11: // K: glitch/signal
+      styles.opacity = Math.min(1, p * 2);
+      const gx = (1-p) * Math.sin(t*100) * 6;
+      styles.transform = `translateX(${gx}px) skewX(${(1-p)*8}deg)`;
+      styles.filter = `hue-rotate(${(1-p)*90}deg) brightness(${1+(1-p)*0.8})`;
+      break;
+    case 12: // L: fractal/chaos
+      styles.opacity = p;
+      const cx = (1-p) * Math.sin(t*23) * 15;
+      const cy = (1-p) * Math.cos(t*31) * 8;
+      const cr = (1-p) * Math.sin(t*17) * 20;
+      styles.transform = `translate(${cx}px, ${cy}px) rotate(${cr}deg) scale(${0.5+p*0.5})`;
+      break;
+    default:
+      styles.opacity = p;
+  }
+  return styles;
+}
+
+// Scramble text simulation for cat H (noise/random)
+const GLYPHS = 'アカサタナ01XΞΨ#%&@王金木水火土';
+function scrambleText(text, progress) {
+  const chars = Array.from(text);
+  return chars.map((ch, i) => {
+    const lock = (i / Math.max(chars.length, 1)) * 0.85;
+    if (progress > lock + 0.15) return ch;
+    return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+  }).join('');
+}
+
+function animatePreview(timestamp) {
+  if (!previewPlaying) { previewAnim = requestAnimationFrame(animatePreview); return; }
+
+  const scenes = getActiveScenes();
+  if (!scenes.length) { previewAnim = requestAnimationFrame(animatePreview); return; }
+
+  const dt = lastTimestamp ? (timestamp - lastTimestamp) / 1000 : 0;
+  lastTimestamp = timestamp;
+
+  const scene = scenes[Math.min(previewSceneIdx, scenes.length - 1)];
+  const timing = scene.timing;
+  const fps = 30;
+  const inDur = timing.inF / fps;
+  const holdDur = timing.holdF / fps;
+  const outDur = timing.outF / fps;
+  const totalDur = inDur + holdDur + outDur;
+
+  previewT += dt;
+
+  let phase, t;
+  if (previewT < inDur) {
+    phase = 'in';
+    t = previewT / inDur;
+  } else if (previewT < inDur + holdDur) {
+    phase = 'hold';
+    t = 1;
+  } else if (previewT < totalDur) {
+    phase = 'out';
+    t = (previewT - inDur - holdDur) / outDur;
+  } else {
+    // Move to next scene
+    previewSceneIdx = (previewSceneIdx + 1) % scenes.length;
+    previewT = 0;
+    phase = 'in';
+    t = 0;
+    renderSceneChips(scenes);
+  }
+
+  previewPhase = phase;
+  const effectId = phase === 'out' ? scene.eff.outEffectId : scene.eff.inEffectId;
+  const effStyles = phase === 'hold'
+    ? {opacity: 1, transform: 'none', filter: 'none', clipPath: 'none'}
+    : simulateEffect(effectId, phase, t);
+
+  // Update stage
+  const stage = document.getElementById('previewStage');
+  const inner = document.getElementById('previewInner');
+  const textEl = document.getElementById('previewText');
+  const subEl = document.getElementById('previewSub');
+  const labelEl = document.getElementById('previewLabel');
+
+  const style = scene.style;
+  stage.style.background = style.background;
+  inner.style.color = style.color;
+  inner.style.fontFamily = style.fontFamily;
+
+  // Determine text
+  let displayText = scene.text;
+  const cat = Math.ceil(effectId / 10);
+  if (cat === 8 && phase !== 'hold') {
+    const progress = phase === 'in' ? t : 1 - t;
+    displayText = scrambleText(scene.text, progress);
+  }
+
+  if (scene.role === 'emphasis' && scene.token) {
+    const accentColor = scene.accent || style.accent;
+    const tokenOpacity = phase === 'hold' ? 1 : (phase === 'in' ? Math.min(1, t * 1.5) : Math.max(0, 1 - t * 1.5));
+    textEl.innerHTML = `${esc(scene.text)}<span style="color:${accentColor};font-weight:900;opacity:${tokenOpacity}">${esc(scene.token)}</span>${esc(scene.post || '')}`;
+  } else {
+    textEl.textContent = displayText;
+  }
+
+  textEl.style.fontSize = scene.fontSize + 'px';
+  textEl.style.fontWeight = scene.fontWeight;
+  textEl.style.letterSpacing = (style.letterSpacing || 0) + 'px';
+
+  // Apply effect styles
+  textEl.style.opacity = effStyles.opacity ?? 1;
+  textEl.style.transform = effStyles.transform || 'none';
+  textEl.style.filter = effStyles.filter || 'none';
+  textEl.style.clipPath = effStyles.clipPath || 'none';
+
+  subEl.textContent = scene.sub || '';
+  subEl.style.opacity = phase === 'hold' ? 0.6 : (phase === 'in' ? Math.max(0, (t - 0.5) * 1.2) : Math.max(0, (1 - t * 2) * 0.6));
+  subEl.style.color = style.color;
+
+  const catLetter = String.fromCharCode(64 + Math.ceil(effectId / 10));
+  const padId = String(effectId).padStart(2, '0');
+  labelEl.textContent = `${(SCENE_LABELS[scene.role]||scene.role).toUpperCase()} \u00B7 ${catLetter}${padId}`;
+  labelEl.style.color = style.color;
+
+  // Update timeline
+  const progress = Math.min(1, previewT / totalDur);
+  document.getElementById('tlProgress').style.width = (progress * 100) + '%';
+  const phaseLabels = {in: '入场 In', hold: '停留 Hold', out: '出场 Out'};
+  document.getElementById('tlPhase').textContent = phaseLabels[phase] || phase;
+  document.getElementById('tlTime').textContent = previewT.toFixed(1) + 's / ' + totalDur.toFixed(1) + 's';
+
+  previewAnim = requestAnimationFrame(animatePreview);
+}
+
+function startPreview() {
+  const scenes = getActiveScenes();
+  previewSceneIdx = 0;
+  previewPhase = 'in';
+  previewT = 0;
+  lastTimestamp = 0;
+  renderSceneChips(scenes);
+  if (previewAnim) cancelAnimationFrame(previewAnim);
+  previewAnim = requestAnimationFrame(animatePreview);
+}
+
+function restartPreview() {
+  const scenes = getActiveScenes();
+  if (previewSceneIdx >= scenes.length) previewSceneIdx = 0;
+  previewT = 0;
+  previewPhase = 'in';
+  lastTimestamp = 0;
+  renderSceneChips(scenes);
+}
+
+function togglePlay() {
+  previewPlaying = !previewPlaying;
+  lastTimestamp = 0;
+  document.getElementById('playBtn').innerHTML = previewPlaying ? '&#9646;&#9646;' : '&#9654;';
 }
 
 // ============================================================
@@ -664,24 +1416,31 @@ function switchTab(name) {
 // ============================================================
 function exportZip() {
   const config = buildConfig();
-  const themeJson = JSON.stringify(config, null, 2) + '\n';
+  const themeJson = JSON.stringify(config,null,2)+'\n';
   const readmeMd = generateReadme(config);
-  const files = {'theme.json': themeJson, 'README.md': readmeMd};
-  downloadZip(files, `theme-${config.theme}.zip`);
-  showToast('主题包已下载 / Theme package downloaded');
+  downloadZip({'theme.json':themeJson,'README.md':readmeMd}, `theme-${config.theme}.zip`);
+  showToast('主题包已下载');
 }
-
 function copyJson() {
-  const config = buildConfig();
-  navigator.clipboard.writeText(JSON.stringify(config, null, 2));
-  showToast('JSON 已复制 / JSON copied');
+  navigator.clipboard.writeText(JSON.stringify(buildConfig(),null,2));
+  showToast('JSON 已复制');
 }
-
 function copyRenderCmd() {
-  const config = buildConfig();
-  const json = JSON.stringify(config, null, 2);
+  const json = JSON.stringify(buildConfig(),null,2);
   navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`);
-  showToast('渲染命令已复制 / Render command copied');
+  showToast('渲染命令已复制');
+}
+function resetConfig() {
+  state = {theme:'glitch', content: JSON.parse(JSON.stringify(DEMO_CONTENT))};
+  renderThemeGrid();
+  renderAllSections();
+  ['inF','holdF','outF','bgOverride','colorOverride','accentOverride','orderInput'].forEach(id => document.getElementById(id).value = '');
+  ['hero','list','lowerThird','caption','emphasis'].forEach(role => {
+    document.getElementById(`eo-${role}-in`).value = '';
+    document.getElementById(`eo-${role}-out`).value = '';
+  });
+  updateConfig();
+  showToast('已重置');
 }
 
 function showToast(msg) {
@@ -689,102 +1448,29 @@ function showToast(msg) {
   t.className = 'toast';
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2000);
+  setTimeout(() => t.remove(), 2500);
 }
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ============================================================
-//  Minimal ZIP builder (STORE, no compression)
+//  Minimal ZIP builder
 // ============================================================
-function crc32(data) {
-  let crc = 0xFFFFFFFF;
-  for (let i = 0; i < data.length; i++) {
-    crc = (crc >>> 8) ^ crcTable[(crc ^ data[i]) & 0xFF];
-  }
-  return (crc ^ 0xFFFFFFFF) >>> 0;
-}
 const crcTable = new Uint32Array(256);
-for (let i = 0; i < 256; i++) {
-  let c = i;
-  for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
-  crcTable[i] = c;
-}
-
-function createZip(files) {
-  const enc = new TextEncoder();
-  const entries = [];
-  const parts = [];
-  let offset = 0;
-
-  for (const [name, content] of Object.entries(files)) {
-    const data = enc.encode(content);
-    const crc = crc32(data);
-    const nameBytes = enc.encode(name);
-    const local = [
-      0x50,0x4B,0x03,0x04,  // signature
-      20,0, 0,0, 0,0,       // version, flags, compression
-      0,0, 0,0,             // mod time, mod date
-      crc&0xFF,(crc>>>8)&0xFF,(crc>>>16)&0xFF,(crc>>>24)&0xFF,
-      data.length&0xFF,(data.length>>>8)&0xFF,(data.length>>>16)&0xFF,(data.length>>>24)&0xFF,
-      data.length&0xFF,(data.length>>>8)&0xFF,(data.length>>>16)&0xFF,(data.length>>>24)&0xFF,
-      nameBytes.length&0xFF,(nameBytes.length>>>8)&0xFF,
-      0,0,                  // extra field length
-      ...nameBytes,
-      ...data,
-    ];
-    parts.push(...local);
-    entries.push({name, data, crc, offset});
-    offset += local.length;
+for (let i=0;i<256;i++){let c=i;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;crcTable[i]=c;}
+function crc32(data){let crc=0xFFFFFFFF;for(let i=0;i<data.length;i++)crc=(crc>>>8)^crcTable[(crc^data[i])&0xFF];return(crc^0xFFFFFFFF)>>>0;}
+function createZip(files){
+  const enc=new TextEncoder();const entries=[];const parts=[];let offset=0;
+  for(const[name,content]of Object.entries(files)){
+    const data=enc.encode(content);const crc=crc32(data);const nameBytes=enc.encode(name);
+    const local=[0x50,0x4B,0x03,0x04,20,0,0,0,0,0,0,0,0,0,crc&0xFF,(crc>>>8)&0xFF,(crc>>>16)&0xFF,(crc>>>24)&0xFF,data.length&0xFF,(data.length>>>8)&0xFF,(data.length>>>16)&0xFF,(data.length>>>24)&0xFF,data.length&0xFF,(data.length>>>8)&0xFF,(data.length>>>16)&0xFF,(data.length>>>24)&0xFF,nameBytes.length&0xFF,(nameBytes.length>>>8)&0xFF,0,0,...nameBytes,...data];
+    parts.push(...local);entries.push({name,data,crc,offset});offset+=local.length;
   }
-
-  const central = [];
-  let centralSize = 0;
-  for (const e of entries) {
-    const nameBytes = enc.encode(e.name);
-    const ch = [
-      0x50,0x4B,0x01,0x02,  // signature
-      20,0, 20,0,           // version made/needed
-      0,0, 0,0, 0,0, 0,0,   // flags, compression, time, date
-      e.crc&0xFF,(e.crc>>>8)&0xFF,(e.crc>>>16)&0xFF,(e.crc>>>24)&0xFF,
-      e.data.length&0xFF,(e.data.length>>>8)&0xFF,(e.data.length>>>16)&0xFF,(e.data.length>>>24)&0xFF,
-      e.data.length&0xFF,(e.data.length>>>8)&0xFF,(e.data.length>>>16)&0xFF,(e.data.length>>>24)&0xFF,
-      nameBytes.length&0xFF,(nameBytes.length>>>8)&0xFF,
-      0,0, 0,0, 0,0, 0,0, 0,0,  // extra, comment, disk, internal, external
-      e.offset&0xFF,(e.offset>>>8)&0xFF,(e.offset>>>16)&0xFF,(e.offset>>>24)&0xFF,
-      ...nameBytes,
-    ];
-    central.push(...ch);
-    centralSize += ch.length;
-  }
-
-  const eocd = [
-    0x50,0x4B,0x05,0x06,  // signature
-    0,0, 0,0,              // disk numbers
-    entries.length&0xFF,(entries.length>>>8)&0xFF,
-    entries.length&0xFF,(entries.length>>>8)&0xFF,
-    centralSize&0xFF,(centralSize>>>8)&0xFF,(centralSize>>>16)&0xFF,(centralSize>>>24)&0xFF,
-    offset&0xFF,(offset>>>8)&0xFF,(offset>>>16)&0xFF,(offset>>>24)&0xFF,
-    0,0,                  // comment length
-  ];
-
-  return new Uint8Array([...parts, ...central, ...eocd]);
+  const central=[];let centralSize=0;
+  for(const e of entries){const nameBytes=enc.encode(e.name);const ch=[0x50,0x4B,0x01,0x02,20,0,20,0,0,0,0,0,0,0,0,0,e.crc&0xFF,(e.crc>>>8)&0xFF,(e.crc>>>16)&0xFF,(e.crc>>>24)&0xFF,e.data.length&0xFF,(e.data.length>>>8)&0xFF,(e.data.length>>>16)&0xFF,(e.data.length>>>24)&0xFF,e.data.length&0xFF,(e.data.length>>>8)&0xFF,(e.data.length>>>16)&0xFF,(e.data.length>>>24)&0xFF,nameBytes.length&0xFF,(nameBytes.length>>>8)&0xFF,0,0,0,0,0,0,0,0,0,0,e.offset&0xFF,(e.offset>>>8)&0xFF,(e.offset>>>16)&0xFF,(e.offset>>>24)&0xFF,...nameBytes];central.push(...ch);centralSize+=ch.length;}
+  const eocd=[0x50,0x4B,0x05,0x06,0,0,0,0,entries.length&0xFF,(entries.length>>>8)&0xFF,entries.length&0xFF,(entries.length>>>8)&0xFF,centralSize&0xFF,(centralSize>>>8)&0xFF,(centralSize>>>16)&0xFF,(centralSize>>>24)&0xFF,offset&0xFF,(offset>>>8)&0xFF,(offset>>>16)&0xFF,(offset>>>24)&0xFF,0,0];
+  return new Uint8Array([...parts,...central,...eocd]);
 }
-
-function downloadZip(files, zipName) {
-  const zipBytes = createZip(files);
-  const blob = new Blob([zipBytes.buffer], {type: 'application/zip'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = zipName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+function downloadZip(files,zipName){const z=createZip(files);const b=new Blob([z.buffer],{type:'application/zip'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=zipName;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
 
 // ============================================================
 //  Boot

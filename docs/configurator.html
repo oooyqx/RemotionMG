@@ -93,9 +93,13 @@
   .eo-sel:focus{outline:none;border-color:var(--acc)}
   .eo-sel option{background:var(--bg);color:var(--text)}
   .eo-hdr{font-size:8px;color:var(--dim);font-weight:600;text-align:center}
-  .eo-def{display:flex;gap:6px;align-items:center;margin-bottom:4px;padding:3px 6px;background:rgba(255,255,255,0.02);border-radius:3px;border:1px solid var(--border)}
+  .eo-def{display:flex;gap:6px;align-items:center;margin-bottom:6px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:3px;border:1px solid var(--border)}
   .eo-def-lbl{font-size:9px;color:var(--dim);font-weight:600;white-space:nowrap}
-  .eo-def-val{font-size:10px;color:var(--acc);font-weight:600}
+  .eo-def-sel{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;font-family:inherit;cursor:pointer}
+  .eo-def-sel:focus{outline:none;border-color:var(--acc)}
+  .eo-def-sel option{background:var(--bg);color:var(--text)}
+  .eo-apply{padding:2px 8px;border-radius:3px;border:1px solid var(--acc);background:transparent;color:var(--acc);font-size:9px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .1s}
+  .eo-apply:hover{background:var(--glow)}
 
   /* === Right panel === */
   .right{flex:1;display:flex;flex-direction:column;min-width:300px;min-height:0}
@@ -206,8 +210,10 @@
       <div class="ctrl-section" style="margin-bottom:0">
         <div class="ctrl-label">动效</div>
         <div class="eo-def" id="eoDefRow">
-          <span class="eo-def-lbl">主题动效族：</span>
-          <span class="eo-def-val" id="eoDefIn"></span>
+          <span class="eo-def-lbl">默认</span>
+          <select class="eo-def-sel" id="eoDefIn" onchange="uc()"></select>
+          <select class="eo-def-sel" id="eoDefOut" onchange="uc()"></select>
+          <button class="eo-apply" onclick="applyDefToAll()">应用全部</button>
         </div>
         <div class="eo-grid" id="eoGrid">
           <div></div><div class="eo-hdr">入场</div><div class="eo-hdr">出场</div>
@@ -326,14 +332,23 @@ function fxOptsHtml(){
 }
 function fxLabel(id){const f=FX_NAMES.find(x=>x.id===id);return f?`${f.c}${String(f.id%10||10).padStart(2,'0')} ${f.n}`:`#${id}`;}
 function initEoGrid(){
-  const g=document.getElementById('eoGrid');const opts=fxOptsHtml();
+  const opts=fxOptsHtml();
+  document.getElementById('eoDefIn').innerHTML=opts;
+  document.getElementById('eoDefOut').innerHTML=opts;
+  const g=document.getElementById('eoGrid');
   for(const r of ORD){
     g.innerHTML+=`<div class="eo-lbl">${LB[r]}</div><select class="eo-sel" id="eo-${r}-in" onchange="uc()">${opts}</select><select class="eo-sel" id="eo-${r}-out" onchange="uc()">${opts}</select>`;
   }
 }
 function syncEoDefaults(){
   const th=TH[S.theme];
-  document.getElementById('eoDefIn').textContent=th.families.map(f=>`${f} · ${CAT[f]||f}`).join(' / ');
+  document.getElementById('eoDefIn').value=th.effects.hero.i;
+  document.getElementById('eoDefOut').value=th.effects.hero.o;
+}
+function applyDefToAll(){
+  const i=document.getElementById('eoDefIn').value,o=document.getElementById('eoDefOut').value;
+  for(const r of ORD){document.getElementById(`eo-${r}-in`).value=i;document.getElementById(`eo-${r}-out`).value=o;}
+  uc();
 }
 function syncEoValues(){
   const th=TH[S.theme];

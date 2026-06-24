@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主题配置器 / Theme Configurator — RemotionMG</title>
+<style>
+  :root {
+    --bg: #0a0e1c;
+    --bg2: #0d1226;
+    --card: #111733;
+    --border: #1e2748;
+    --text: #e8ecf5;
+    --muted: #8892b0;
+    --accent: #38e0ff;
+    --accent2: #7aa2ff;
+    --danger: #ff5d73;
+    --ok: #4ad9a0;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  h1 small { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .header { margin-bottom: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
+  label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; margin-top: 10px; }
+  label:first-child { margin-top: 0; }
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 60px; font-family: "Menlo", "Consolas", monospace; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+  .scene-section { border-left: 3px solid var(--border); padding-left: 12px; margin-bottom: 12px; }
+  .scene-section h3 { font-size: 0.85rem; margin-bottom: 8px; cursor: pointer; user-select: none; }
+  .scene-section h3:hover { color: var(--accent); }
+  .scene-section.collapsed .scene-body { display: none; }
+  .scene-section.collapsed h3::after { content: " ▸"; }
+  .scene-section h3::after { content: " ▾"; color: var(--muted); }
+  .entry-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
+  .entry-row input { flex: 1; }
+  .btn-mini {
+    background: var(--border);
+    border: none;
+    color: var(--text);
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  .btn-mini:hover { background: var(--accent); color: var(--bg); }
+  .btn-mini.danger:hover { background: var(--danger); }
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-secondary { background: var(--accent2); color: #fff; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .json-preview {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 0.78rem;
+    max-height: 400px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .readme-preview {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-size: 0.8rem;
+    max-height: 400px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+  .tab {
+    padding: 6px 14px;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    background: var(--bg2);
+    color: var(--muted);
+  }
+  .tab.active { background: var(--card); color: var(--accent); border-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ok);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.85rem;
+    z-index: 999;
+    animation: fadeOut 2s forwards;
+  }
+  @keyframes fadeOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
+  .hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+  .toggle { display: flex; align-items: center; gap: 6px; }
+  .toggle input { width: auto; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>主题配置器 <small>Theme Configurator — RemotionMG</small></h1>
+    <p style="color:var(--muted);font-size:.82rem">选主题 → 填文字 → 导出主题包（theme.json + README.md）</p>
+  </div>
+
+  <div class="grid">
+    <!-- Left: Editor -->
+    <div>
+      <!-- Theme selection -->
+      <div class="card">
+        <h2>1. 主题 / Theme</h2>
+        <label>主题 / Theme</label>
+        <select id="themeSelect"></select>
+        <div id="themeDesc" style="margin-top:8px;font-size:.8rem;color:var(--muted)"></div>
+      </div>
+
+      <!-- Content editor -->
+      <div class="card">
+        <h2>2. 内容 / Content</h2>
+
+        <div class="scene-section" id="sec-hero">
+          <h3 onclick="toggleSection('sec-hero')">主标题 / Hero</h3>
+          <div class="scene-body">
+            <div id="heroEntries"></div>
+            <button class="btn-mini" onclick="addHeroEntry()">+ 添加 / Add</button>
+          </div>
+        </div>
+
+        <div class="scene-section" id="sec-list">
+          <h3 onclick="toggleSection('sec-list')">列表 / List</h3>
+          <div class="scene-body">
+            <label>标题 / Title</label>
+            <input id="listTitle" type="text" oninput="updateConfig()">
+            <label>条目 / Items</label>
+            <div id="listItems"></div>
+            <button class="btn-mini" onclick="addListItem()">+ 添加 / Add</button>
+          </div>
+        </div>
+
+        <div class="scene-section" id="sec-lowerThird">
+          <h3 onclick="toggleSection('sec-lowerThird')">角标 / Lower-third</h3>
+          <div class="scene-body">
+            <div id="lowerThirdEntries"></div>
+            <button class="btn-mini" onclick="addLowerThirdEntry()">+ 添加 / Add</button>
+          </div>
+        </div>
+
+        <div class="scene-section" id="sec-caption">
+          <h3 onclick="toggleSection('sec-caption')">字幕 / Caption</h3>
+          <div class="scene-body">
+            <div id="captionLines"></div>
+            <button class="btn-mini" onclick="addCaptionLine()">+ 添加 / Add</button>
+          </div>
+        </div>
+
+        <div class="scene-section" id="sec-emphasis">
+          <h3 onclick="toggleSection('sec-emphasis')">强调 / Emphasis</h3>
+          <div class="scene-body">
+            <div id="emphasisLines"></div>
+            <button class="btn-mini" onclick="addEmphasisLine()">+ 添加 / Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced overrides -->
+      <div class="card">
+        <h2>3. 高级覆盖 / Advanced Overrides <span style="font-size:.7rem;color:var(--muted)">(可选 / optional)</span></h2>
+        <label>场景顺序 / Scene Order (逗号分隔)</label>
+        <input id="orderInput" type="text" placeholder="hero,list,lowerThird,caption,emphasis" oninput="updateConfig()">
+        <div class="hint">默认: hero → list → lowerThird → caption → emphasis</div>
+
+        <div class="row">
+          <div>
+            <label>入场帧 / In frames</label>
+            <input id="inF" type="number" oninput="updateConfig()">
+          </div>
+          <div>
+            <label>停留帧 / Hold frames</label>
+            <input id="holdF" type="number" oninput="updateConfig()">
+          </div>
+          <div>
+            <label>出场帧 / Out frames</label>
+            <input id="outF" type="number" oninput="updateConfig()">
+          </div>
+        </div>
+        <div class="hint">留空即用主题默认时序</div>
+
+        <label>背景 / Background</label>
+        <input id="bgOverride" type="text" placeholder="覆盖主题背景 (CSS)" oninput="updateConfig()">
+        <label>前景色 / Foreground</label>
+        <input id="colorOverride" type="text" placeholder="覆盖主题前景色" oninput="updateConfig()">
+        <label>强调色 / Accent</label>
+        <input id="accentOverride" type="text" placeholder="覆盖主题强调色" oninput="updateConfig()">
+      </div>
+
+      <!-- Actions -->
+      <div class="card">
+        <div class="actions">
+          <button class="btn btn-primary" onclick="exportZip()">📦 导出主题包 / Export ZIP</button>
+          <button class="btn btn-secondary" onclick="copyJson()">📋 复制 JSON / Copy JSON</button>
+          <button class="btn btn-ghost" onclick="copyRenderCmd()">⌨️ 复制渲染命令 / Copy Render Cmd</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Preview -->
+    <div>
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('json')">theme.json</div>
+          <div class="tab" onclick="switchTab('readme')">README.md</div>
+          <div class="tab" onclick="switchTab('cmd')">渲染命令 / Render Cmd</div>
+        </div>
+        <div id="tab-json" class="tab-content active">
+          <div class="json-preview" id="jsonPreview"></div>
+        </div>
+        <div id="tab-readme" class="tab-content">
+          <div class="readme-preview" id="readmePreview"></div>
+        </div>
+        <div id="tab-cmd" class="tab-content">
+          <div class="json-preview" id="cmdPreview"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  Theme data (inlined from docs/effects.json themes array)
+// ============================================================
+const THEMES = [
+  {id:"glitch",name:"故障赛博",enName:"Glitch / Cyber",description:"数字故障风：乱码解码登场、RGB 撕裂离场；等宽字体、青色高亮、深色背景。",effects:{hero:{inEffectId:72,outEffectId:95},list:{inEffectId:74,outEffectId:74},lowerThird:{inEffectId:72,outEffectId:95},caption:{inEffectId:78,outEffectId:79},emphasis:{inEffectId:95,outEffectId:72}}},
+  {id:"soft",name:"柔和优雅",enName:"Soft / Focus",description:"柔和聚焦风：从模糊对焦浮现、墨水晕染淡出；轻字重、蓝白配色，适合解说/科普。",effects:{hero:{inEffectId:31,outEffectId:33},list:{inEffectId:11,outEffectId:11},lowerThird:{inEffectId:31,outEffectId:33},caption:{inEffectId:31,outEffectId:31},emphasis:{inEffectId:34,outEffectId:31}}},
+  {id:"bouncy",name:"活力弹跳",enName:"Bouncy / Spring",description:"弹性活泼风：弹簧弹出、旋转缩放螺入/出；橙色高亮、重字重，适合宣传/活动片。",effects:{hero:{inEffectId:21,outEffectId:23},list:{inEffectId:13,outEffectId:13},lowerThird:{inEffectId:12,outEffectId:12},caption:{inEffectId:11,outEffectId:11},emphasis:{inEffectId:21,outEffectId:21}}},
+  {id:"minimal",name:"极简打字",enName:"Minimal / Type",description:"极简打字风：打字机逐字登场、字距收拢离场；近黑背景、细字重，适合代码/技术向。",effects:{hero:{inEffectId:51,outEffectId:58},list:{inEffectId:52,outEffectId:52},lowerThird:{inEffectId:11,outEffectId:11},caption:{inEffectId:51,outEffectId:51},emphasis:{inEffectId:51,outEffectId:58}}},
+  {id:"elegant",name:"优雅衬线",enName:"Elegant / Serif",description:"优雅衬线风：螺旋极坐标归位、辉光绽放强调；衬线字体、金色高亮，适合品牌/片头。",effects:{hero:{inEffectId:47,outEffectId:40},list:{inEffectId:11,outEffectId:11},lowerThird:{inEffectId:69,outEffectId:63},caption:{inEffectId:11,outEffectId:11},emphasis:{inEffectId:34,outEffectId:31}}},
+];
+
+const DEMO_CONTENT = {
+  hero: {entries: [{text: "主题成套动效", sub: "One theme · consistent motion"}]},
+  list: {title: "一个主题搞定整片", items: [
+    {text: "标题、列表、字幕…自动协调"},
+    {text: "入场/出场可分别切换"},
+    {text: "配色/字体/节奏全主题统一"},
+    {text: "导出即一份配置 JSON"},
+  ]},
+  lowerThird: {entries: [{name: "林述白", role: "动态设计师 / Motion Designer"}]},
+  caption: {lines: [
+    {text: "选一个主题，整片风格一键成套。"},
+    {text: "再逐场景微调入场与出场。"},
+  ]},
+  emphasis: {lines: [{pre: "只需 ", token: "一个主题", post: " 即可统一全片。"}]},
+};
+
+// ============================================================
+//  State
+// ============================================================
+let state = {
+  theme: "glitch",
+  content: JSON.parse(JSON.stringify(DEMO_CONTENT)),
+};
+
+// ============================================================
+//  Init
+// ============================================================
+function init() {
+  const sel = document.getElementById('themeSelect');
+  THEMES.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = `${t.name} · ${t.enName}`;
+    sel.appendChild(opt);
+  });
+  sel.value = state.theme;
+  sel.onchange = () => { state.theme = sel.value; updateThemeDesc(); updateConfig(); };
+  updateThemeDesc();
+  renderAllSections();
+  updateConfig();
+}
+
+function updateThemeDesc() {
+  const t = THEMES.find(x => x.id === state.theme);
+  document.getElementById('themeDesc').textContent = t ? t.description : '';
+}
+
+// ============================================================
+//  Section toggle
+// ============================================================
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+
+// ============================================================
+//  Content editors
+// ============================================================
+function renderAllSections() {
+  renderHeroEntries();
+  renderListItems();
+  renderLowerThirdEntries();
+  renderCaptionLines();
+  renderEmphasisLines();
+}
+
+function renderHeroEntries() {
+  const c = document.getElementById('heroEntries');
+  c.innerHTML = '';
+  (state.content.hero?.entries || []).forEach((e, i) => {
+    const row = document.createElement('div');
+    row.className = 'entry-row';
+    row.innerHTML = `
+      <input type="text" placeholder="标题 / text" value="${esc(e.text)}" oninput="editHeroEntry(${i},'text',this.value)">
+      <input type="text" placeholder="副标题 / sub" value="${esc(e.sub||'')}" oninput="editHeroEntry(${i},'sub',this.value)">
+      <button class="btn-mini danger" onclick="removeHeroEntry(${i})">✕</button>
+    `;
+    c.appendChild(row);
+  });
+}
+function addHeroEntry() {
+  if (!state.content.hero) state.content.hero = {entries: []};
+  state.content.hero.entries.push({text: "新标题", sub: ""});
+  renderHeroEntries(); updateConfig();
+}
+function editHeroEntry(i, field, val) {
+  state.content.hero.entries[i][field] = val;
+  updateConfig();
+}
+function removeHeroEntry(i) {
+  state.content.hero.entries.splice(i, 1);
+  renderHeroEntries(); updateConfig();
+}
+
+function renderListItems() {
+  const c = document.getElementById('listItems');
+  c.innerHTML = '';
+  document.getElementById('listTitle').value = state.content.list?.title || '';
+  (state.content.list?.items || []).forEach((it, i) => {
+    const row = document.createElement('div');
+    row.className = 'entry-row';
+    row.innerHTML = `
+      <input type="text" placeholder="条目 / item" value="${esc(it.text)}" oninput="editListItem(${i},this.value)">
+      <button class="btn-mini danger" onclick="removeListItem(${i})">✕</button>
+    `;
+    c.appendChild(row);
+  });
+}
+function addListItem() {
+  if (!state.content.list) state.content.list = {title: "", items: []};
+  state.content.list.items.push({text: "新条目"});
+  renderListItems(); updateConfig();
+}
+function editListItem(i, val) {
+  state.content.list.items[i].text = val;
+  updateConfig();
+}
+function removeListItem(i) {
+  state.content.list.items.splice(i, 1);
+  renderListItems(); updateConfig();
+}
+
+function renderLowerThirdEntries() {
+  const c = document.getElementById('lowerThirdEntries');
+  c.innerHTML = '';
+  (state.content.lowerThird?.entries || []).forEach((e, i) => {
+    const row = document.createElement('div');
+    row.className = 'entry-row';
+    row.innerHTML = `
+      <input type="text" placeholder="姓名 / name" value="${esc(e.name)}" oninput="editLowerThird(${i},'name',this.value)">
+      <input type="text" placeholder="角色 / role" value="${esc(e.role)}" oninput="editLowerThird(${i},'role',this.value)">
+      <button class="btn-mini danger" onclick="removeLowerThird(${i})">✕</button>
+    `;
+    c.appendChild(row);
+  });
+}
+function addLowerThirdEntry() {
+  if (!state.content.lowerThird) state.content.lowerThird = {entries: []};
+  state.content.lowerThird.entries.push({name: "姓名", role: "角色"});
+  renderLowerThirdEntries(); updateConfig();
+}
+function editLowerThird(i, field, val) {
+  state.content.lowerThird.entries[i][field] = val;
+  updateConfig();
+}
+function removeLowerThird(i) {
+  state.content.lowerThird.entries.splice(i, 1);
+  renderLowerThirdEntries(); updateConfig();
+}
+
+function renderCaptionLines() {
+  const c = document.getElementById('captionLines');
+  c.innerHTML = '';
+  (state.content.caption?.lines || []).forEach((l, i) => {
+    const row = document.createElement('div');
+    row.className = 'entry-row';
+    row.innerHTML = `
+      <input type="text" placeholder="字幕 / caption" value="${esc(l.text)}" oninput="editCaption(${i},this.value)">
+      <button class="btn-mini danger" onclick="removeCaption(${i})">✕</button>
+    `;
+    c.appendChild(row);
+  });
+}
+function addCaptionLine() {
+  if (!state.content.caption) state.content.caption = {lines: []};
+  state.content.caption.lines.push({text: "新字幕"});
+  renderCaptionLines(); updateConfig();
+}
+function editCaption(i, val) {
+  state.content.caption.lines[i].text = val;
+  updateConfig();
+}
+function removeCaption(i) {
+  state.content.caption.lines.splice(i, 1);
+  renderCaptionLines(); updateConfig();
+}
+
+function renderEmphasisLines() {
+  const c = document.getElementById('emphasisLines');
+  c.innerHTML = '';
+  (state.content.emphasis?.lines || []).forEach((l, i) => {
+    const div = document.createElement('div');
+    div.style.marginBottom = '8px';
+    div.innerHTML = `
+      <div class="entry-row">
+        <input type="text" placeholder="前 / pre" value="${esc(l.pre)}" oninput="editEmphasis(${i},'pre',this.value)">
+        <input type="text" placeholder="强调词 / token" value="${esc(l.token)}" oninput="editEmphasis(${i},'token',this.value)">
+        <input type="text" placeholder="后 / post" value="${esc(l.post)}" oninput="editEmphasis(${i},'post',this.value)">
+        <button class="btn-mini danger" onclick="removeEmphasis(${i})">✕</button>
+      </div>
+    `;
+    c.appendChild(div);
+  });
+}
+function addEmphasisLine() {
+  if (!state.content.emphasis) state.content.emphasis = {lines: []};
+  state.content.emphasis.lines.push({pre: "", token: "强调", post: ""});
+  renderEmphasisLines(); updateConfig();
+}
+function editEmphasis(i, field, val) {
+  state.content.emphasis.lines[i][field] = val;
+  updateConfig();
+}
+function removeEmphasis(i) {
+  state.content.emphasis.lines.splice(i, 1);
+  renderEmphasisLines(); updateConfig();
+}
+
+// ============================================================
+//  Build config from state + overrides
+// ============================================================
+function buildConfig() {
+  const config = {theme: state.theme, content: {}};
+
+  // Copy non-empty content
+  if (state.content.hero?.entries.length) config.content.hero = state.content.hero;
+  if (state.content.list?.items.length) {
+    config.content.list = {items: state.content.list.items};
+    if (state.content.list.title) config.content.list.title = state.content.list.title;
+  }
+  if (state.content.lowerThird?.entries.length) config.content.lowerThird = state.content.lowerThird;
+  if (state.content.caption?.lines.length) config.content.caption = state.content.caption;
+  if (state.content.emphasis?.lines.length) config.content.emphasis = state.content.emphasis;
+
+  // Order override
+  const orderVal = document.getElementById('orderInput').value.trim();
+  if (orderVal) {
+    const parts = orderVal.split(',').map(s => s.trim()).filter(Boolean);
+    if (parts.length) config.order = parts;
+  }
+
+  // Timing override
+  const inF = parseInt(document.getElementById('inF').value);
+  const holdF = parseInt(document.getElementById('holdF').value);
+  const outF = parseInt(document.getElementById('outF').value);
+  if (inF > 0 && holdF >= 0 && outF > 0) {
+    config.timing = {inF, holdF, outF};
+  }
+
+  // Style override
+  const style = {};
+  const bg = document.getElementById('bgOverride').value.trim();
+  const color = document.getElementById('colorOverride').value.trim();
+  const accent = document.getElementById('accentOverride').value.trim();
+  if (bg) style.background = bg;
+  if (color) style.color = color;
+  if (accent) style.accent = accent;
+  if (Object.keys(style).length) config.style = style;
+
+  return config;
+}
+
+// ============================================================
+//  README generation (mirrors src/textfx/themeExport.ts)
+// ============================================================
+function generateReadme(config) {
+  const theme = THEMES.find(t => t.id === config.theme);
+  if (!theme) return 'Error: theme not found';
+
+  const themeJson = JSON.stringify(config, null, 2);
+  const renderCmd = `npx remotion render src/index.ts SceneTheme out.mp4 --props='${themeJson.trim()}'`;
+
+  const sceneLabels = {hero:['主标题','Hero'],list:['列表','List'],lowerThird:['角标','Lower-third'],caption:['字幕','Caption'],emphasis:['强调','Emphasis']};
+  const order = config.order || ['hero','list','lowerThird','caption','emphasis'];
+  const activeScenes = order.filter(r => config.content[r]);
+  const sceneList = activeScenes.map(r => `${sceneLabels[r][0]} (${sceneLabels[r][1]})`).join(' → ');
+
+  // Estimate frames (simplified)
+  const t = config.timing || {inF:20,holdF:40,outF:16};
+  const slot = t.inF + t.holdF + t.outF;
+  let totalFrames = 0;
+  if (config.content.hero) totalFrames += (config.content.hero.entries.length || 1) * slot;
+  if (config.content.list) totalFrames += Math.max(0, (config.content.list.items.length-1)) * 22 + 18 + 30;
+  if (config.content.lowerThird) totalFrames += (config.content.lowerThird.entries.length || 1) * slot;
+  if (config.content.caption) totalFrames += (config.content.caption.lines.length || 1) * slot;
+  if (config.content.emphasis) totalFrames += (config.content.emphasis.lines.length || 1) * slot;
+  if (totalFrames === 0) totalFrames = slot;
+  const seconds = (totalFrames / 30).toFixed(1);
+
+  const sections = [];
+  if (config.content.hero) {
+    sections.push('### 主标题 / Hero\n' + config.content.hero.entries.map(e => `- **${e.text}**${e.sub ? ' — ' + e.sub : ''}`).join('\n'));
+  }
+  if (config.content.list) {
+    sections.push('### 列表 / List\n' + (config.content.list.title ? '*'+config.content.list.title+'*\n' : '') + config.content.list.items.map(it => '- '+it.text).join('\n'));
+  }
+  if (config.content.lowerThird) {
+    sections.push('### 角标 / Lower-third\n' + config.content.lowerThird.entries.map(e => `- **${e.name}** — ${e.role}`).join('\n'));
+  }
+  if (config.content.caption) {
+    sections.push('### 字幕 / Caption\n' + config.content.caption.lines.map(l => '- '+l.text).join('\n'));
+  }
+  if (config.content.emphasis) {
+    sections.push('### 强调 / Emphasis\n' + config.content.emphasis.lines.map(l => `- ${l.pre}**${l.token}**${l.post}`).join('\n'));
+  }
+
+  const hasStyleOverride = !!config.style;
+  const hasTimingOverride = !!config.timing;
+  const hasEffectOverride = !!config.effects;
+
+  return `# 主题包 / Theme Package: ${theme.name} · ${theme.enName}
+
+> ${theme.description}
+
+## 渲染命令 / Render Command
+
+\`\`\`bash
+${renderCmd}
+\`\`\`
+
+> 也可用 \`--props=@theme.json\` 从文件读取。
+> Alternatively, use \`--props=@theme.json\` to read from file.
+
+## 配置摘要 / Config Summary
+
+| 项目 / Item | 值 / Value |
+|---|---|
+| 主题 / Theme | \`${theme.id}\` — ${theme.name} / ${theme.enName} |
+| 场景顺序 / Scenes | ${sceneList} |
+| 时序 / Timing | 入场 ${t.inF}f · 停留 ${t.holdF}f · 出场 ${t.outF}f${hasTimingOverride ? ' (已覆盖 / overridden)' : ''} |
+| 总时长 / Duration | ${totalFrames}f (${seconds}s @ 30fps) |
+| 动效覆盖 / Effect overrides | ${hasEffectOverride ? '是 / yes' : '否 / no'} |
+
+## 内容 / Content
+
+${sections.join('\n\n')}
+
+## 文件 / Files
+
+- \`theme.json\` — 单一事实源 / Single source of truth (the ThemeConfig)
+- \`README.md\` — 本文件 / This file
+
+## 用法 / Usage
+
+1. **命令行渲染 / CLI render:**
+   \`\`\`bash
+   npx remotion render src/index.ts SceneTheme out.mp4 --props=@theme.json
+   \`\`\`
+
+2. **Remotion Studio:**
+   \`npm run dev\` → 选择 \`SceneTheme\` 合成 → 在 props 面板粘贴 \`theme.json\` 内容。
+
+3. **AI / 脚本调用 / AI / script usage:**
+   \`\`\`bash
+   npm run export:theme -- --config theme.json --out theme-package.zip
+   \`\`\`
+`;
+}
+
+// ============================================================
+//  Update preview
+// ============================================================
+function updateConfig() {
+  const config = buildConfig();
+  const json = JSON.stringify(config, null, 2);
+  document.getElementById('jsonPreview').textContent = json;
+  document.getElementById('readmePreview').textContent = generateReadme(config);
+  document.getElementById('cmdPreview').textContent =
+    `npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`;
+}
+
+// ============================================================
+//  Tabs
+// ============================================================
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ============================================================
+//  Export / Copy
+// ============================================================
+function exportZip() {
+  const config = buildConfig();
+  const themeJson = JSON.stringify(config, null, 2) + '\n';
+  const readmeMd = generateReadme(config);
+  const files = {'theme.json': themeJson, 'README.md': readmeMd};
+  downloadZip(files, `theme-${config.theme}.zip`);
+  showToast('主题包已下载 / Theme package downloaded');
+}
+
+function copyJson() {
+  const config = buildConfig();
+  navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+  showToast('JSON 已复制 / JSON copied');
+}
+
+function copyRenderCmd() {
+  const config = buildConfig();
+  const json = JSON.stringify(config, null, 2);
+  navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`);
+  showToast('渲染命令已复制 / Render command copied');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2000);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+//  Minimal ZIP builder (STORE, no compression)
+// ============================================================
+function crc32(data) {
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < data.length; i++) {
+    crc = (crc >>> 8) ^ crcTable[(crc ^ data[i]) & 0xFF];
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+const crcTable = new Uint32Array(256);
+for (let i = 0; i < 256; i++) {
+  let c = i;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+  crcTable[i] = c;
+}
+
+function createZip(files) {
+  const enc = new TextEncoder();
+  const entries = [];
+  const parts = [];
+  let offset = 0;
+
+  for (const [name, content] of Object.entries(files)) {
+    const data = enc.encode(content);
+    const crc = crc32(data);
+    const nameBytes = enc.encode(name);
+    const local = [
+      0x50,0x4B,0x03,0x04,  // signature
+      20,0, 0,0, 0,0,       // version, flags, compression
+      0,0, 0,0,             // mod time, mod date
+      crc&0xFF,(crc>>>8)&0xFF,(crc>>>16)&0xFF,(crc>>>24)&0xFF,
+      data.length&0xFF,(data.length>>>8)&0xFF,(data.length>>>16)&0xFF,(data.length>>>24)&0xFF,
+      data.length&0xFF,(data.length>>>8)&0xFF,(data.length>>>16)&0xFF,(data.length>>>24)&0xFF,
+      nameBytes.length&0xFF,(nameBytes.length>>>8)&0xFF,
+      0,0,                  // extra field length
+      ...nameBytes,
+      ...data,
+    ];
+    parts.push(...local);
+    entries.push({name, data, crc, offset});
+    offset += local.length;
+  }
+
+  const central = [];
+  let centralSize = 0;
+  for (const e of entries) {
+    const nameBytes = enc.encode(e.name);
+    const ch = [
+      0x50,0x4B,0x01,0x02,  // signature
+      20,0, 20,0,           // version made/needed
+      0,0, 0,0, 0,0, 0,0,   // flags, compression, time, date
+      e.crc&0xFF,(e.crc>>>8)&0xFF,(e.crc>>>16)&0xFF,(e.crc>>>24)&0xFF,
+      e.data.length&0xFF,(e.data.length>>>8)&0xFF,(e.data.length>>>16)&0xFF,(e.data.length>>>24)&0xFF,
+      e.data.length&0xFF,(e.data.length>>>8)&0xFF,(e.data.length>>>16)&0xFF,(e.data.length>>>24)&0xFF,
+      nameBytes.length&0xFF,(nameBytes.length>>>8)&0xFF,
+      0,0, 0,0, 0,0, 0,0, 0,0,  // extra, comment, disk, internal, external
+      e.offset&0xFF,(e.offset>>>8)&0xFF,(e.offset>>>16)&0xFF,(e.offset>>>24)&0xFF,
+      ...nameBytes,
+    ];
+    central.push(...ch);
+    centralSize += ch.length;
+  }
+
+  const eocd = [
+    0x50,0x4B,0x05,0x06,  // signature
+    0,0, 0,0,              // disk numbers
+    entries.length&0xFF,(entries.length>>>8)&0xFF,
+    entries.length&0xFF,(entries.length>>>8)&0xFF,
+    centralSize&0xFF,(centralSize>>>8)&0xFF,(centralSize>>>16)&0xFF,(centralSize>>>24)&0xFF,
+    offset&0xFF,(offset>>>8)&0xFF,(offset>>>16)&0xFF,(offset>>>24)&0xFF,
+    0,0,                  // comment length
+  ];
+
+  return new Uint8Array([...parts, ...central, ...eocd]);
+}
+
+function downloadZip(files, zipName) {
+  const zipBytes = createZip(files);
+  const blob = new Blob([zipBytes.buffer], {type: 'application/zip'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = zipName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+//  Boot
+// ============================================================
+init();
+</script>
+</body>
+</html>

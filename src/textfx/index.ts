@@ -39,5 +39,9 @@ export * from './presets';
 // 主题系统（一键成套动效）
 export * from './themes';
 
+// 主题包导出（theme.json + README.md → zip）
+export * from './themeExport';
+export * from './zip';
+
 // 机读清单
 export * from './manifest';

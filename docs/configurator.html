@@ -70,7 +70,7 @@
   .empty-msg{color:var(--dim);font-size:11px;text-align:center;padding:12px 0}
 
   /* -- Controls strip -- */
-  .controls{flex-shrink:0;padding:8px 12px;border-top:1px solid var(--border);background:var(--bg2)}
+  .controls{flex-shrink:0;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
   .ctrl-section{margin-bottom:6px}
   .ctrl-label{font-size:9px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
   .sl-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
@@ -93,6 +93,9 @@
   .eo-sel:focus{outline:none;border-color:var(--acc)}
   .eo-sel option{background:var(--bg);color:var(--text)}
   .eo-hdr{font-size:8px;color:var(--dim);font-weight:600;text-align:center}
+  .eo-def{display:flex;gap:6px;align-items:center;margin-bottom:4px;padding:3px 6px;background:rgba(255,255,255,0.02);border-radius:3px;border:1px solid var(--border)}
+  .eo-def-lbl{font-size:9px;color:var(--dim);font-weight:600;white-space:nowrap}
+  .eo-def-val{font-size:10px;color:var(--acc);font-weight:600}
 
   /* === Right panel === */
   .right{flex:1;display:flex;flex-direction:column;min-width:300px;min-height:0}
@@ -184,12 +187,6 @@
 
   <!-- Left: Controls -->
   <div class="left">
-    <!-- Scene tabs -->
-    <div class="scene-tabs" id="sceneTabs"></div>
-
-    <!-- Editor -->
-    <div class="editor" id="editorArea"></div>
-
     <!-- Controls strip -->
     <div class="controls">
       <div class="ctrl-section">
@@ -207,12 +204,22 @@
         </div>
       </div>
       <div class="ctrl-section" style="margin-bottom:0">
-        <div class="ctrl-label">动效覆盖</div>
+        <div class="ctrl-label">动效</div>
+        <div class="eo-def" id="eoDefRow">
+          <span class="eo-def-lbl">主题动效族：</span>
+          <span class="eo-def-val" id="eoDefIn"></span>
+        </div>
         <div class="eo-grid" id="eoGrid">
           <div></div><div class="eo-hdr">入场</div><div class="eo-hdr">出场</div>
         </div>
       </div>
     </div>
+
+    <!-- Scene tabs -->
+    <div class="scene-tabs" id="sceneTabs"></div>
+
+    <!-- Editor -->
+    <div class="editor" id="editorArea"></div>
   </div>
 
   <!-- Right: Preview + Output -->
@@ -317,10 +324,22 @@ function fxOptsHtml(){
   if(cur)h+='</optgroup>';
   _fxOptsHtml=h;return h;
 }
+function fxLabel(id){const f=FX_NAMES.find(x=>x.id===id);return f?`${f.c}${String(f.id%10||10).padStart(2,'0')} ${f.n}`:`#${id}`;}
 function initEoGrid(){
   const g=document.getElementById('eoGrid');const opts=fxOptsHtml();
   for(const r of ORD){
     g.innerHTML+=`<div class="eo-lbl">${LB[r]}</div><select class="eo-sel" id="eo-${r}-in" onchange="uc()">${opts}</select><select class="eo-sel" id="eo-${r}-out" onchange="uc()">${opts}</select>`;
+  }
+}
+function syncEoDefaults(){
+  const th=TH[S.theme];
+  document.getElementById('eoDefIn').textContent=th.families.map(f=>`${f} · ${CAT[f]||f}`).join(' / ');
+}
+function syncEoValues(){
+  const th=TH[S.theme];
+  for(const r of ORD){
+    document.getElementById(`eo-${r}-in`).value=th.effects[r].i;
+    document.getElementById(`eo-${r}-out`).value=th.effects[r].o;
   }
 }
 const DEMO={hero:{entries:[{text:'主题成套动效',sub:'One theme · consistent motion'}]},list:{title:'一个主题搞定整片',items:[{text:'标题、列表、字幕…自动协调'},{text:'入场/出场可分别切换'},{text:'配色/字体/节奏全主题统一'},{text:'导出即一份配置 JSON'}]},lowerThird:{entries:[{name:'林述白',role:'动态设计师'}]},caption:{lines:[{text:'选一个主题，整片风格一键成套。'},{text:'再逐场景微调入场与出场。'}]},emphasis:{lines:[{pre:'只需 ',token:'一个主题',post:' 即可统一全片。'}]}};
@@ -331,7 +350,7 @@ let S={theme:'glitch',content:structuredClone(DEMO)};
 let curTab='hero',timOv=false;
 
 // === Init ===
-function init(){initEoGrid();renderPills();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
+function init(){initEoGrid();syncEoValues();syncEoDefaults();renderPills();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
 
 // === Theme pills ===
 function renderPills(){
@@ -348,6 +367,7 @@ function renderPills(){
 function selTheme(id){
   S.theme=id;
   document.querySelectorAll('.tp').forEach(b=>b.classList.toggle('on',b.getAttribute('data-id')===id));
+  syncEoValues();syncEoDefaults();
   if(!timOv)syncTim();uc();
 }
 function syncTim(){
@@ -466,7 +486,7 @@ function buildCfg(){
   if(bg)st.background=bg;if(fg)st.color=fg;if(ac)st.accent=ac;
   if(Object.keys(st).length)cfg.style=st;
   const eff={};
-  for(const r of ORD){const iv=document.getElementById(`eo-${r}-in`).value,ov=document.getElementById(`eo-${r}-out`).value;const i=+iv,o=+ov;const th=TH[S.theme].effects[r];if(iv||ov)eff[r]={inEffectId:(i>=1&&i<=100)?i:th.i,outEffectId:(o>=1&&o<=100)?o:th.o};}
+  for(const r of ORD){const i=+document.getElementById(`eo-${r}-in`).value,o=+document.getElementById(`eo-${r}-out`).value;const th=TH[S.theme].effects[r];if(i!==th.i||o!==th.o)eff[r]={inEffectId:i,outEffectId:o};}
   if(Object.keys(eff).length)cfg.effects=eff;
   return cfg;
 }
@@ -820,7 +840,7 @@ function exportZip(){
 }
 function copyJson(){navigator.clipboard.writeText(JSON.stringify(buildCfg(),null,2));toast('JSON 已复制');}
 function copyRenderCmd(){const j=JSON.stringify(buildCfg(),null,2);navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${j.trim()}'`);toast('命令已复制');}
-function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;renderPills();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');ORD.forEach(r=>{document.getElementById(`eo-${r}-in`).value='';document.getElementById(`eo-${r}-out`).value='';});uc();toast('已重置');}
+function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;renderPills();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');syncEoValues();syncEoDefaults();uc();toast('已重置');}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 

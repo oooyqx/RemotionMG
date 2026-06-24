@@ -101,6 +101,16 @@
   .eo-apply{padding:2px 8px;border-radius:3px;border:1px solid var(--acc);background:transparent;color:var(--acc);font-size:9px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .1s}
   .eo-apply:hover{background:var(--glow)}
 
+  /* -- Scene order -- */
+  .ord-section{padding:6px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
+  .ord-label{font-size:9px;color:var(--dim);font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+  .ord-list{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+  .ord-item{display:flex;align-items:center;gap:2px;padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:var(--bg);font-size:10px;color:var(--text2);cursor:default;transition:all .1s}
+  .ord-item.active{border-color:var(--acc);color:var(--acc);background:var(--glow)}
+  .ord-arrow{width:14px;height:14px;border:none;background:transparent;color:var(--dim);cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;border-radius:2px;padding:0;transition:all .1s}
+  .ord-arrow:hover{color:var(--acc);background:rgba(56,224,255,0.08)}
+  .ord-sep{color:var(--dim);font-size:9px;opacity:.5;user-select:none}
+
   /* === Right panel === */
   .right{flex:1;display:flex;flex-direction:column;min-width:300px;min-height:0}
 
@@ -219,6 +229,12 @@
           <div></div><div class="eo-hdr">入场</div><div class="eo-hdr">出场</div>
         </div>
       </div>
+    </div>
+
+    <!-- Scene order -->
+    <div class="ord-section">
+      <div class="ord-label">队列 Order</div>
+      <div class="ord-list" id="ordList"></div>
     </div>
 
     <!-- Scene tabs -->
@@ -360,12 +376,34 @@ function syncEoValues(){
 const DEMO={hero:{entries:[{text:'主题成套动效',sub:'One theme · consistent motion'}]},list:{title:'一个主题搞定整片',items:[{text:'标题、列表、字幕…自动协调'},{text:'入场/出场可分别切换'},{text:'配色/字体/节奏全主题统一'},{text:'导出即一份配置 JSON'}]},lowerThird:{entries:[{name:'林述白',role:'动态设计师'}]},caption:{lines:[{text:'选一个主题，整片风格一键成套。'},{text:'再逐场景微调入场与出场。'}]},emphasis:{lines:[{pre:'只需 ',token:'一个主题',post:' 即可统一全片。'}]}};
 const LB={hero:'主标题',list:'列表',lowerThird:'角标',caption:'字幕',emphasis:'强调'};
 const ORD=['hero','list','lowerThird','caption','emphasis'];
+let sceneOrder=[...ORD];
 
 let S={theme:'glitch',content:structuredClone(DEMO)};
 let curTab='hero',timOv=false;
 
+// === Scene order ===
+function renderOrder(){
+  const c=document.getElementById('ordList');c.innerHTML='';
+  sceneOrder.forEach((r,i)=>{
+    if(i>0){const sep=document.createElement('span');sep.className='ord-sep';sep.textContent='→';c.appendChild(sep);}
+    const item=document.createElement('span');item.className='ord-item'+(getCnt(r)?' active':'');
+    const left=document.createElement('button');left.className='ord-arrow';left.textContent='◀';left.onclick=()=>moveOrd(i,-1);
+    if(i===0)left.style.visibility='hidden';
+    const lbl=document.createElement('span');lbl.textContent=LB[r];
+    const right=document.createElement('button');right.className='ord-arrow';right.textContent='▶';right.onclick=()=>moveOrd(i,1);
+    if(i===sceneOrder.length-1)right.style.visibility='hidden';
+    item.appendChild(left);item.appendChild(lbl);item.appendChild(right);
+    c.appendChild(item);
+  });
+}
+function moveOrd(i,dir){
+  const j=i+dir;if(j<0||j>=sceneOrder.length)return;
+  [sceneOrder[i],sceneOrder[j]]=[sceneOrder[j],sceneOrder[i]];
+  renderOrder();uc();
+}
+
 // === Init ===
-function init(){initEoGrid();syncEoValues();syncEoDefaults();renderPills();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
+function init(){initEoGrid();syncEoValues();syncEoDefaults();renderPills();renderOrder();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
 
 // === Theme pills ===
 function renderPills(){
@@ -483,13 +521,15 @@ function renderEmp(c){
   addBtn(c,()=>{if(!S.content.emphasis)S.content.emphasis={lines:[]};S.content.emphasis.lines.push({pre:'',token:'强调',post:''});refresh();});
 }
 
-function refresh(){renderSceneTabs();renderEditor();uc();}
+function refresh(){renderOrder();renderSceneTabs();renderEditor();uc();}
 function addBtn(c,fn){const b=document.createElement('button');b.className='add-btn';b.textContent='+ 添加';b.onclick=fn;c.appendChild(b);}
 function mk(tag,cls){const e=document.createElement(tag);e.className=cls;return e;}
 
 // === Build config ===
 function buildCfg(){
-  const cfg={theme:S.theme,content:{}};
+  const cfg={theme:S.theme};
+  if(sceneOrder.some((r,i)=>r!==ORD[i]))cfg.order=sceneOrder.slice();
+  cfg.content={};
   if(S.content.hero?.entries?.length) cfg.content.hero=S.content.hero;
   if(S.content.list?.items?.length){cfg.content.list={items:S.content.list.items};if(S.content.list.title)cfg.content.list.title=S.content.list.title;}
   if(S.content.lowerThird?.entries?.length) cfg.content.lowerThird=S.content.lowerThird;
@@ -855,7 +895,7 @@ function exportZip(){
 }
 function copyJson(){navigator.clipboard.writeText(JSON.stringify(buildCfg(),null,2));toast('JSON 已复制');}
 function copyRenderCmd(){const j=JSON.stringify(buildCfg(),null,2);navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${j.trim()}'`);toast('命令已复制');}
-function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;renderPills();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');syncEoValues();syncEoDefaults();uc();toast('已重置');}
+function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;sceneOrder=[...ORD];renderPills();renderOrder();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');syncEoValues();syncEoDefaults();uc();toast('已重置');}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 

@@ -87,12 +87,12 @@
   .clr-item input[type=text]{width:64px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 4px;font-size:10px;font-family:"Menlo","Consolas",monospace}
   .clr-item input[type=text]:focus{outline:none;border-color:var(--acc)}
 
-  .eo-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-  .eo-pair{display:flex;align-items:center;gap:2px;font-size:10px}
-  .eo-pair span{color:var(--dim);font-weight:600;font-size:9px;min-width:18px}
-  .eo-pair input{width:36px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;text-align:center;font-family:inherit}
-  .eo-pair input:focus{outline:none;border-color:var(--acc)}
-  .eo-sep{color:var(--border);margin:0 2px}
+  .eo-grid{display:grid;grid-template-columns:auto 1fr 1fr;gap:3px 6px;align-items:center;font-size:10px}
+  .eo-lbl{color:var(--dim);font-weight:600;font-size:9px;text-align:right}
+  .eo-sel{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;font-family:inherit;cursor:pointer}
+  .eo-sel:focus{outline:none;border-color:var(--acc)}
+  .eo-sel option{background:var(--bg);color:var(--text)}
+  .eo-hdr{font-size:8px;color:var(--dim);font-weight:600;text-align:center}
 
   /* === Right panel === */
   .right{flex:1;display:flex;flex-direction:column;min-width:300px;min-height:0}
@@ -207,22 +207,9 @@
         </div>
       </div>
       <div class="ctrl-section" style="margin-bottom:0">
-        <div class="ctrl-label">动效覆盖 <span style="font-weight:400;text-transform:none">effectId 1-100</span></div>
-        <div class="eo-row">
-          <div class="eo-pair"><span>H入</span><input id="eo-hero-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-hero-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <span class="eo-sep">|</span>
-          <div class="eo-pair"><span>L入</span><input id="eo-list-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-list-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <span class="eo-sep">|</span>
-          <div class="eo-pair"><span>角入</span><input id="eo-lowerThird-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-lowerThird-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <span class="eo-sep">|</span>
-          <div class="eo-pair"><span>字入</span><input id="eo-caption-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-caption-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <span class="eo-sep">|</span>
-          <div class="eo-pair"><span>强入</span><input id="eo-emphasis-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-emphasis-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+        <div class="ctrl-label">动效覆盖</div>
+        <div class="eo-grid" id="eoGrid">
+          <div></div><div class="eo-hdr">入场</div><div class="eo-hdr">出场</div>
         </div>
       </div>
     </div>
@@ -317,6 +304,25 @@ const TH = {
     sw:['#20182a','#f6efe2','#d9b46a']},
 };
 const CAT={A:'透明度',B:'缓动',C:'缩放3D',D:'模糊',E:'波动',F:'逐字',G:'遮罩',H:'噪声',I:'粒子',J:'光影',K:'故障',L:'分形'};
+const FX_NAMES=[{id:1,c:'A',n:'线性淡入'},{id:2,c:'A',n:'二次淡入'},{id:3,c:'A',n:'三次缓出'},{id:4,c:'A',n:'指数冲入'},{id:5,c:'A',n:'对数渐显'},{id:6,c:'A',n:'Sigmoid渐显'},{id:7,c:'A',n:'高斯闪现'},{id:8,c:'A',n:'伽马淡入'},{id:9,c:'A',n:'双指数过冲'},{id:10,c:'A',n:'幂律阶梯'},{id:11,c:'B',n:'上移淡入'},{id:12,c:'B',n:'回退超调滑入'},{id:13,c:'B',n:'弹性滑入'},{id:14,c:'B',n:'重力下坠'},{id:15,c:'B',n:'抛物线抛入'},{id:16,c:'B',n:'阻尼回正'},{id:17,c:'B',n:'速度模糊滑入'},{id:18,c:'B',n:'惯性甩入'},{id:19,c:'B',n:'磁吸归位'},{id:20,c:'B',n:'折线入场'},{id:21,c:'C',n:'弹簧弹出'},{id:22,c:'C',n:'挤压拉伸'},{id:23,c:'C',n:'旋转缩放螺入'},{id:24,c:'C',n:'透视纵深推入'},{id:25,c:'C',n:'焦点拉近'},{id:26,c:'C',n:'翻牌立体'},{id:27,c:'C',n:'折纸展开'},{id:28,c:'C',n:'镜像对开'},{id:29,c:'C',n:'厚度生长'},{id:30,c:'C',n:'弹性拉伸归位'},{id:31,c:'D',n:'模糊聚焦'},{id:32,c:'D',n:'失焦呼吸'},{id:33,c:'D',n:'墨水晕染'},{id:34,c:'D',n:'辉光绽放'},{id:35,c:'D',n:'色差散焦'},{id:36,c:'D',n:'半调网点'},{id:37,c:'D',n:'像素化解析'},{id:38,c:'D',n:'热浪扭曲'},{id:39,c:'E',n:'正弦行波'},{id:40,c:'E',n:'余弦摆入'},{id:41,c:'E',n:'驻波涟漪'},{id:42,c:'E',n:'心跳脉动'},{id:43,c:'E',n:'正切骤变'},{id:44,c:'E',n:'李萨如聚合'},{id:45,c:'E',n:'阻尼正弦定格'},{id:46,c:'E',n:'拍频闪烁'},{id:47,c:'E',n:'螺旋极坐标'},{id:48,c:'E',n:'波纹扩散'},{id:49,c:'E',n:'旗帜飘动'},{id:50,c:'E',n:'摆线滚入'},{id:51,c:'F',n:'打字机'},{id:52,c:'F',n:'线性交错'},{id:53,c:'F',n:'居中开花'},{id:54,c:'F',n:'随机浮现'},{id:55,c:'F',n:'高斯交错'},{id:56,c:'F',n:'逐字波浪'},{id:57,c:'F',n:'多米诺倒下'},{id:58,c:'F',n:'字符收缩'},{id:59,c:'F',n:'逐行上推'},{id:60,c:'F',n:'词组弹入'},{id:61,c:'F',n:'卷轴百叶'},{id:62,c:'F',n:'蛇形推进'},{id:63,c:'G',n:'横向擦除'},{id:64,c:'G',n:'对角揭开'},{id:65,c:'G',n:'圆形聚光'},{id:66,c:'G',n:'马赛克揭示'},{id:67,c:'G',n:'扫描线显影'},{id:68,c:'G',n:'形状蒙版'},{id:69,c:'G',n:'笔刷手写'},{id:70,c:'G',n:'液态升起'},{id:71,c:'H',n:'噪声抖动收敛'},{id:72,c:'H',n:'乱码解码'},{id:73,c:'H',n:'沙粒重组'},{id:74,c:'H',n:'概率点阵'},{id:75,c:'H',n:'布朗漂移'},{id:76,c:'H',n:'泊松雨点'},{id:77,c:'H',n:'噪声场涌入'},{id:78,c:'H',n:'信噪比提升'},{id:79,c:'H',n:'抖动消融'},{id:80,c:'H',n:'量子坍缩'},{id:81,c:'I',n:'粒子聚合'},{id:82,c:'I',n:'碎片逆爆'},{id:83,c:'I',n:'冲击波成形'},{id:84,c:'I',n:'烟雾凝字'},{id:85,c:'I',n:'磁力吸附'},{id:86,c:'I',n:'体素堆叠'},{id:87,c:'I',n:'拉丝聚合'},{id:88,c:'I',n:'细胞增殖'},{id:89,c:'J',n:'色相旋转'},{id:90,c:'J',n:'流光扫过'},{id:91,c:'J',n:'冷暖渐变'},{id:92,c:'J',n:'投影成型'},{id:93,c:'J',n:'光晕浮现'},{id:94,c:'J',n:'霓虹点亮'},{id:95,c:'K',n:'RGB撕裂故障'},{id:96,c:'K',n:'数据流瀑落'},{id:97,c:'K',n:'方块频闪'},{id:98,c:'L',n:'分形递归展开'},{id:99,c:'L',n:'混沌吸引子归位'},{id:100,c:'L',n:'逻辑斯蒂分岔'}];
+let _fxOptsHtml=null;
+function fxOptsHtml(){
+  if(_fxOptsHtml)return _fxOptsHtml;
+  let h='<option value="">— 默认 —</option>';
+  let cur='';
+  for(const f of FX_NAMES){
+    if(f.c!==cur){if(cur)h+='</optgroup>';cur=f.c;h+=`<optgroup label="${f.c} · ${CAT[f.c]||f.c}">`};
+    h+=`<option value="${f.id}">${f.c}${String(f.id%10||10).padStart(2,'0')} ${f.n}</option>`;
+  }
+  if(cur)h+='</optgroup>';
+  _fxOptsHtml=h;return h;
+}
+function initEoGrid(){
+  const g=document.getElementById('eoGrid');const opts=fxOptsHtml();
+  for(const r of ORD){
+    g.innerHTML+=`<div class="eo-lbl">${LB[r]}</div><select class="eo-sel" id="eo-${r}-in" onchange="uc()">${opts}</select><select class="eo-sel" id="eo-${r}-out" onchange="uc()">${opts}</select>`;
+  }
+}
 const DEMO={hero:{entries:[{text:'主题成套动效',sub:'One theme · consistent motion'}]},list:{title:'一个主题搞定整片',items:[{text:'标题、列表、字幕…自动协调'},{text:'入场/出场可分别切换'},{text:'配色/字体/节奏全主题统一'},{text:'导出即一份配置 JSON'}]},lowerThird:{entries:[{name:'林述白',role:'动态设计师'}]},caption:{lines:[{text:'选一个主题，整片风格一键成套。'},{text:'再逐场景微调入场与出场。'}]},emphasis:{lines:[{pre:'只需 ',token:'一个主题',post:' 即可统一全片。'}]}};
 const LB={hero:'主标题',list:'列表',lowerThird:'角标',caption:'字幕',emphasis:'强调'};
 const ORD=['hero','list','lowerThird','caption','emphasis'];
@@ -325,7 +331,7 @@ let S={theme:'glitch',content:structuredClone(DEMO)};
 let curTab='hero',timOv=false;
 
 // === Init ===
-function init(){renderPills();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
+function init(){initEoGrid();renderPills();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
 
 // === Theme pills ===
 function renderPills(){
@@ -460,7 +466,7 @@ function buildCfg(){
   if(bg)st.background=bg;if(fg)st.color=fg;if(ac)st.accent=ac;
   if(Object.keys(st).length)cfg.style=st;
   const eff={};
-  for(const r of ORD){const i=+document.getElementById(`eo-${r}-in`).value,o=+document.getElementById(`eo-${r}-out`).value;if(i>=1&&i<=100&&o>=1&&o<=100)eff[r]={inEffectId:i,outEffectId:o};}
+  for(const r of ORD){const iv=document.getElementById(`eo-${r}-in`).value,ov=document.getElementById(`eo-${r}-out`).value;const i=+iv,o=+ov;const th=TH[S.theme].effects[r];if(iv||ov)eff[r]={inEffectId:(i>=1&&i<=100)?i:th.i,outEffectId:(o>=1&&o<=100)?o:th.o};}
   if(Object.keys(eff).length)cfg.effects=eff;
   return cfg;
 }

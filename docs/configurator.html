@@ -288,6 +288,7 @@
     </div>
     <div class="pv-bar">
       <div class="chips" id="pvChips"></div>
+      <button class="sp-btn" id="autoBtn" onclick="toggleAuto()" title="自动轮播开关" style="font-size:8px;padding:1px 5px">全部</button>
       <div class="tl"><div class="tl-p" id="tlP"></div></div>
       <span class="tl-i" id="tlI">入场 0.0s</span>
     </div>
@@ -301,11 +302,13 @@
       </div>
       <div class="out-body">
         <div class="out-tabs">
-          <div class="ot on" onclick="stab('json',this)">JSON</div>
+          <div class="ot on" onclick="stab('ai',this)">AI 提示词</div>
+          <div class="ot" onclick="stab('json',this)">JSON</div>
           <div class="ot" onclick="stab('readme',this)">README</div>
           <div class="ot" onclick="stab('cmd',this)">命令</div>
         </div>
-        <div id="t-json" class="tc on"><div class="out-code" id="oJson"></div></div>
+        <div id="t-ai" class="tc on"><div class="out-code" id="oAi" style="white-space:pre-wrap;line-height:1.6"></div></div>
+        <div id="t-json" class="tc"><div class="out-code" id="oJson"></div></div>
         <div id="t-readme" class="tc"><div class="out-code" id="oReadme"></div></div>
         <div id="t-cmd" class="tc"><div class="out-code" id="oCmd"></div></div>
       </div>
@@ -515,7 +518,7 @@ function renderSceneTabs(){
     const b=document.createElement('button');
     b.className='st'+(r===curTab?' on':'');
     b.setAttribute('data-r',r);
-    b.onclick=()=>{curTab=r;renderSceneTabs();renderLoControls();renderEditor();};
+    b.onclick=()=>{curTab=r;renderSceneTabs();renderLoControls();renderEditor();if(!autoCarousel)syncPvToTab();uc();};
     const cnt=getCnt(r);
     b.innerHTML=`<span class="sd ${cnt?'has':'no'}"></span>${LB[r]}`;
     c.appendChild(b);
@@ -628,6 +631,7 @@ function buildCfg(){
 // === Update ===
 function uc(){
   const cfg=buildCfg();const json=JSON.stringify(cfg,null,2);
+  document.getElementById('oAi').textContent=genAiPrompt(cfg);
   document.getElementById('oJson').textContent=json;
   document.getElementById('oReadme').textContent=genRm(cfg);
   document.getElementById('oCmd').textContent=`npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`;
@@ -648,10 +652,99 @@ function genRm(cfg){
 }
 function stab(n,el){document.querySelectorAll('.ot').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.getElementById('t-'+n).classList.add('on');}
 
+function genAiPrompt(cfg){
+  const th=TH[cfg.theme];if(!th)return'';
+  const r=curTab;const c=cfg.content[r];
+  if(!c)return'（当前场景无内容）';
+  const ef=cfg.effects?.[r]?{i:cfg.effects[r].inEffectId,o:cfg.effects[r].outEffectId}:th.effects[r];
+  const inFx=fxLabel(ef.i),outFx=fxLabel(ef.o);
+  const tm=cfg.timing||th.timing;
+  const st={...th.style,...(cfg.style||{})};
+  const lo=cfg.sceneStyle?.[r]||{};
+  const fps=30;
+  const defs=LO_DEFAULTS[r]||{};
+
+  let text='';
+  if(r==='hero'&&c.entries?.length)text=c.entries[0].text;
+  else if(r==='list'&&c.items?.length)text=c.items[0].text;
+  else if(r==='lowerThird'&&c.entries?.length)text=c.entries[0].name;
+  else if(r==='caption'&&c.lines?.length)text=c.lines[0].text;
+  else if(r==='emphasis'&&c.lines?.length)text=c.lines[0].pre+c.lines[0].token+c.lines[0].post;
+
+  const catIn=Math.ceil(ef.i/10),catOut=Math.ceil(ef.o/10);
+  const catDesc={1:'透明度渐变',2:'位移+缓动',3:'缩放/3D旋转',4:'模糊聚焦',5:'波动/振荡',6:'逐字符交错',7:'遮罩裁切',8:'噪声抖动',9:'粒子聚散',10:'色彩光影',11:'故障撕裂',12:'分形展开'};
+
+  let prompt=`请用 CSS/JS 动画实现以下文字动效场景：\n\n`;
+  prompt+=`【场景类型】${LB[r]}（${r}）\n`;
+  prompt+=`【文字内容】"${text}"\n`;
+  prompt+=`【背景色】${st.background}\n`;
+  prompt+=`【文字颜色】${st.color}\n`;
+  prompt+=`【字体】${st.fontFamily}, 字重 ${st.fontWeight}\n`;
+  prompt+=`【字号】${lo.fontSize||defs.fontSize||64}px\n`;
+  if(lo.align)prompt+=`【水平对齐】${lo.align}\n`;
+  if(lo.vAlign)prompt+=`【垂直对齐】${lo.vAlign}\n`;
+  if(lo.offsetX)prompt+=`【X偏移】${lo.offsetX}px\n`;
+  if(lo.offsetY)prompt+=`【Y偏移】${lo.offsetY}px\n`;
+  prompt+=`\n【动画时序】30fps\n`;
+  prompt+=`  入场：${tm.inF}帧（${(tm.inF/fps).toFixed(2)}秒）\n`;
+  prompt+=`  停留：${tm.holdF}帧（${(tm.holdF/fps).toFixed(2)}秒）\n`;
+  prompt+=`  出场：${tm.outF}帧（${(tm.outF/fps).toFixed(2)}秒）\n`;
+  prompt+=`\n【入场动效】${inFx}（${catDesc[catIn]||'未知'}类）\n`;
+  prompt+=`  进度 t: 0→1, 使用 easeOutCubic: 1-(1-t)³\n`;
+  prompt+=simFxDesc(ef.i,'in');
+  prompt+=`\n【出场动效】${outFx}（${catDesc[catOut]||'未知'}类）\n`;
+  prompt+=`  进度 t: 0→1, 使用 easeOutCubic 反转: 1-easeOut(t)\n`;
+  prompt+=simFxDesc(ef.o,'out');
+  prompt+=`\n【停留状态】opacity:1, transform:none, filter:none\n`;
+  if(r==='emphasis'&&c.lines?.[0]){
+    const l=c.lines[0];
+    prompt+=`\n【强调词】"${l.token}" 高亮色 ${l.accent||st.accent}\n`;
+    prompt+=`  入场时强调词 opacity: min(1, t*1.5), 出场时 max(0, 1-t*1.5)\n`;
+  }
+  prompt+=`\n复制以上提示词给 AI，即可快速复现此文字动画效果。`;
+  return prompt;
+}
+
+function simFxDesc(id,phase){
+  const cat=Math.ceil(id/10);let d='';
+  switch(cat){
+    case 1:d='  CSS: opacity = p\n';break;
+    case 2:d='  CSS: opacity = min(1, p*2); transform: translateY((1-p)*35px)\n';break;
+    case 3:d='  CSS: opacity = min(1, p*1.5); transform: scale(0.3+p*0.7) rotate((1-p)*15deg)\n';break;
+    case 4:d='  CSS: opacity = p; filter: blur((1-p)*8px)\n';break;
+    case 5:d='  CSS: opacity = p; transform: translateY(sin(t*π*3)*(1-p)*10px) rotate((1-p)*8deg)\n';break;
+    case 6:d='  CSS: opacity = 1; clip-path: inset(0 (1-p)*100% 0 0); transform: translateX((1-p)*-8px)\n  技巧: 逐字符设置不同延迟(stagger)实现打字/交错效果\n';break;
+    case 7:d='  CSS: opacity = 1; clip-path: 几何遮罩渐变裁切\n';break;
+    case 8:d='  CSS: opacity = min(1, p*1.5); transform: translate(随机抖动); filter: brightness(1+(1-p)*0.5)\n';break;
+    case 9:d='  CSS: opacity = p; transform: scale(0.2+p*0.8) rotate((1-p)*180deg); filter: blur((1-p)*3px)\n';break;
+    case 10:d='  CSS: opacity = p; filter: brightness(1+(1-p)*1.5) saturate(0.5+p*0.5); transform: scale(0.95+p*0.05)\n';break;
+    case 11:d='  CSS: opacity = min(1, p*2); transform: translateX(随机*5px) skewX((1-p)*8deg); filter: hue-rotate((1-p)*90deg)\n';break;
+    case 12:d='  CSS: opacity = p; transform: translate(混沌) rotate(混沌) scale(0.5+p*0.5)\n';break;
+    default:d='  CSS: opacity = p\n';
+  }
+  d+='  其中 p = easeOutCubic(t), t∈[0,1]\n';
+  return d;
+}
+
 // === Preview ===
 let an=null,playing=true,si=0,ph='in',pT=0,lTs=0,speed=1;
+let autoCarousel=true;
 const SP=[0.5,1,1.5,2];let spi=1;
 function cycleSpeed(){spi=(spi+1)%SP.length;speed=SP[spi];document.getElementById('spBtn').textContent=speed+'x';}
+function toggleAuto(){
+  autoCarousel=!autoCarousel;
+  const btn=document.getElementById('autoBtn');
+  btn.textContent=autoCarousel?'全部':'单场景';
+  btn.style.borderColor=autoCarousel?'':'var(--acc)';
+  btn.style.color=autoCarousel?'':'var(--acc)';
+  if(!autoCarousel)syncPvToTab();
+  else restartPv();
+}
+function syncPvToTab(){
+  const sc=getScenes();
+  const idx=sc.findIndex(s=>s.r===curTab);
+  if(idx>=0){si=idx;pT=0;ph='in';lTs=0;_lastRole='';_lastLoKey='';renderChips(sc);}
+}
 
 function getScenes(){
   const cfg=buildCfg();const order=cfg.order||ORD;const sc=[];
@@ -676,7 +769,7 @@ function getScenes(){
 
 function renderChips(sc){
   const c=document.getElementById('pvChips');c.innerHTML='';
-  sc.forEach((s,i)=>{const b=document.createElement('button');b.className='chip'+(i===si?' on':'');b.textContent=LB[s.r]||s.r;b.onclick=()=>{si=i;pT=0;ph='in';lTs=0;renderChips(sc);};c.appendChild(b);});
+  sc.forEach((s,i)=>{const b=document.createElement('button');b.className='chip'+(i===si?' on':'');b.textContent=LB[s.r]||s.r;b.onclick=()=>{si=i;pT=0;ph='in';lTs=0;renderChips(sc);if(!autoCarousel){curTab=s.r;renderSceneTabs();renderLoControls();renderEditor();uc();}};c.appendChild(b);});
 }
 
 function simFx(id,ph,t){
@@ -767,7 +860,13 @@ function tick(ts){
   const fps=30,iD=s.tm.inF/fps,hD=s.tm.holdF/fps,oD=s.tm.outF/fps,tot=iD+hD+oD;
   pT+=dt;
   let p,t;
-  if(pT<iD){p='in';t=pT/iD;}else if(pT<iD+hD){p='hold';t=1;}else if(pT<tot){p='out';t=(pT-iD-hD)/oD;}else{si=(si+1)%sc.length;pT=0;p='in';t=0;renderChips(sc);}
+  if(pT<iD){p='in';t=pT/iD;}else if(pT<iD+hD){p='hold';t=1;}else if(pT<tot){p='out';t=(pT-iD-hD)/oD;}else{
+    if(autoCarousel){si=(si+1)%sc.length;}else{
+      const curRole=sc[si]?.r;const sameRole=sc.filter(x=>x.r===curRole);
+      if(sameRole.length>1){const ci=sameRole.indexOf(sc[si]);const ni=(ci+1)%sameRole.length;si=sc.indexOf(sameRole[ni]);}
+    }
+    pT=0;p='in';t=0;renderChips(sc);
+  }
   ph=p;
   const eid=p==='out'?s.ef.o:s.ef.i;
   const fx=p==='hold'?{opacity:1,transform:'none',filter:'none',clipPath:'none'}:simFx(eid,p,t);
@@ -1008,7 +1107,11 @@ function exportZip(){
   const sceneCnt=roles.length,fileCnt=Object.keys(files).length;
   toast(`已下载 (${sceneCnt}场景, ${fileCnt}文件)`);
 }
-function copyJson(){navigator.clipboard.writeText(JSON.stringify(buildCfg(),null,2));toast('JSON 已复制');}
+function copyJson(){
+  const activeTab=document.querySelector('.tc.on .out-code');
+  if(activeTab){navigator.clipboard.writeText(activeTab.textContent);toast('已复制');}
+  else{navigator.clipboard.writeText(JSON.stringify(buildCfg(),null,2));toast('JSON 已复制');}
+}
 function copyRenderCmd(){const j=JSON.stringify(buildCfg(),null,2);navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${j.trim()}'`);toast('命令已复制');}
 function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;sceneOrder=[...ORD];renderPills();renderOrder();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');syncEoValues();syncEoDefaults();uc();toast('已重置');}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}

@@ -101,6 +101,22 @@
   .eo-apply{padding:2px 8px;border-radius:3px;border:1px solid var(--acc);background:transparent;color:var(--acc);font-size:9px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .1s}
   .eo-apply:hover{background:var(--glow)}
 
+  /* -- Layout controls -- */
+  .lo-section{padding:6px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
+  .lo-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;align-items:center;font-size:10px}
+  .lo-lbl{color:var(--dim);font-weight:600;font-size:9px;text-align:right;white-space:nowrap}
+  .lo-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 4px;font-size:10px;font-family:"Menlo","Consolas",monospace;box-sizing:border-box}
+  .lo-input:focus{outline:none;border-color:var(--acc)}
+  .lo-sel{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;font-family:inherit;cursor:pointer}
+  .lo-sel:focus{outline:none;border-color:var(--acc)}
+  .lo-sel option{background:var(--bg);color:var(--text)}
+  .lo-pair{display:flex;gap:4px}
+  .lo-pair .lo-sub{flex:1;display:flex;align-items:center;gap:3px}
+  .lo-pair .lo-sub label{color:var(--dim);font-size:8px;font-weight:600}
+  .lo-scene-lbl{font-size:9px;color:var(--acc);font-weight:700;margin-bottom:2px}
+  .lo-reset{padding:1px 6px;border-radius:3px;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:8px;cursor:pointer;font-family:inherit;transition:all .1s;white-space:nowrap}
+  .lo-reset:hover{border-color:var(--acc);color:var(--acc)}
+
   /* -- Scene order -- */
   .ord-section{padding:6px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
   .ord-label{font-size:9px;color:var(--dim);font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
@@ -229,6 +245,12 @@
           <div></div><div class="eo-hdr">入场</div><div class="eo-hdr">出场</div>
         </div>
       </div>
+    </div>
+
+    <!-- Layout controls -->
+    <div class="lo-section">
+      <div class="ctrl-label">布局 Layout <span style="font-weight:400;font-size:8px;color:var(--dim)">(当前场景)</span></div>
+      <div id="loControls"></div>
     </div>
 
     <!-- Scene order -->
@@ -402,8 +424,62 @@ function moveOrd(i,dir){
   renderOrder();uc();
 }
 
+// === Layout controls ===
+const sceneStyles={};
+const LO_CAPS={
+  hero:  {offsetX:true,offsetY:true,fontSize:true,align:true,vAlign:true},
+  list:  {offsetX:false,offsetY:false,fontSize:true,align:false,vAlign:false},
+  lowerThird:{offsetX:true,offsetY:true,fontSize:true,align:false,vAlign:false},
+  caption:{offsetX:true,offsetY:true,fontSize:true,align:true,vAlign:false},
+  emphasis:{offsetX:false,offsetY:false,fontSize:true,align:true,vAlign:false}
+};
+const LO_DEFAULTS={hero:{fontSize:180},list:{fontSize:70},lowerThird:{fontSize:88},caption:{fontSize:64},emphasis:{fontSize:88}};
+const ALIGN_OPTS=[{v:'',l:'— 默认 —'},{v:'left',l:'左 Left'},{v:'center',l:'中 Center'},{v:'right',l:'右 Right'}];
+const VALIGN_OPTS=[{v:'',l:'— 默认 —'},{v:'top',l:'上 Top'},{v:'center',l:'中 Center'},{v:'bottom',l:'下 Bottom'}];
+
+function getLoVal(role,prop){return sceneStyles[role]?.[prop];}
+function setLoVal(role,prop,val){
+  if(!sceneStyles[role])sceneStyles[role]={};
+  if(val===undefined||val===''||val===null)delete sceneStyles[role][prop];
+  else sceneStyles[role][prop]=val;
+  if(!Object.keys(sceneStyles[role]).length)delete sceneStyles[role];
+  uc();
+}
+function renderLoControls(){
+  const c=document.getElementById('loControls');c.innerHTML='';
+  const r=curTab;const caps=LO_CAPS[r];const defs=LO_DEFAULTS[r];
+  const lbl=LB[r];
+  let html=`<div class="lo-scene-lbl">${esc(lbl)}</div><div class="lo-grid">`;
+  if(caps.fontSize){
+    const v=getLoVal(r,'fontSize');
+    html+=`<span class="lo-lbl">字号</span><input class="lo-input" type="number" min="10" max="500" step="1" placeholder="${defs.fontSize}" value="${v!=null?v:''}" onchange="setLoVal('${r}','fontSize',this.value?+this.value:undefined)">`;
+  }
+  if(caps.offsetX||caps.offsetY){
+    html+=`<span class="lo-lbl">偏移</span><div class="lo-pair">`;
+    if(caps.offsetX){const v=getLoVal(r,'offsetX');html+=`<div class="lo-sub"><label>X</label><input class="lo-input" type="number" step="1" placeholder="0" value="${v!=null?v:''}" onchange="setLoVal('${r}','offsetX',this.value?+this.value:undefined)"></div>`;}
+    if(caps.offsetY){const v=getLoVal(r,'offsetY');html+=`<div class="lo-sub"><label>Y</label><input class="lo-input" type="number" step="1" placeholder="0" value="${v!=null?v:''}" onchange="setLoVal('${r}','offsetY',this.value?+this.value:undefined)"></div>`;}
+    html+=`</div>`;
+  }
+  if(caps.align){
+    const v=getLoVal(r,'align')||'';
+    html+=`<span class="lo-lbl">水平</span><select class="lo-sel" onchange="setLoVal('${r}','align',this.value||undefined)">`;
+    for(const o of ALIGN_OPTS)html+=`<option value="${o.v}"${v===o.v?' selected':''}>${o.l}</option>`;
+    html+=`</select>`;
+  }
+  if(caps.vAlign){
+    const v=getLoVal(r,'vAlign')||'';
+    html+=`<span class="lo-lbl">垂直</span><select class="lo-sel" onchange="setLoVal('${r}','vAlign',this.value||undefined)">`;
+    for(const o of VALIGN_OPTS)html+=`<option value="${o.v}"${v===o.v?' selected':''}>${o.l}</option>`;
+    html+=`</select>`;
+  }
+  html+=`</div>`;
+  const hasAny=sceneStyles[r]&&Object.keys(sceneStyles[r]).length;
+  if(hasAny)html+=`<div style="margin-top:4px;text-align:right"><button class="lo-reset" onclick="delete sceneStyles['${r}'];renderLoControls();uc()">重置 ${esc(lbl)}</button></div>`;
+  c.innerHTML=html;
+}
+
 // === Init ===
-function init(){initEoGrid();syncEoValues();syncEoDefaults();renderPills();renderOrder();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
+function init(){initEoGrid();syncEoValues();syncEoDefaults();renderPills();renderOrder();renderLoControls();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
 
 // === Theme pills ===
 function renderPills(){
@@ -439,7 +515,7 @@ function renderSceneTabs(){
     const b=document.createElement('button');
     b.className='st'+(r===curTab?' on':'');
     b.setAttribute('data-r',r);
-    b.onclick=()=>{curTab=r;renderSceneTabs();renderEditor();};
+    b.onclick=()=>{curTab=r;renderSceneTabs();renderLoControls();renderEditor();};
     const cnt=getCnt(r);
     b.innerHTML=`<span class="sd ${cnt?'has':'no'}"></span>${LB[r]}`;
     c.appendChild(b);
@@ -543,6 +619,9 @@ function buildCfg(){
   const eff={};
   for(const r of ORD){const i=+document.getElementById(`eo-${r}-in`).value,o=+document.getElementById(`eo-${r}-out`).value;const th=TH[S.theme].effects[r];if(i!==th.i||o!==th.o)eff[r]={inEffectId:i,outEffectId:o};}
   if(Object.keys(eff).length)cfg.effects=eff;
+  const ss={};
+  for(const r of ORD){if(sceneStyles[r]&&Object.keys(sceneStyles[r]).length)ss[r]={...sceneStyles[r]};}
+  if(Object.keys(ss).length)cfg.sceneStyle=ss;
   return cfg;
 }
 
@@ -576,17 +655,22 @@ function cycleSpeed(){spi=(spi+1)%SP.length;speed=SP[spi];document.getElementByI
 
 function getScenes(){
   const cfg=buildCfg();const order=cfg.order||ORD;const sc=[];
+  const PV_FS={hero:24,list:11,lowerThird:18,caption:14,emphasis:18};
   for(const r of order){
     const c=cfg.content[r];if(!c)continue;
     const th=TH[S.theme];const ef=cfg.effects?.[r]?{i:cfg.effects[r].inEffectId,o:cfg.effects[r].outEffectId}:th.effects[r];
     const st={...th.style,...(cfg.style||{})};const tm=cfg.timing||th.timing;
-    if(r==='hero'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.text,sub:e.sub||'',ef,st,tm,fs:24,fw:st.fontWeight});
-    else if(r==='list'&&c.items?.length){const stepF=22,inF2=18,tail=30;const totalF=(c.items.length-1)*stepF+inF2+tail;sc.push({r,title:c.title||'',items:c.items.map(it=>it.text),ef,st,tm:{inF:totalF,holdF:0,outF:tm.outF},fs:11,fw:st.fontWeight,stepF,inF2});}
-    else if(r==='lowerThird'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.name,sub:e.role,ef,st,tm,fs:18,fw:st.fontWeight});
-    else if(r==='caption'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.text,sub:'',ef,st,tm,fs:14,fw:st.fontWeight});
-    else if(r==='emphasis'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.pre,token:l.token,post:l.post,sub:'',ef,st,tm,fs:18,fw:st.fontWeight,accent:st.accent});
+    const lo=cfg.sceneStyle?.[r]||{};
+    const pvScale=lo.fontSize?lo.fontSize/LO_DEFAULTS[r].fontSize:1;
+    const fs=Math.round(PV_FS[r]*pvScale);
+    const loBase={lo};
+    if(r==='hero'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.text,sub:e.sub||'',ef,st,tm,fs,fw:st.fontWeight,...loBase});
+    else if(r==='list'&&c.items?.length){const stepF=22,inF2=18,tail=30;const totalF=(c.items.length-1)*stepF+inF2+tail;sc.push({r,title:c.title||'',items:c.items.map(it=>it.text),ef,st,tm:{inF:totalF,holdF:0,outF:tm.outF},fs,fw:st.fontWeight,stepF,inF2,...loBase});}
+    else if(r==='lowerThird'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.name,sub:e.role,ef,st,tm,fs,fw:st.fontWeight,...loBase});
+    else if(r==='caption'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.text,sub:'',ef,st,tm,fs,fw:st.fontWeight,...loBase});
+    else if(r==='emphasis'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.pre,token:l.token,post:l.post,sub:'',ef,st,tm,fs,fw:st.fontWeight,accent:st.accent,...loBase});
   }
-  if(!sc.length){const th=TH[S.theme];sc.push({r:'hero',text:'预览',sub:'',ef:th.effects.hero,st:th.style,tm:th.timing,fs:24,fw:800});}
+  if(!sc.length){const th=TH[S.theme];sc.push({r:'hero',text:'预览',sub:'',ef:th.effects.hero,st:th.style,tm:th.timing,fs:24,fw:800,lo:{}});}
   return sc;
 }
 
@@ -618,15 +702,34 @@ function simFx(id,ph,t){
 const GL='アカサタナ01XΞΨ#%&@王金木水火土';
 function scr(text,prog){return Array.from(text).map((ch,i)=>{const l=(i/Math.max(text.length,1))*.85;return prog>l+.15?ch:GL[Math.floor(Math.random()*GL.length)];}).join('');}
 
-let _lastRole='';
-function showPvMode(role){
-  if(_lastRole===role)return;_lastRole=role;
+let _lastRole='',_lastLoKey='';
+function alignToFlex(a){return a==='left'?'flex-start':a==='right'?'flex-end':'center';}
+function vAlignToFlex(v){return v==='top'?'flex-start':v==='bottom'?'flex-end':'center';}
+function showPvMode(role,lo){
+  lo=lo||{};
+  const loKey=role+JSON.stringify(lo);
+  if(_lastLoKey===loKey)return;_lastRole=role;_lastLoKey=loKey;
   const txt=document.getElementById('pvText'),sub=document.getElementById('pvSub'),lst=document.getElementById('pvList'),lt=document.getElementById('pvLt'),inner=document.getElementById('pvInner');
   txt.style.display=sub.style.display=(role==='list'||role==='lowerThird')?'none':'';
   lst.style.display=role==='list'?'flex':'none';
   lt.style.display=role==='lowerThird'?'flex':'none';
-  inner.style.alignItems=role==='list'?'flex-start':'center';
-  inner.style.justifyContent=role==='lowerThird'?'flex-end':'center';
+  const ox=lo.offsetX||0,oy=lo.offsetY||0;
+  const pvW=document.getElementById('pvStage').offsetWidth||400;
+  const pvH=document.getElementById('pvStage').offsetHeight||200;
+  const sx=ox*(pvW/1920),sy=oy*(pvH/1080);
+  if(role==='list'){
+    inner.style.alignItems='flex-start';inner.style.justifyContent='center';
+    inner.style.paddingLeft=(16+sx)+'px';inner.style.paddingTop=(28+sy)+'px';
+  } else if(role==='lowerThird'){
+    inner.style.alignItems='center';inner.style.justifyContent='flex-end';
+    lt.style.marginLeft=sx+'px';lt.style.marginBottom=(-sy)+'px';
+  } else {
+    const ha=lo.align?alignToFlex(lo.align):'center';
+    const va=lo.vAlign?vAlignToFlex(lo.vAlign):'center';
+    inner.style.alignItems=ha;inner.style.justifyContent=va;
+    inner.style.paddingLeft=inner.style.paddingTop='';
+    txt.style.marginLeft=sx+'px';txt.style.marginTop=sy+'px';
+  }
 }
 function renderList(s,p,t,eid){
   const lst=document.getElementById('pvList'),sty=s.st,fps=30;
@@ -672,7 +775,7 @@ function tick(ts){
   const txt=document.getElementById('pvText'),sub=document.getElementById('pvSub'),tag=document.getElementById('pvTag');
   const sty=s.st;
   stage.style.background=sty.background;inner.style.color=sty.color;inner.style.fontFamily=sty.fontFamily;
-  showPvMode(s.r);
+  showPvMode(s.r,s.lo);
   if(s.r==='list'){
     renderList(s,p,t,eid);
   } else if(s.r==='lowerThird'){
@@ -692,8 +795,8 @@ function tick(ts){
   document.getElementById('tlI').textContent=`${pl[p]||p} ${pT.toFixed(1)}s/${tot.toFixed(1)}s`;
   an=requestAnimationFrame(tick);
 }
-function startPv(){si=0;ph='in';pT=0;lTs=0;_lastRole='';renderChips(getScenes());if(an)cancelAnimationFrame(an);an=requestAnimationFrame(tick);}
-function restartPv(){const sc=getScenes();if(si>=sc.length)si=0;pT=0;ph='in';lTs=0;_lastRole='';renderChips(sc);}
+function startPv(){si=0;ph='in';pT=0;lTs=0;_lastRole='';_lastLoKey='';renderChips(getScenes());if(an)cancelAnimationFrame(an);an=requestAnimationFrame(tick);}
+function restartPv(){const sc=getScenes();if(si>=sc.length)si=0;pT=0;ph='in';lTs=0;_lastRole='';_lastLoKey='';renderChips(sc);}
 function togglePlay(){playing=!playing;lTs=0;document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';}
 
 // === Export ===
@@ -821,6 +924,18 @@ Timing: in=${t.inF}f, hold=${t.holdF}f, out=${t.outF}f (30fps)
 4. **Override colors** — Add \`"style": {"background": "#...", "color": "#...", "accent": "#..."}\`
 
 5. **Override effects per scene** — Add \`"effects": {"hero": {"inEffectId": 72, "outEffectId": 95}}\`
+
+6. **Override layout per scene** — Add \`"sceneStyle"\`:
+   \`\`\`json
+   "sceneStyle": {
+     "hero":    {"offsetX": 0, "offsetY": -100, "fontSize": 160, "align": "left", "vAlign": "bottom"},
+     "caption": {"offsetX": 50, "offsetY": 30, "fontSize": 48, "align": "right"},
+     "lowerThird": {"offsetX": 20, "offsetY": -10, "fontSize": 72},
+     "list":    {"fontSize": 56},
+     "emphasis": {"fontSize": 100, "align": "left"}
+   }
+   \`\`\`
+   Supported per scene: hero(offsetX/Y,fontSize,align,vAlign), caption(offsetX/Y,fontSize,align), lowerThird(offsetX/Y,fontSize), list(fontSize), emphasis(fontSize,align)
 
 ## Effect Library (effectId 1-100)
 

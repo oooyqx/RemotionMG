@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {effectIdSchema, timingSchema, Timing, ReelProps, ReelSegment, reelFrames} from './schemas';
+import {effectIdSchema, timingSchema, Timing, ReelProps, ReelSegment, reelFrames, alignSchema, vAlignSchema} from './schemas';
 
 /**
  * 主题（Theme）= 一套"协调的动效语言"。
@@ -234,6 +234,18 @@ const themeStyleOverrideSchema = z
   })
   .partial();
 
+/** 逐场景的排版/位置覆盖（偏移、对齐、字号）。 */
+const sceneLayoutSchema = z
+  .object({
+    offsetX: z.number(),
+    offsetY: z.number(),
+    fontSize: z.number().positive(),
+    align: alignSchema,
+    vAlign: vAlignSchema,
+  })
+  .partial();
+export type SceneLayout = z.infer<typeof sceneLayoutSchema>;
+
 /**
  * 主题配置 —— 这就是"单一事实源"：配置前端读写它、AI 拼它、`applyTheme` 解析它。
  * 解析结果是一份标准的 Reel props，可直接 `npx remotion render SceneReel --props`。
@@ -256,6 +268,16 @@ export const themeConfigSchema = z.object({
       emphasis: effectChoiceSchema.optional(),
     })
     .optional(),
+  /** 逐场景覆盖排版/位置（偏移、对齐、字号）。 */
+  sceneStyle: z
+    .object({
+      hero: sceneLayoutSchema.optional(),
+      list: sceneLayoutSchema.optional(),
+      lowerThird: sceneLayoutSchema.optional(),
+      caption: sceneLayoutSchema.optional(),
+      emphasis: sceneLayoutSchema.optional(),
+    })
+    .optional(),
   content: themeContentSchema,
 });
 export type ThemeConfig = z.infer<typeof themeConfigSchema>;
@@ -267,7 +289,8 @@ const buildSegment = (
   content: ThemeContent,
   style: ThemeStyle,
   timing: Timing,
-  eff: EffectChoice
+  eff: EffectChoice,
+  layout?: SceneLayout
 ): ReelSegment | null => {
   const ref = {effectId: eff.inEffectId, inEffectId: eff.inEffectId, outEffectId: eff.outEffectId};
   const base = {
@@ -276,6 +299,7 @@ const buildSegment = (
     fontWeight: style.fontWeight,
     letterSpacing: style.letterSpacing,
   };
+  const lo = layout ?? {};
   switch (role) {
     case 'hero': {
       if (!content.hero) return null;
@@ -285,8 +309,12 @@ const buildSegment = (
           entries: content.hero.entries.map((e) => ({text: e.text, sub: e.sub, ...ref})),
           timing,
           color: style.color,
-          fontSize: SCENE_SIZE.hero,
+          fontSize: lo.fontSize ?? SCENE_SIZE.hero,
           ...base,
+          ...(lo.offsetX != null && {offsetX: lo.offsetX}),
+          ...(lo.offsetY != null && {offsetY: lo.offsetY}),
+          ...(lo.align && {align: lo.align}),
+          ...(lo.vAlign && {vAlign: lo.vAlign}),
         },
       };
     }
@@ -300,7 +328,7 @@ const buildSegment = (
           stepFrames: 22,
           inFrames: 18,
           color: style.color,
-          fontSize: SCENE_SIZE.list,
+          fontSize: lo.fontSize ?? SCENE_SIZE.list,
           ...base,
         },
       };
@@ -313,7 +341,10 @@ const buildSegment = (
           entries: content.lowerThird.entries.map((e) => ({name: e.name, role: e.role, ...ref})),
           timing,
           accent: style.accent,
+          fontSize: lo.fontSize ?? SCENE_SIZE.lowerThird,
           ...base,
+          ...(lo.offsetX != null && {offsetX: lo.offsetX}),
+          ...(lo.offsetY != null && {offsetY: lo.offsetY}),
         },
       };
     }
@@ -326,8 +357,11 @@ const buildSegment = (
           timing,
           barColor: style.barColor,
           color: style.color,
-          fontSize: SCENE_SIZE.caption,
+          fontSize: lo.fontSize ?? SCENE_SIZE.caption,
           ...base,
+          ...(lo.offsetX != null && {offsetX: lo.offsetX}),
+          ...(lo.offsetY != null && {offsetY: lo.offsetY}),
+          ...(lo.align && {align: lo.align}),
         },
       };
     }
@@ -345,8 +379,9 @@ const buildSegment = (
           })),
           timing,
           color: style.color,
-          fontSize: SCENE_SIZE.emphasis,
+          fontSize: lo.fontSize ?? SCENE_SIZE.emphasis,
           ...base,
+          ...(lo.align && {align: lo.align}),
         },
       };
     }
@@ -364,7 +399,8 @@ export const resolveThemeConfig = (config: ThemeConfig): ReelProps => {
   const segments: ReelSegment[] = [];
   for (const role of order) {
     const eff = config.effects?.[role] ?? theme.effects[role];
-    const seg = buildSegment(role, config.content, style, timing, eff);
+    const layout = config.sceneStyle?.[role];
+    const seg = buildSegment(role, config.content, style, timing, eff, layout);
     if (seg) segments.push(seg);
   }
   return {segments};

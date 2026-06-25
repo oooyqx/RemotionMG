@@ -70,7 +70,7 @@
   .empty-msg{color:var(--dim);font-size:11px;text-align:center;padding:12px 0}
 
   /* -- Controls strip -- */
-  .controls{flex-shrink:0;padding:8px 12px;border-top:1px solid var(--border);background:var(--bg2)}
+  .controls{flex-shrink:0;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
   .ctrl-section{margin-bottom:6px}
   .ctrl-label{font-size:9px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
   .sl-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
@@ -87,12 +87,45 @@
   .clr-item input[type=text]{width:64px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 4px;font-size:10px;font-family:"Menlo","Consolas",monospace}
   .clr-item input[type=text]:focus{outline:none;border-color:var(--acc)}
 
-  .eo-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-  .eo-pair{display:flex;align-items:center;gap:2px;font-size:10px}
-  .eo-pair span{color:var(--dim);font-weight:600;font-size:9px;min-width:18px}
-  .eo-pair input{width:36px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;text-align:center;font-family:inherit}
-  .eo-pair input:focus{outline:none;border-color:var(--acc)}
-  .eo-sep{color:var(--border);margin:0 2px}
+  .eo-grid{display:grid;grid-template-columns:auto 1fr 1fr;gap:3px 6px;align-items:center;font-size:10px}
+  .eo-lbl{color:var(--dim);font-weight:600;font-size:9px;text-align:right}
+  .eo-sel{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;font-family:inherit;cursor:pointer}
+  .eo-sel:focus{outline:none;border-color:var(--acc)}
+  .eo-sel option{background:var(--bg);color:var(--text)}
+  .eo-hdr{font-size:8px;color:var(--dim);font-weight:600;text-align:center}
+  .eo-def{display:flex;gap:6px;align-items:center;margin-bottom:6px;padding:4px 6px;background:rgba(255,255,255,0.03);border-radius:3px;border:1px solid var(--border)}
+  .eo-def-lbl{font-size:9px;color:var(--dim);font-weight:600;white-space:nowrap}
+  .eo-def-sel{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;font-family:inherit;cursor:pointer}
+  .eo-def-sel:focus{outline:none;border-color:var(--acc)}
+  .eo-def-sel option{background:var(--bg);color:var(--text)}
+  .eo-apply{padding:2px 8px;border-radius:3px;border:1px solid var(--acc);background:transparent;color:var(--acc);font-size:9px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .1s}
+  .eo-apply:hover{background:var(--glow)}
+
+  /* -- Layout controls -- */
+  .lo-section{padding:6px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
+  .lo-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;align-items:center;font-size:10px}
+  .lo-lbl{color:var(--dim);font-weight:600;font-size:9px;text-align:right;white-space:nowrap}
+  .lo-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 4px;font-size:10px;font-family:"Menlo","Consolas",monospace;box-sizing:border-box}
+  .lo-input:focus{outline:none;border-color:var(--acc)}
+  .lo-sel{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;font-family:inherit;cursor:pointer}
+  .lo-sel:focus{outline:none;border-color:var(--acc)}
+  .lo-sel option{background:var(--bg);color:var(--text)}
+  .lo-pair{display:flex;gap:4px}
+  .lo-pair .lo-sub{flex:1;display:flex;align-items:center;gap:3px}
+  .lo-pair .lo-sub label{color:var(--dim);font-size:8px;font-weight:600}
+  .lo-scene-lbl{font-size:9px;color:var(--acc);font-weight:700;margin-bottom:2px}
+  .lo-reset{padding:1px 6px;border-radius:3px;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:8px;cursor:pointer;font-family:inherit;transition:all .1s;white-space:nowrap}
+  .lo-reset:hover{border-color:var(--acc);color:var(--acc)}
+
+  /* -- Scene order -- */
+  .ord-section{padding:6px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
+  .ord-label{font-size:9px;color:var(--dim);font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+  .ord-list{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+  .ord-item{display:flex;align-items:center;gap:2px;padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:var(--bg);font-size:10px;color:var(--text2);cursor:default;transition:all .1s}
+  .ord-item.active{border-color:var(--acc);color:var(--acc);background:var(--glow)}
+  .ord-arrow{width:14px;height:14px;border:none;background:transparent;color:var(--dim);cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;border-radius:2px;padding:0;transition:all .1s}
+  .ord-arrow:hover{color:var(--acc);background:rgba(56,224,255,0.08)}
+  .ord-sep{color:var(--dim);font-size:9px;opacity:.5;user-select:none}
 
   /* === Right panel === */
   .right{flex:1;display:flex;flex-direction:column;min-width:300px;min-height:0}
@@ -111,6 +144,14 @@
   .pv-text{white-space:nowrap;will-change:transform,opacity,filter}
   .pv-sub{font-size:10px;margin-top:4px;letter-spacing:1.5px;opacity:0.5}
   .pv-tag{position:absolute;left:8px;top:6px;font-size:8px;letter-spacing:1.5px;opacity:0.25;text-transform:uppercase;font-weight:700}
+  .pv-list{display:none;position:absolute;left:16px;top:28px;right:16px;flex-direction:column;gap:6px}
+  .pv-list-title{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#6fa0ff;margin-bottom:4px}
+  .pv-list-item{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700}
+  .pv-list-dot{width:5px;height:5px;border-radius:50%;background:#4aa3ff;flex:0 0 auto;box-shadow:0 0 6px rgba(74,163,255,0.7)}
+  .pv-lt{display:none;position:absolute;left:16px;bottom:16px;align-items:stretch;gap:8px}
+  .pv-lt-bar{width:3px;border-radius:2px;flex:0 0 auto}
+  .pv-lt-name{font-weight:900;line-height:1.05}
+  .pv-lt-role{font-size:9px;margin-top:3px;letter-spacing:1px}
 
   .pv-bar{display:flex;align-items:center;gap:6px;padding:6px 10px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;flex-wrap:wrap}
   .chips{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
@@ -176,12 +217,6 @@
 
   <!-- Left: Controls -->
   <div class="left">
-    <!-- Scene tabs -->
-    <div class="scene-tabs" id="sceneTabs"></div>
-
-    <!-- Editor -->
-    <div class="editor" id="editorArea"></div>
-
     <!-- Controls strip -->
     <div class="controls">
       <div class="ctrl-section">
@@ -199,25 +234,36 @@
         </div>
       </div>
       <div class="ctrl-section" style="margin-bottom:0">
-        <div class="ctrl-label">动效覆盖 <span style="font-weight:400;text-transform:none">effectId 1-100</span></div>
-        <div class="eo-row">
-          <div class="eo-pair"><span>H入</span><input id="eo-hero-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-hero-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <span class="eo-sep">|</span>
-          <div class="eo-pair"><span>L入</span><input id="eo-list-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-list-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <span class="eo-sep">|</span>
-          <div class="eo-pair"><span>角入</span><input id="eo-lowerThird-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-lowerThird-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <span class="eo-sep">|</span>
-          <div class="eo-pair"><span>字入</span><input id="eo-caption-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-caption-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <span class="eo-sep">|</span>
-          <div class="eo-pair"><span>强入</span><input id="eo-emphasis-in" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
-          <div class="eo-pair"><span>出</span><input id="eo-emphasis-out" type="number" min="1" max="100" placeholder="-" oninput="uc()"></div>
+        <div class="ctrl-label">动效</div>
+        <div class="eo-def" id="eoDefRow">
+          <span class="eo-def-lbl">默认</span>
+          <select class="eo-def-sel" id="eoDefIn" onchange="uc()"></select>
+          <select class="eo-def-sel" id="eoDefOut" onchange="uc()"></select>
+          <button class="eo-apply" onclick="applyDefToAll()">应用全部</button>
+        </div>
+        <div class="eo-grid" id="eoGrid">
+          <div></div><div class="eo-hdr">入场</div><div class="eo-hdr">出场</div>
         </div>
       </div>
     </div>
+
+    <!-- Layout controls -->
+    <div class="lo-section">
+      <div class="ctrl-label">布局 Layout <span style="font-weight:400;font-size:8px;color:var(--dim)">(当前场景)</span></div>
+      <div id="loControls"></div>
+    </div>
+
+    <!-- Scene order -->
+    <div class="ord-section">
+      <div class="ord-label">队列 Order</div>
+      <div class="ord-list" id="ordList"></div>
+    </div>
+
+    <!-- Scene tabs -->
+    <div class="scene-tabs" id="sceneTabs"></div>
+
+    <!-- Editor -->
+    <div class="editor" id="editorArea"></div>
   </div>
 
   <!-- Right: Preview + Output -->
@@ -233,10 +279,16 @@
         <div class="pv-tag" id="pvTag">HERO</div>
         <div class="pv-text" id="pvText" style="font-size:24px;font-weight:800">预览</div>
         <div class="pv-sub" id="pvSub"></div>
+        <div class="pv-list" id="pvList"></div>
+        <div class="pv-lt" id="pvLt">
+          <div class="pv-lt-bar" id="pvLtBar"></div>
+          <div><div class="pv-lt-name" id="pvLtName"></div><div class="pv-lt-role" id="pvLtRole"></div></div>
+        </div>
       </div>
     </div>
     <div class="pv-bar">
       <div class="chips" id="pvChips"></div>
+      <button class="sp-btn" id="autoBtn" onclick="toggleAuto()" title="自动轮播开关" style="font-size:8px;padding:1px 5px">全部</button>
       <div class="tl"><div class="tl-p" id="tlP"></div></div>
       <span class="tl-i" id="tlI">入场 0.0s</span>
     </div>
@@ -250,11 +302,13 @@
       </div>
       <div class="out-body">
         <div class="out-tabs">
-          <div class="ot on" onclick="stab('json',this)">JSON</div>
+          <div class="ot on" onclick="stab('ai',this)">AI 提示词</div>
+          <div class="ot" onclick="stab('json',this)">JSON</div>
           <div class="ot" onclick="stab('readme',this)">README</div>
           <div class="ot" onclick="stab('cmd',this)">命令</div>
         </div>
-        <div id="t-json" class="tc on"><div class="out-code" id="oJson"></div></div>
+        <div id="t-ai" class="tc on"><div class="out-code" id="oAi" style="white-space:pre-wrap;line-height:1.6"></div></div>
+        <div id="t-json" class="tc"><div class="out-code" id="oJson"></div></div>
         <div id="t-readme" class="tc"><div class="out-code" id="oReadme"></div></div>
         <div id="t-cmd" class="tc"><div class="out-code" id="oCmd"></div></div>
       </div>
@@ -304,15 +358,131 @@ const TH = {
     sw:['#20182a','#f6efe2','#d9b46a']},
 };
 const CAT={A:'透明度',B:'缓动',C:'缩放3D',D:'模糊',E:'波动',F:'逐字',G:'遮罩',H:'噪声',I:'粒子',J:'光影',K:'故障',L:'分形'};
+const FX_NAMES=[{id:1,c:'A',n:'线性淡入'},{id:2,c:'A',n:'二次淡入'},{id:3,c:'A',n:'三次缓出'},{id:4,c:'A',n:'指数冲入'},{id:5,c:'A',n:'对数渐显'},{id:6,c:'A',n:'Sigmoid渐显'},{id:7,c:'A',n:'高斯闪现'},{id:8,c:'A',n:'伽马淡入'},{id:9,c:'A',n:'双指数过冲'},{id:10,c:'A',n:'幂律阶梯'},{id:11,c:'B',n:'上移淡入'},{id:12,c:'B',n:'回退超调滑入'},{id:13,c:'B',n:'弹性滑入'},{id:14,c:'B',n:'重力下坠'},{id:15,c:'B',n:'抛物线抛入'},{id:16,c:'B',n:'阻尼回正'},{id:17,c:'B',n:'速度模糊滑入'},{id:18,c:'B',n:'惯性甩入'},{id:19,c:'B',n:'磁吸归位'},{id:20,c:'B',n:'折线入场'},{id:21,c:'C',n:'弹簧弹出'},{id:22,c:'C',n:'挤压拉伸'},{id:23,c:'C',n:'旋转缩放螺入'},{id:24,c:'C',n:'透视纵深推入'},{id:25,c:'C',n:'焦点拉近'},{id:26,c:'C',n:'翻牌立体'},{id:27,c:'C',n:'折纸展开'},{id:28,c:'C',n:'镜像对开'},{id:29,c:'C',n:'厚度生长'},{id:30,c:'C',n:'弹性拉伸归位'},{id:31,c:'D',n:'模糊聚焦'},{id:32,c:'D',n:'失焦呼吸'},{id:33,c:'D',n:'墨水晕染'},{id:34,c:'D',n:'辉光绽放'},{id:35,c:'D',n:'色差散焦'},{id:36,c:'D',n:'半调网点'},{id:37,c:'D',n:'像素化解析'},{id:38,c:'D',n:'热浪扭曲'},{id:39,c:'E',n:'正弦行波'},{id:40,c:'E',n:'余弦摆入'},{id:41,c:'E',n:'驻波涟漪'},{id:42,c:'E',n:'心跳脉动'},{id:43,c:'E',n:'正切骤变'},{id:44,c:'E',n:'李萨如聚合'},{id:45,c:'E',n:'阻尼正弦定格'},{id:46,c:'E',n:'拍频闪烁'},{id:47,c:'E',n:'螺旋极坐标'},{id:48,c:'E',n:'波纹扩散'},{id:49,c:'E',n:'旗帜飘动'},{id:50,c:'E',n:'摆线滚入'},{id:51,c:'F',n:'打字机'},{id:52,c:'F',n:'线性交错'},{id:53,c:'F',n:'居中开花'},{id:54,c:'F',n:'随机浮现'},{id:55,c:'F',n:'高斯交错'},{id:56,c:'F',n:'逐字波浪'},{id:57,c:'F',n:'多米诺倒下'},{id:58,c:'F',n:'字符收缩'},{id:59,c:'F',n:'逐行上推'},{id:60,c:'F',n:'词组弹入'},{id:61,c:'F',n:'卷轴百叶'},{id:62,c:'F',n:'蛇形推进'},{id:63,c:'G',n:'横向擦除'},{id:64,c:'G',n:'对角揭开'},{id:65,c:'G',n:'圆形聚光'},{id:66,c:'G',n:'马赛克揭示'},{id:67,c:'G',n:'扫描线显影'},{id:68,c:'G',n:'形状蒙版'},{id:69,c:'G',n:'笔刷手写'},{id:70,c:'G',n:'液态升起'},{id:71,c:'H',n:'噪声抖动收敛'},{id:72,c:'H',n:'乱码解码'},{id:73,c:'H',n:'沙粒重组'},{id:74,c:'H',n:'概率点阵'},{id:75,c:'H',n:'布朗漂移'},{id:76,c:'H',n:'泊松雨点'},{id:77,c:'H',n:'噪声场涌入'},{id:78,c:'H',n:'信噪比提升'},{id:79,c:'H',n:'抖动消融'},{id:80,c:'H',n:'量子坍缩'},{id:81,c:'I',n:'粒子聚合'},{id:82,c:'I',n:'碎片逆爆'},{id:83,c:'I',n:'冲击波成形'},{id:84,c:'I',n:'烟雾凝字'},{id:85,c:'I',n:'磁力吸附'},{id:86,c:'I',n:'体素堆叠'},{id:87,c:'I',n:'拉丝聚合'},{id:88,c:'I',n:'细胞增殖'},{id:89,c:'J',n:'色相旋转'},{id:90,c:'J',n:'流光扫过'},{id:91,c:'J',n:'冷暖渐变'},{id:92,c:'J',n:'投影成型'},{id:93,c:'J',n:'光晕浮现'},{id:94,c:'J',n:'霓虹点亮'},{id:95,c:'K',n:'RGB撕裂故障'},{id:96,c:'K',n:'数据流瀑落'},{id:97,c:'K',n:'方块频闪'},{id:98,c:'L',n:'分形递归展开'},{id:99,c:'L',n:'混沌吸引子归位'},{id:100,c:'L',n:'逻辑斯蒂分岔'}];
+let _fxOptsHtml=null;
+function fxOptsHtml(){
+  if(_fxOptsHtml)return _fxOptsHtml;
+  let h='<option value="">— 默认 —</option>';
+  let cur='';
+  for(const f of FX_NAMES){
+    if(f.c!==cur){if(cur)h+='</optgroup>';cur=f.c;h+=`<optgroup label="${f.c} · ${CAT[f.c]||f.c}">`};
+    h+=`<option value="${f.id}">${f.c}${String(f.id%10||10).padStart(2,'0')} ${f.n}</option>`;
+  }
+  if(cur)h+='</optgroup>';
+  _fxOptsHtml=h;return h;
+}
+function fxLabel(id){const f=FX_NAMES.find(x=>x.id===id);return f?`${f.c}${String(f.id%10||10).padStart(2,'0')} ${f.n}`:`#${id}`;}
+function initEoGrid(){
+  const opts=fxOptsHtml();
+  document.getElementById('eoDefIn').innerHTML=opts;
+  document.getElementById('eoDefOut').innerHTML=opts;
+  const g=document.getElementById('eoGrid');
+  for(const r of ORD){
+    g.innerHTML+=`<div class="eo-lbl">${LB[r]}</div><select class="eo-sel" id="eo-${r}-in" onchange="uc()">${opts}</select><select class="eo-sel" id="eo-${r}-out" onchange="uc()">${opts}</select>`;
+  }
+}
+function syncEoDefaults(){
+  const th=TH[S.theme];
+  document.getElementById('eoDefIn').value=th.effects.hero.i;
+  document.getElementById('eoDefOut').value=th.effects.hero.o;
+}
+function applyDefToAll(){
+  const i=document.getElementById('eoDefIn').value,o=document.getElementById('eoDefOut').value;
+  for(const r of ORD){document.getElementById(`eo-${r}-in`).value=i;document.getElementById(`eo-${r}-out`).value=o;}
+  uc();
+}
+function syncEoValues(){
+  const th=TH[S.theme];
+  for(const r of ORD){
+    document.getElementById(`eo-${r}-in`).value=th.effects[r].i;
+    document.getElementById(`eo-${r}-out`).value=th.effects[r].o;
+  }
+}
 const DEMO={hero:{entries:[{text:'主题成套动效',sub:'One theme · consistent motion'}]},list:{title:'一个主题搞定整片',items:[{text:'标题、列表、字幕…自动协调'},{text:'入场/出场可分别切换'},{text:'配色/字体/节奏全主题统一'},{text:'导出即一份配置 JSON'}]},lowerThird:{entries:[{name:'林述白',role:'动态设计师'}]},caption:{lines:[{text:'选一个主题，整片风格一键成套。'},{text:'再逐场景微调入场与出场。'}]},emphasis:{lines:[{pre:'只需 ',token:'一个主题',post:' 即可统一全片。'}]}};
 const LB={hero:'主标题',list:'列表',lowerThird:'角标',caption:'字幕',emphasis:'强调'};
 const ORD=['hero','list','lowerThird','caption','emphasis'];
+let sceneOrder=[...ORD];
 
 let S={theme:'glitch',content:structuredClone(DEMO)};
 let curTab='hero',timOv=false;
 
+// === Scene order ===
+function renderOrder(){
+  const c=document.getElementById('ordList');c.innerHTML='';
+  sceneOrder.forEach((r,i)=>{
+    if(i>0){const sep=document.createElement('span');sep.className='ord-sep';sep.textContent='→';c.appendChild(sep);}
+    const item=document.createElement('span');item.className='ord-item'+(getCnt(r)?' active':'');
+    const left=document.createElement('button');left.className='ord-arrow';left.textContent='◀';left.onclick=()=>moveOrd(i,-1);
+    if(i===0)left.style.visibility='hidden';
+    const lbl=document.createElement('span');lbl.textContent=LB[r];
+    const right=document.createElement('button');right.className='ord-arrow';right.textContent='▶';right.onclick=()=>moveOrd(i,1);
+    if(i===sceneOrder.length-1)right.style.visibility='hidden';
+    item.appendChild(left);item.appendChild(lbl);item.appendChild(right);
+    c.appendChild(item);
+  });
+}
+function moveOrd(i,dir){
+  const j=i+dir;if(j<0||j>=sceneOrder.length)return;
+  [sceneOrder[i],sceneOrder[j]]=[sceneOrder[j],sceneOrder[i]];
+  renderOrder();uc();
+}
+
+// === Layout controls ===
+const sceneStyles={};
+const LO_CAPS={
+  hero:  {offsetX:true,offsetY:true,fontSize:true,align:true,vAlign:true},
+  list:  {offsetX:false,offsetY:false,fontSize:true,align:false,vAlign:false},
+  lowerThird:{offsetX:true,offsetY:true,fontSize:true,align:false,vAlign:false},
+  caption:{offsetX:true,offsetY:true,fontSize:true,align:true,vAlign:false},
+  emphasis:{offsetX:false,offsetY:false,fontSize:true,align:true,vAlign:false}
+};
+const LO_DEFAULTS={hero:{fontSize:180},list:{fontSize:70},lowerThird:{fontSize:88},caption:{fontSize:64},emphasis:{fontSize:88}};
+const ALIGN_OPTS=[{v:'',l:'— 默认 —'},{v:'left',l:'左 Left'},{v:'center',l:'中 Center'},{v:'right',l:'右 Right'}];
+const VALIGN_OPTS=[{v:'',l:'— 默认 —'},{v:'top',l:'上 Top'},{v:'center',l:'中 Center'},{v:'bottom',l:'下 Bottom'}];
+
+function getLoVal(role,prop){return sceneStyles[role]?.[prop];}
+function setLoVal(role,prop,val){
+  if(!sceneStyles[role])sceneStyles[role]={};
+  if(val===undefined||val===''||val===null)delete sceneStyles[role][prop];
+  else sceneStyles[role][prop]=val;
+  if(!Object.keys(sceneStyles[role]).length)delete sceneStyles[role];
+  uc();
+}
+function renderLoControls(){
+  const c=document.getElementById('loControls');c.innerHTML='';
+  const r=curTab;const caps=LO_CAPS[r];const defs=LO_DEFAULTS[r];
+  const lbl=LB[r];
+  let html=`<div class="lo-scene-lbl">${esc(lbl)}</div><div class="lo-grid">`;
+  if(caps.fontSize){
+    const v=getLoVal(r,'fontSize');
+    html+=`<span class="lo-lbl">字号</span><input class="lo-input" type="number" min="10" max="500" step="1" placeholder="${defs.fontSize}" value="${v!=null?v:''}" onchange="setLoVal('${r}','fontSize',this.value?+this.value:undefined)">`;
+  }
+  if(caps.offsetX||caps.offsetY){
+    html+=`<span class="lo-lbl">偏移</span><div class="lo-pair">`;
+    if(caps.offsetX){const v=getLoVal(r,'offsetX');html+=`<div class="lo-sub"><label>X</label><input class="lo-input" type="number" step="1" placeholder="0" value="${v!=null?v:''}" onchange="setLoVal('${r}','offsetX',this.value?+this.value:undefined)"></div>`;}
+    if(caps.offsetY){const v=getLoVal(r,'offsetY');html+=`<div class="lo-sub"><label>Y</label><input class="lo-input" type="number" step="1" placeholder="0" value="${v!=null?v:''}" onchange="setLoVal('${r}','offsetY',this.value?+this.value:undefined)"></div>`;}
+    html+=`</div>`;
+  }
+  if(caps.align){
+    const v=getLoVal(r,'align')||'';
+    html+=`<span class="lo-lbl">水平</span><select class="lo-sel" onchange="setLoVal('${r}','align',this.value||undefined)">`;
+    for(const o of ALIGN_OPTS)html+=`<option value="${o.v}"${v===o.v?' selected':''}>${o.l}</option>`;
+    html+=`</select>`;
+  }
+  if(caps.vAlign){
+    const v=getLoVal(r,'vAlign')||'';
+    html+=`<span class="lo-lbl">垂直</span><select class="lo-sel" onchange="setLoVal('${r}','vAlign',this.value||undefined)">`;
+    for(const o of VALIGN_OPTS)html+=`<option value="${o.v}"${v===o.v?' selected':''}>${o.l}</option>`;
+    html+=`</select>`;
+  }
+  html+=`</div>`;
+  const hasAny=sceneStyles[r]&&Object.keys(sceneStyles[r]).length;
+  if(hasAny)html+=`<div style="margin-top:4px;text-align:right"><button class="lo-reset" onclick="delete sceneStyles['${r}'];renderLoControls();uc()">重置 ${esc(lbl)}</button></div>`;
+  c.innerHTML=html;
+}
+
 // === Init ===
-function init(){renderPills();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
+function init(){initEoGrid();syncEoValues();syncEoDefaults();renderPills();renderOrder();renderLoControls();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
 
 // === Theme pills ===
 function renderPills(){
@@ -329,6 +499,7 @@ function renderPills(){
 function selTheme(id){
   S.theme=id;
   document.querySelectorAll('.tp').forEach(b=>b.classList.toggle('on',b.getAttribute('data-id')===id));
+  syncEoValues();syncEoDefaults();
   if(!timOv)syncTim();uc();
 }
 function syncTim(){
@@ -347,7 +518,7 @@ function renderSceneTabs(){
     const b=document.createElement('button');
     b.className='st'+(r===curTab?' on':'');
     b.setAttribute('data-r',r);
-    b.onclick=()=>{curTab=r;renderSceneTabs();renderEditor();};
+    b.onclick=()=>{curTab=r;renderSceneTabs();renderLoControls();renderEditor();if(!autoCarousel)syncPvToTab();uc();};
     const cnt=getCnt(r);
     b.innerHTML=`<span class="sd ${cnt?'has':'no'}"></span>${LB[r]}`;
     c.appendChild(b);
@@ -429,13 +600,15 @@ function renderEmp(c){
   addBtn(c,()=>{if(!S.content.emphasis)S.content.emphasis={lines:[]};S.content.emphasis.lines.push({pre:'',token:'强调',post:''});refresh();});
 }
 
-function refresh(){renderSceneTabs();renderEditor();uc();}
+function refresh(){renderOrder();renderSceneTabs();renderEditor();uc();}
 function addBtn(c,fn){const b=document.createElement('button');b.className='add-btn';b.textContent='+ 添加';b.onclick=fn;c.appendChild(b);}
 function mk(tag,cls){const e=document.createElement(tag);e.className=cls;return e;}
 
 // === Build config ===
 function buildCfg(){
-  const cfg={theme:S.theme,content:{}};
+  const cfg={theme:S.theme};
+  if(sceneOrder.some((r,i)=>r!==ORD[i]))cfg.order=sceneOrder.slice();
+  cfg.content={};
   if(S.content.hero?.entries?.length) cfg.content.hero=S.content.hero;
   if(S.content.list?.items?.length){cfg.content.list={items:S.content.list.items};if(S.content.list.title)cfg.content.list.title=S.content.list.title;}
   if(S.content.lowerThird?.entries?.length) cfg.content.lowerThird=S.content.lowerThird;
@@ -447,14 +620,18 @@ function buildCfg(){
   if(bg)st.background=bg;if(fg)st.color=fg;if(ac)st.accent=ac;
   if(Object.keys(st).length)cfg.style=st;
   const eff={};
-  for(const r of ORD){const i=+document.getElementById(`eo-${r}-in`).value,o=+document.getElementById(`eo-${r}-out`).value;if(i>=1&&i<=100&&o>=1&&o<=100)eff[r]={inEffectId:i,outEffectId:o};}
+  for(const r of ORD){const i=+document.getElementById(`eo-${r}-in`).value,o=+document.getElementById(`eo-${r}-out`).value;const th=TH[S.theme].effects[r];if(i!==th.i||o!==th.o)eff[r]={inEffectId:i,outEffectId:o};}
   if(Object.keys(eff).length)cfg.effects=eff;
+  const ss={};
+  for(const r of ORD){if(sceneStyles[r]&&Object.keys(sceneStyles[r]).length)ss[r]={...sceneStyles[r]};}
+  if(Object.keys(ss).length)cfg.sceneStyle=ss;
   return cfg;
 }
 
 // === Update ===
 function uc(){
   const cfg=buildCfg();const json=JSON.stringify(cfg,null,2);
+  document.getElementById('oAi').textContent=genAiPrompt(cfg);
   document.getElementById('oJson').textContent=json;
   document.getElementById('oReadme').textContent=genRm(cfg);
   document.getElementById('oCmd').textContent=`npx remotion render src/index.ts SceneTheme out.mp4 --props='${json.trim()}'`;
@@ -475,30 +652,124 @@ function genRm(cfg){
 }
 function stab(n,el){document.querySelectorAll('.ot').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.getElementById('t-'+n).classList.add('on');}
 
+function genAiPrompt(cfg){
+  const th=TH[cfg.theme];if(!th)return'';
+  const r=curTab;const c=cfg.content[r];
+  if(!c)return'（当前场景无内容）';
+  const ef=cfg.effects?.[r]?{i:cfg.effects[r].inEffectId,o:cfg.effects[r].outEffectId}:th.effects[r];
+  const inFx=fxLabel(ef.i),outFx=fxLabel(ef.o);
+  const tm=cfg.timing||th.timing;
+  const st={...th.style,...(cfg.style||{})};
+  const lo=cfg.sceneStyle?.[r]||{};
+  const fps=30;
+  const defs=LO_DEFAULTS[r]||{};
+
+  let text='';
+  if(r==='hero'&&c.entries?.length)text=c.entries[0].text;
+  else if(r==='list'&&c.items?.length)text=c.items[0].text;
+  else if(r==='lowerThird'&&c.entries?.length)text=c.entries[0].name;
+  else if(r==='caption'&&c.lines?.length)text=c.lines[0].text;
+  else if(r==='emphasis'&&c.lines?.length)text=c.lines[0].pre+c.lines[0].token+c.lines[0].post;
+
+  const catIn=Math.ceil(ef.i/10),catOut=Math.ceil(ef.o/10);
+  const catDesc={1:'透明度渐变',2:'位移+缓动',3:'缩放/3D旋转',4:'模糊聚焦',5:'波动/振荡',6:'逐字符交错',7:'遮罩裁切',8:'噪声抖动',9:'粒子聚散',10:'色彩光影',11:'故障撕裂',12:'分形展开'};
+
+  let prompt=`请用 CSS/JS 动画实现以下文字动效场景：\n\n`;
+  prompt+=`【场景类型】${LB[r]}（${r}）\n`;
+  prompt+=`【文字内容】"${text}"\n`;
+  prompt+=`【背景色】${st.background}\n`;
+  prompt+=`【文字颜色】${st.color}\n`;
+  prompt+=`【字体】${st.fontFamily}, 字重 ${st.fontWeight}\n`;
+  prompt+=`【字号】${lo.fontSize||defs.fontSize||64}px\n`;
+  if(lo.align)prompt+=`【水平对齐】${lo.align}\n`;
+  if(lo.vAlign)prompt+=`【垂直对齐】${lo.vAlign}\n`;
+  if(lo.offsetX)prompt+=`【X偏移】${lo.offsetX}px\n`;
+  if(lo.offsetY)prompt+=`【Y偏移】${lo.offsetY}px\n`;
+  prompt+=`\n【动画时序】30fps\n`;
+  prompt+=`  入场：${tm.inF}帧（${(tm.inF/fps).toFixed(2)}秒）\n`;
+  prompt+=`  停留：${tm.holdF}帧（${(tm.holdF/fps).toFixed(2)}秒）\n`;
+  prompt+=`  出场：${tm.outF}帧（${(tm.outF/fps).toFixed(2)}秒）\n`;
+  prompt+=`\n【入场动效】${inFx}（${catDesc[catIn]||'未知'}类）\n`;
+  prompt+=`  进度 t: 0→1, 使用 easeOutCubic: 1-(1-t)³\n`;
+  prompt+=simFxDesc(ef.i,'in');
+  prompt+=`\n【出场动效】${outFx}（${catDesc[catOut]||'未知'}类）\n`;
+  prompt+=`  进度 t: 0→1, 使用 easeOutCubic 反转: 1-easeOut(t)\n`;
+  prompt+=simFxDesc(ef.o,'out');
+  prompt+=`\n【停留状态】opacity:1, transform:none, filter:none\n`;
+  if(r==='emphasis'&&c.lines?.[0]){
+    const l=c.lines[0];
+    prompt+=`\n【强调词】"${l.token}" 高亮色 ${l.accent||st.accent}\n`;
+    prompt+=`  入场时强调词 opacity: min(1, t*1.5), 出场时 max(0, 1-t*1.5)\n`;
+  }
+  prompt+=`\n复制以上提示词给 AI，即可快速复现此文字动画效果。`;
+  return prompt;
+}
+
+function simFxDesc(id,phase){
+  const cat=Math.ceil(id/10);let d='';
+  switch(cat){
+    case 1:d='  CSS: opacity = p\n';break;
+    case 2:d='  CSS: opacity = min(1, p*2); transform: translateY((1-p)*35px)\n';break;
+    case 3:d='  CSS: opacity = min(1, p*1.5); transform: scale(0.3+p*0.7) rotate((1-p)*15deg)\n';break;
+    case 4:d='  CSS: opacity = p; filter: blur((1-p)*8px)\n';break;
+    case 5:d='  CSS: opacity = p; transform: translateY(sin(t*π*3)*(1-p)*10px) rotate((1-p)*8deg)\n';break;
+    case 6:d='  CSS: opacity = 1; clip-path: inset(0 (1-p)*100% 0 0); transform: translateX((1-p)*-8px)\n  技巧: 逐字符设置不同延迟(stagger)实现打字/交错效果\n';break;
+    case 7:d='  CSS: opacity = 1; clip-path: 几何遮罩渐变裁切\n';break;
+    case 8:d='  CSS: opacity = min(1, p*1.5); transform: translate(随机抖动); filter: brightness(1+(1-p)*0.5)\n';break;
+    case 9:d='  CSS: opacity = p; transform: scale(0.2+p*0.8) rotate((1-p)*180deg); filter: blur((1-p)*3px)\n';break;
+    case 10:d='  CSS: opacity = p; filter: brightness(1+(1-p)*1.5) saturate(0.5+p*0.5); transform: scale(0.95+p*0.05)\n';break;
+    case 11:d='  CSS: opacity = min(1, p*2); transform: translateX(随机*5px) skewX((1-p)*8deg); filter: hue-rotate((1-p)*90deg)\n';break;
+    case 12:d='  CSS: opacity = p; transform: translate(混沌) rotate(混沌) scale(0.5+p*0.5)\n';break;
+    default:d='  CSS: opacity = p\n';
+  }
+  d+='  其中 p = easeOutCubic(t), t∈[0,1]\n';
+  return d;
+}
+
 // === Preview ===
 let an=null,playing=true,si=0,ph='in',pT=0,lTs=0,speed=1;
+let autoCarousel=true;
 const SP=[0.5,1,1.5,2];let spi=1;
 function cycleSpeed(){spi=(spi+1)%SP.length;speed=SP[spi];document.getElementById('spBtn').textContent=speed+'x';}
+function toggleAuto(){
+  autoCarousel=!autoCarousel;
+  const btn=document.getElementById('autoBtn');
+  btn.textContent=autoCarousel?'全部':'单场景';
+  btn.style.borderColor=autoCarousel?'':'var(--acc)';
+  btn.style.color=autoCarousel?'':'var(--acc)';
+  if(!autoCarousel)syncPvToTab();
+  else restartPv();
+}
+function syncPvToTab(){
+  const sc=getScenes();
+  const idx=sc.findIndex(s=>s.r===curTab);
+  if(idx>=0){si=idx;pT=0;ph='in';lTs=0;_lastRole='';_lastLoKey='';renderChips(sc);}
+}
 
 function getScenes(){
   const cfg=buildCfg();const order=cfg.order||ORD;const sc=[];
+  const PV_FS={hero:24,list:11,lowerThird:18,caption:14,emphasis:18};
   for(const r of order){
     const c=cfg.content[r];if(!c)continue;
     const th=TH[S.theme];const ef=cfg.effects?.[r]?{i:cfg.effects[r].inEffectId,o:cfg.effects[r].outEffectId}:th.effects[r];
     const st={...th.style,...(cfg.style||{})};const tm=cfg.timing||th.timing;
-    if(r==='hero'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.text,sub:e.sub||'',ef,st,tm,fs:24,fw:st.fontWeight});
-    else if(r==='list'&&c.items?.length)for(const it of c.items)sc.push({r,text:it.text,sub:'',ef,st,tm,fs:14,fw:st.fontWeight});
-    else if(r==='lowerThird'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.name,sub:e.role,ef,st,tm,fs:18,fw:st.fontWeight});
-    else if(r==='caption'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.text,sub:'',ef,st,tm,fs:14,fw:st.fontWeight});
-    else if(r==='emphasis'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.pre,token:l.token,post:l.post,sub:'',ef,st,tm,fs:18,fw:st.fontWeight,accent:st.accent});
+    const lo=cfg.sceneStyle?.[r]||{};
+    const pvScale=lo.fontSize?lo.fontSize/LO_DEFAULTS[r].fontSize:1;
+    const fs=Math.round(PV_FS[r]*pvScale);
+    const loBase={lo};
+    if(r==='hero'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.text,sub:e.sub||'',ef,st,tm,fs,fw:st.fontWeight,...loBase});
+    else if(r==='list'&&c.items?.length){const stepF=22,inF2=18,tail=30;const totalF=(c.items.length-1)*stepF+inF2+tail;sc.push({r,title:c.title||'',items:c.items.map(it=>it.text),ef,st,tm:{inF:totalF,holdF:0,outF:tm.outF},fs,fw:st.fontWeight,stepF,inF2,...loBase});}
+    else if(r==='lowerThird'&&c.entries?.length)for(const e of c.entries)sc.push({r,text:e.name,sub:e.role,ef,st,tm,fs,fw:st.fontWeight,...loBase});
+    else if(r==='caption'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.text,sub:'',ef,st,tm,fs,fw:st.fontWeight,...loBase});
+    else if(r==='emphasis'&&c.lines?.length)for(const l of c.lines)sc.push({r,text:l.pre,token:l.token,post:l.post,sub:'',ef,st,tm,fs,fw:st.fontWeight,accent:st.accent,...loBase});
   }
-  if(!sc.length){const th=TH[S.theme];sc.push({r:'hero',text:'预览',sub:'',ef:th.effects.hero,st:th.style,tm:th.timing,fs:24,fw:800});}
+  if(!sc.length){const th=TH[S.theme];sc.push({r:'hero',text:'预览',sub:'',ef:th.effects.hero,st:th.style,tm:th.timing,fs:24,fw:800,lo:{}});}
   return sc;
 }
 
 function renderChips(sc){
   const c=document.getElementById('pvChips');c.innerHTML='';
-  sc.forEach((s,i)=>{const b=document.createElement('button');b.className='chip'+(i===si?' on':'');b.textContent=LB[s.r]||s.r;b.onclick=()=>{si=i;pT=0;ph='in';lTs=0;renderChips(sc);};c.appendChild(b);});
+  sc.forEach((s,i)=>{const b=document.createElement('button');b.className='chip'+(i===si?' on':'');b.textContent=LB[s.r]||s.r;b.onclick=()=>{si=i;pT=0;ph='in';lTs=0;renderChips(sc);if(!autoCarousel){curTab=s.r;renderSceneTabs();renderLoControls();renderEditor();uc();}};c.appendChild(b);});
 }
 
 function simFx(id,ph,t){
@@ -524,6 +795,63 @@ function simFx(id,ph,t){
 const GL='アカサタナ01XΞΨ#%&@王金木水火土';
 function scr(text,prog){return Array.from(text).map((ch,i)=>{const l=(i/Math.max(text.length,1))*.85;return prog>l+.15?ch:GL[Math.floor(Math.random()*GL.length)];}).join('');}
 
+let _lastRole='',_lastLoKey='';
+function alignToFlex(a){return a==='left'?'flex-start':a==='right'?'flex-end':'center';}
+function vAlignToFlex(v){return v==='top'?'flex-start':v==='bottom'?'flex-end':'center';}
+function showPvMode(role,lo){
+  lo=lo||{};
+  const loKey=role+JSON.stringify(lo);
+  if(_lastLoKey===loKey)return;_lastRole=role;_lastLoKey=loKey;
+  const txt=document.getElementById('pvText'),sub=document.getElementById('pvSub'),lst=document.getElementById('pvList'),lt=document.getElementById('pvLt'),inner=document.getElementById('pvInner');
+  txt.style.display=sub.style.display=(role==='list'||role==='lowerThird')?'none':'';
+  lst.style.display=role==='list'?'flex':'none';
+  lt.style.display=role==='lowerThird'?'flex':'none';
+  const ox=lo.offsetX||0,oy=lo.offsetY||0;
+  const pvW=document.getElementById('pvStage').offsetWidth||400;
+  const pvH=document.getElementById('pvStage').offsetHeight||200;
+  const sx=ox*(pvW/1920),sy=oy*(pvH/1080);
+  if(role==='list'){
+    inner.style.alignItems='flex-start';inner.style.justifyContent='center';
+    inner.style.paddingLeft=(16+sx)+'px';inner.style.paddingTop=(28+sy)+'px';
+  } else if(role==='lowerThird'){
+    inner.style.alignItems='center';inner.style.justifyContent='flex-end';
+    lt.style.marginLeft=sx+'px';lt.style.marginBottom=(-sy)+'px';
+  } else {
+    const ha=lo.align?alignToFlex(lo.align):'center';
+    const va=lo.vAlign?vAlignToFlex(lo.vAlign):'center';
+    inner.style.alignItems=ha;inner.style.justifyContent=va;
+    inner.style.paddingLeft=inner.style.paddingTop='';
+    txt.style.marginLeft=sx+'px';txt.style.marginTop=sy+'px';
+  }
+}
+function renderList(s,p,t,eid){
+  const lst=document.getElementById('pvList'),sty=s.st,fps=30;
+  const stepF=s.stepF||22,inF2=s.inF2||18;
+  let html='';
+  if(s.title)html+=`<div class="pv-list-title">${esc(s.title)}</div>`;
+  const frameT=p==='in'?t*s.tm.inF:p==='hold'?s.tm.inF:(1-t)*s.tm.inF;
+  s.items.forEach((text,i)=>{
+    const start=i*stepF;const itemT=Math.min(1,Math.max(0,(frameT-start)/inF2));
+    if(itemT<=0)return;
+    const cat=Math.ceil(eid/10);const iFx=simFx(eid,'in',itemT);
+    const dotOp=itemT;
+    html+=`<div class="pv-list-item" style="opacity:${iFx.opacity??1};transform:${iFx.transform||'none'};filter:${iFx.filter||'none'}"><div class="pv-list-dot" style="opacity:${dotOp}"></div><span style="font-size:${s.fs}px;font-weight:${s.fw};letter-spacing:${sty.letterSpacing||0}px;color:${sty.color}">${esc(text)}</span></div>`;
+  });
+  lst.innerHTML=html;
+}
+function renderLt(s,p,t,eid){
+  const name=document.getElementById('pvLtName'),role=document.getElementById('pvLtRole'),bar=document.getElementById('pvLtBar'),sty=s.st;
+  const ez=x=>1-Math.pow(1-x,3);const slide=p==='in'?ez(Math.min(1,t)):p==='hold'?1:1-ez(Math.min(1,t));
+  const boxX=(1-slide)*-30;const roleOp=p==='in'?Math.min(1,(t-.4)/.5):slide;
+  const lt=document.getElementById('pvLt');
+  lt.style.transform=`translateX(${boxX}px)`;lt.style.opacity=Math.min(1,slide*1.3);
+  bar.style.background=sty.accent||'#ff7a3c';bar.style.boxShadow=`0 0 8px ${sty.accent||'#ff7a3c'}`;
+  const fx=p==='hold'?{}:simFx(eid,p,t);
+  name.textContent=s.text;name.style.fontSize=s.fs+'px';name.style.fontWeight=900;name.style.color=sty.color;
+  name.style.letterSpacing=(sty.letterSpacing||0)+'px';
+  name.style.opacity=fx.opacity??1;name.style.transform=fx.transform||'none';
+  role.textContent=s.sub||'';role.style.color=sty.accent||'#ff7a3c';role.style.opacity=Math.max(0,roleOp);
+}
 function tick(ts){
   if(!playing){an=requestAnimationFrame(tick);return;}
   const sc=getScenes();if(!sc.length){an=requestAnimationFrame(tick);return;}
@@ -532,7 +860,13 @@ function tick(ts){
   const fps=30,iD=s.tm.inF/fps,hD=s.tm.holdF/fps,oD=s.tm.outF/fps,tot=iD+hD+oD;
   pT+=dt;
   let p,t;
-  if(pT<iD){p='in';t=pT/iD;}else if(pT<iD+hD){p='hold';t=1;}else if(pT<tot){p='out';t=(pT-iD-hD)/oD;}else{si=(si+1)%sc.length;pT=0;p='in';t=0;renderChips(sc);}
+  if(pT<iD){p='in';t=pT/iD;}else if(pT<iD+hD){p='hold';t=1;}else if(pT<tot){p='out';t=(pT-iD-hD)/oD;}else{
+    if(autoCarousel){si=(si+1)%sc.length;}else{
+      const curRole=sc[si]?.r;const sameRole=sc.filter(x=>x.r===curRole);
+      if(sameRole.length>1){const ci=sameRole.indexOf(sc[si]);const ni=(ci+1)%sameRole.length;si=sc.indexOf(sameRole[ni]);}
+    }
+    pT=0;p='in';t=0;renderChips(sc);
+  }
   ph=p;
   const eid=p==='out'?s.ef.o:s.ef.i;
   const fx=p==='hold'?{opacity:1,transform:'none',filter:'none',clipPath:'none'}:simFx(eid,p,t);
@@ -540,12 +874,19 @@ function tick(ts){
   const txt=document.getElementById('pvText'),sub=document.getElementById('pvSub'),tag=document.getElementById('pvTag');
   const sty=s.st;
   stage.style.background=sty.background;inner.style.color=sty.color;inner.style.fontFamily=sty.fontFamily;
-  let disp=s.text;const cat=Math.ceil(eid/10);
-  if(cat===8&&p!=='hold')disp=scr(s.text,p==='in'?t:1-t);
-  if(s.r==='emphasis'&&s.token){const to=p==='hold'?1:(p==='in'?Math.min(1,t*1.5):Math.max(0,1-t*1.5));txt.innerHTML=`${esc(s.text)}<span style="color:${s.accent};font-weight:900;opacity:${to}">${esc(s.token)}</span>${esc(s.post||'')}`;}else txt.textContent=disp;
-  txt.style.fontSize=s.fs+'px';txt.style.fontWeight=s.fw;txt.style.letterSpacing=(sty.letterSpacing||0)+'px';
-  txt.style.opacity=fx.opacity??1;txt.style.transform=fx.transform||'none';txt.style.filter=fx.filter||'none';txt.style.clipPath=fx.clipPath||'none';
-  sub.textContent=s.sub||'';sub.style.opacity=p==='hold'?.5:(p==='in'?Math.max(0,(t-.5)*1.2):Math.max(0,(1-t*2)*.5));sub.style.color=sty.color;
+  showPvMode(s.r,s.lo);
+  if(s.r==='list'){
+    renderList(s,p,t,eid);
+  } else if(s.r==='lowerThird'){
+    renderLt(s,p,t,eid);
+  } else {
+    let disp=s.text;const cat=Math.ceil(eid/10);
+    if(cat===8&&p!=='hold')disp=scr(s.text,p==='in'?t:1-t);
+    if(s.r==='emphasis'&&s.token){const to=p==='hold'?1:(p==='in'?Math.min(1,t*1.5):Math.max(0,1-t*1.5));txt.innerHTML=`${esc(s.text)}<span style="color:${s.accent};font-weight:900;opacity:${to}">${esc(s.token)}</span>${esc(s.post||'')}`;}else txt.textContent=disp;
+    txt.style.fontSize=s.fs+'px';txt.style.fontWeight=s.fw;txt.style.letterSpacing=(sty.letterSpacing||0)+'px';
+    txt.style.opacity=fx.opacity??1;txt.style.transform=fx.transform||'none';txt.style.filter=fx.filter||'none';txt.style.clipPath=fx.clipPath||'none';
+    sub.textContent=s.sub||'';sub.style.opacity=p==='hold'?.5:(p==='in'?Math.max(0,(t-.5)*1.2):Math.max(0,(1-t*2)*.5));sub.style.color=sty.color;
+  }
   const cl=String.fromCharCode(64+Math.ceil(eid/10));
   tag.textContent=`${(LB[s.r]||s.r).toUpperCase()} · ${cl}${String(eid).padStart(2,'0')}`;tag.style.color=sty.color;
   document.getElementById('tlP').style.width=(Math.min(1,pT/tot)*100)+'%';
@@ -553,8 +894,8 @@ function tick(ts){
   document.getElementById('tlI').textContent=`${pl[p]||p} ${pT.toFixed(1)}s/${tot.toFixed(1)}s`;
   an=requestAnimationFrame(tick);
 }
-function startPv(){si=0;ph='in';pT=0;lTs=0;renderChips(getScenes());if(an)cancelAnimationFrame(an);an=requestAnimationFrame(tick);}
-function restartPv(){const sc=getScenes();if(si>=sc.length)si=0;pT=0;ph='in';lTs=0;renderChips(sc);}
+function startPv(){si=0;ph='in';pT=0;lTs=0;_lastRole='';_lastLoKey='';renderChips(getScenes());if(an)cancelAnimationFrame(an);an=requestAnimationFrame(tick);}
+function restartPv(){const sc=getScenes();if(si>=sc.length)si=0;pT=0;ph='in';lTs=0;_lastRole='';_lastLoKey='';renderChips(sc);}
 function togglePlay(){playing=!playing;lTs=0;document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';}
 
 // === Export ===
@@ -683,6 +1024,18 @@ Timing: in=${t.inF}f, hold=${t.holdF}f, out=${t.outF}f (30fps)
 
 5. **Override effects per scene** — Add \`"effects": {"hero": {"inEffectId": 72, "outEffectId": 95}}\`
 
+6. **Override layout per scene** — Add \`"sceneStyle"\`:
+   \`\`\`json
+   "sceneStyle": {
+     "hero":    {"offsetX": 0, "offsetY": -100, "fontSize": 160, "align": "left", "vAlign": "bottom"},
+     "caption": {"offsetX": 50, "offsetY": 30, "fontSize": 48, "align": "right"},
+     "lowerThird": {"offsetX": 20, "offsetY": -10, "fontSize": 72},
+     "list":    {"fontSize": 56},
+     "emphasis": {"fontSize": 100, "align": "left"}
+   }
+   \`\`\`
+   Supported per scene: hero(offsetX/Y,fontSize,align,vAlign), caption(offsetX/Y,fontSize,align), lowerThird(offsetX/Y,fontSize), list(fontSize), emphasis(fontSize,align)
+
 ## Effect Library (effectId 1-100)
 
 | Range | Category | Description |
@@ -754,9 +1107,13 @@ function exportZip(){
   const sceneCnt=roles.length,fileCnt=Object.keys(files).length;
   toast(`已下载 (${sceneCnt}场景, ${fileCnt}文件)`);
 }
-function copyJson(){navigator.clipboard.writeText(JSON.stringify(buildCfg(),null,2));toast('JSON 已复制');}
+function copyJson(){
+  const activeTab=document.querySelector('.tc.on .out-code');
+  if(activeTab){navigator.clipboard.writeText(activeTab.textContent);toast('已复制');}
+  else{navigator.clipboard.writeText(JSON.stringify(buildCfg(),null,2));toast('JSON 已复制');}
+}
 function copyRenderCmd(){const j=JSON.stringify(buildCfg(),null,2);navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${j.trim()}'`);toast('命令已复制');}
-function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;renderPills();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');ORD.forEach(r=>{document.getElementById(`eo-${r}-in`).value='';document.getElementById(`eo-${r}-out`).value='';});uc();toast('已重置');}
+function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;sceneOrder=[...ORD];renderPills();renderOrder();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');syncEoValues();syncEoDefaults();uc();toast('已重置');}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 

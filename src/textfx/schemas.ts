@@ -88,6 +88,7 @@ export const lowerThirdSchema = z.object({
   timing: timingSchema,
   background: z.string(),
   accent: z.string(),
+  fontSize: z.number().positive().optional(),
 }).merge(styleSchema);
 export type LowerThirdProps = z.infer<typeof lowerThirdSchema>;
 

@@ -101,6 +101,29 @@
   .eo-apply{padding:2px 8px;border-radius:3px;border:1px solid var(--acc);background:transparent;color:var(--acc);font-size:9px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .1s}
   .eo-apply:hover{background:var(--glow)}
 
+  /* -- Custom FX dropdown with hover preview -- */
+  .fx-dd{position:relative;width:100%}
+  .fx-dd-btn{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 3px;font-size:10px;font-family:inherit;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fx-dd-btn:hover{border-color:var(--dim)}
+  .fx-dd-btn.open{border-color:var(--acc)}
+  .fx-dd-list{display:none;position:absolute;top:100%;left:0;right:0;z-index:999;background:var(--card);border:1px solid var(--acc);border-radius:4px;max-height:260px;overflow-y:auto;margin-top:1px;box-shadow:0 4px 16px rgba(0,0,0,0.5)}
+  .fx-dd-list.show{display:block}
+  .fx-dd-list::-webkit-scrollbar{width:4px}
+  .fx-dd-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+  .fx-dd-grp{padding:3px 6px;font-size:8px;font-weight:700;color:var(--acc2);letter-spacing:0.5px;background:rgba(255,255,255,0.03);position:sticky;top:0}
+  .fx-dd-opt{padding:3px 8px;font-size:10px;color:var(--text2);cursor:pointer;transition:background .06s}
+  .fx-dd-opt:hover{background:var(--glow);color:var(--acc)}
+  .fx-dd-opt.on{background:rgba(56,224,255,0.08);color:var(--acc);font-weight:600}
+
+  /* -- Font picker -- */
+  .font-section{padding:4px 12px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;gap:6px;align-items:center}
+  .font-section .ctrl-label{margin:0;font-size:9px;white-space:nowrap}
+  .font-sel{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 4px;font-size:10px;font-family:inherit;cursor:pointer}
+  .font-sel:focus{outline:none;border-color:var(--acc)}
+  .font-sel option{background:var(--bg);color:var(--text)}
+  .font-load-btn{padding:2px 8px;border-radius:3px;border:1px solid var(--acc);background:transparent;color:var(--acc);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .1s;white-space:nowrap}
+  .font-load-btn:hover{background:var(--glow)}
+
   /* -- Layout controls -- */
   .lo-section{padding:6px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
   .lo-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;align-items:center;font-size:10px}
@@ -224,6 +247,11 @@
         <div class="sl-row"><span class="sl-name">入</span><input type="range" id="inF" min="4" max="60" value="20" oninput="sSync(this,'iv');uc()"><span class="sl-v" id="iv">20f</span></div>
         <div class="sl-row"><span class="sl-name">停</span><input type="range" id="holdF" min="0" max="90" value="40" oninput="sSync(this,'hv');uc()"><span class="sl-v" id="hv">40f</span></div>
         <div class="sl-row"><span class="sl-name">出</span><input type="range" id="outF" min="4" max="60" value="16" oninput="sSync(this,'ov');uc()"><span class="sl-v" id="ov">16f</span></div>
+      </div>
+      <div class="font-section">
+        <span class="ctrl-label">字体</span>
+        <div id="fontSelWrapper" style="flex:1;min-width:0"></div>
+        <button class="font-load-btn" id="fontLoadBtn" onclick="loadSystemFonts()">读取本机字体</button>
       </div>
       <div class="ctrl-section">
         <div class="ctrl-label">配色</div>
@@ -372,30 +400,82 @@ function fxOptsHtml(){
   _fxOptsHtml=h;return h;
 }
 function fxLabel(id){const f=FX_NAMES.find(x=>x.id===id);return f?`${f.c}${String(f.id%10||10).padStart(2,'0')} ${f.n}`:`#${id}`;}
+let _fxItems=[];let _hoverOrigVal=null;let _hoverSelId=null;let _hoverOrigFont=null;
+function parseFxItems(){
+  if(_fxItems.length)return _fxItems;
+  let cur=null;
+  for(const fx of FX_NAMES){
+    const grp=fx.c;
+    if(grp!==cur){_fxItems.push({type:'group',label:`${grp} · ${({A:'透明度',B:'缓动',C:'缩放3D',D:'模糊',E:'波动',F:'逐字',G:'遮罩',H:'噪声',I:'粒子',J:'光影',K:'故障',L:'分形'})[grp]||grp}`});cur=grp;}
+    _fxItems.push({type:'opt',id:fx.id,label:`${fx.c}${String(fx.id%10||10).padStart(2,'0')} ${fx.n}`});
+  }
+  return _fxItems;
+}
+function createFxDropdown(id,cls){
+  const wrap=document.createElement('div');wrap.className='fx-dd';wrap.id=id;
+  const btn=document.createElement('button');btn.className=cls+' fx-dd-btn';btn.type='button';btn.textContent='—';
+  btn.setAttribute('data-val','');
+  const list=document.createElement('div');list.className='fx-dd-list';
+  const items=parseFxItems();
+  for(const it of items){
+    if(it.type==='group'){const g=document.createElement('div');g.className='fx-dd-grp';g.textContent=it.label;list.appendChild(g);}
+    else{
+      const o=document.createElement('div');o.className='fx-dd-opt';o.textContent=it.label;o.setAttribute('data-val',it.id);
+      o.onmouseenter=()=>{if(_hoverOrigVal===null){_hoverOrigVal=btn.getAttribute('data-val');_hoverSelId=id;}
+        btn.setAttribute('data-val',it.id);btn.textContent=it.label;fxHoverPreview();}
+      o.onclick=(e)=>{e.stopPropagation();_hoverOrigVal=null;_hoverSelId=null;btn.setAttribute('data-val',it.id);btn.textContent=it.label;
+        list.classList.remove('show');btn.classList.remove('open');highlightFxOpt(list,it.id);uc();}
+      list.appendChild(o);
+    }
+  }
+  list.onmouseleave=()=>{if(_hoverOrigVal!==null&&_hoverSelId===id){
+    btn.setAttribute('data-val',_hoverOrigVal);const orig=items.find(x=>x.id===+_hoverOrigVal);
+    btn.textContent=orig?orig.label:'—';_hoverOrigVal=null;_hoverSelId=null;highlightFxOpt(list,+_hoverOrigVal);restartPv();}}
+  btn.onclick=(e)=>{e.stopPropagation();closeAllFxDd();list.classList.toggle('show');btn.classList.toggle('open');
+    const cur=btn.getAttribute('data-val');if(cur){const el=list.querySelector(`[data-val="${cur}"]`);if(el)el.scrollIntoView({block:'center'});}}
+  wrap.appendChild(btn);wrap.appendChild(list);
+  return wrap;
+}
+function highlightFxOpt(list,val){
+  list.querySelectorAll('.fx-dd-opt').forEach(o=>{o.classList.toggle('on',+o.getAttribute('data-val')===+val);});
+}
+function closeAllFxDd(){document.querySelectorAll('.fx-dd-list.show').forEach(l=>{l.classList.remove('show');l.previousElementSibling.classList.remove('open');});}
+function fxHoverPreview(){restartPv();}
+function getFxDdVal(id){const el=document.getElementById(id);if(!el)return 0;return +(el.querySelector('.fx-dd-btn')?.getAttribute('data-val')||0);}
+function setFxDdVal(id,val){
+  const el=document.getElementById(id);if(!el)return;
+  const btn=el.querySelector('.fx-dd-btn'),list=el.querySelector('.fx-dd-list');
+  btn.setAttribute('data-val',val);const items=parseFxItems();const it=items.find(x=>x.id===+val);
+  btn.textContent=it?it.label:'—';highlightFxOpt(list,+val);
+}
 function initEoGrid(){
-  const opts=fxOptsHtml();
-  document.getElementById('eoDefIn').innerHTML=opts;
-  document.getElementById('eoDefOut').innerHTML=opts;
+  const defRow=document.getElementById('eoDefRow');
+  const oldDefIn=document.getElementById('eoDefIn'),oldDefOut=document.getElementById('eoDefOut');
+  const ddDefIn=createFxDropdown('eoDefIn','eo-def-sel');const ddDefOut=createFxDropdown('eoDefOut','eo-def-sel');
+  oldDefIn.replaceWith(ddDefIn);oldDefOut.replaceWith(ddDefOut);
   const g=document.getElementById('eoGrid');
   for(const r of ORD){
-    g.innerHTML+=`<div class="eo-lbl">${LB[r]}</div><select class="eo-sel" id="eo-${r}-in" onchange="uc()">${opts}</select><select class="eo-sel" id="eo-${r}-out" onchange="uc()">${opts}</select>`;
+    const lbl=document.createElement('div');lbl.className='eo-lbl';lbl.textContent=LB[r];
+    const ddIn=createFxDropdown(`eo-${r}-in`,'eo-sel');const ddOut=createFxDropdown(`eo-${r}-out`,'eo-sel');
+    g.appendChild(lbl);g.appendChild(ddIn);g.appendChild(ddOut);
   }
+  document.addEventListener('click',()=>closeAllFxDd());
 }
 function syncEoDefaults(){
   const th=TH[S.theme];
-  document.getElementById('eoDefIn').value=th.effects.hero.i;
-  document.getElementById('eoDefOut').value=th.effects.hero.o;
+  setFxDdVal('eoDefIn',th.effects.hero.i);
+  setFxDdVal('eoDefOut',th.effects.hero.o);
 }
 function applyDefToAll(){
-  const i=document.getElementById('eoDefIn').value,o=document.getElementById('eoDefOut').value;
-  for(const r of ORD){document.getElementById(`eo-${r}-in`).value=i;document.getElementById(`eo-${r}-out`).value=o;}
+  const i=getFxDdVal('eoDefIn'),o=getFxDdVal('eoDefOut');
+  for(const r of ORD){setFxDdVal(`eo-${r}-in`,i);setFxDdVal(`eo-${r}-out`,o);}
   uc();
 }
 function syncEoValues(){
   const th=TH[S.theme];
   for(const r of ORD){
-    document.getElementById(`eo-${r}-in`).value=th.effects[r].i;
-    document.getElementById(`eo-${r}-out`).value=th.effects[r].o;
+    setFxDdVal(`eo-${r}-in`,th.effects[r].i);
+    setFxDdVal(`eo-${r}-out`,th.effects[r].o);
   }
 }
 const DEMO={hero:{entries:[{text:'主题成套动效',sub:'One theme · consistent motion'}]},list:{title:'一个主题搞定整片',items:[{text:'标题、列表、字幕…自动协调'},{text:'入场/出场可分别切换'},{text:'配色/字体/节奏全主题统一'},{text:'导出即一份配置 JSON'}]},lowerThird:{entries:[{name:'林述白',role:'动态设计师'}]},caption:{lines:[{text:'选一个主题，整片风格一键成套。'},{text:'再逐场景微调入场与出场。'}]},emphasis:{lines:[{pre:'只需 ',token:'一个主题',post:' 即可统一全片。'}]}};
@@ -481,8 +561,108 @@ function renderLoControls(){
   c.innerHTML=html;
 }
 
+// === Font picker ===
+let fontOverride='';
+const BUILTIN_FONTS=[
+  {name:'— 主题默认 —',val:''},
+  {name:'Arial',val:'Arial,sans-serif'},
+  {name:'Segoe UI',val:'"Segoe UI",sans-serif'},
+  {name:'Microsoft YaHei',val:'"Microsoft YaHei",sans-serif'},
+  {name:'PingFang SC',val:'"PingFang SC",sans-serif'},
+  {name:'SimHei',val:'SimHei,sans-serif'},
+  {name:'KaiTi',val:'KaiTi,serif'},
+  {name:'Consolas',val:'Consolas,monospace'},
+  {name:'Menlo',val:'Menlo,monospace'},
+  {name:'Georgia',val:'Georgia,serif'},
+  {name:'Times New Roman',val:'"Times New Roman",serif'},
+  {name:'Comic Sans MS',val:'"Comic Sans MS",cursive'},
+  {name:'Impact',val:'Impact,sans-serif'},
+];
+function initFontSel(){
+  const wrapper=document.getElementById('fontSelWrapper');
+  if(!wrapper)return;
+  const dd=createFontDropdown('fontSel','font-sel');
+  wrapper.appendChild(dd);
+  updateFontOptions(BUILTIN_FONTS);
+}
+function updateFontOptions(list){
+  const dd=document.getElementById('fontSel');if(!dd)return;
+  const btn=dd.querySelector('.fx-dd-btn'),listEl=dd.querySelector('.fx-dd-list');
+  listEl.innerHTML='';
+  for(const f of list){
+    const o=document.createElement('div');o.className='fx-dd-opt';
+    o.textContent=f.name;o.setAttribute('data-val',f.val);
+    if(f.val)o.style.fontFamily=f.val;
+    o.onmouseenter=()=>{
+      if(_hoverOrigFont===null){_hoverOrigFont=fontOverride;}
+      fontOverride=f.val;restartPv();
+      btn.textContent=f.name;
+    };
+    o.onclick=(e)=>{
+      e.stopPropagation();_hoverOrigFont=null;fontOverride=f.val;
+      btn.textContent=f.name;btn.setAttribute('data-val',f.val);
+      listEl.classList.remove('show');btn.classList.remove('open');
+      highlightFontOpt(listEl,f.val);uc();
+    };
+    listEl.appendChild(o);
+  }
+  listEl.onmouseleave=()=>{
+    if(_hoverOrigFont!==null){
+      fontOverride=_hoverOrigFont;const orig=list.find(x=>x.val===fontOverride);
+      btn.textContent=orig?orig.name:'—';btn.setAttribute('data-val',fontOverride);
+      _hoverOrigFont=null;highlightFontOpt(listEl,fontOverride);restartPv();
+    }
+  };
+  const cur=list.find(x=>x.val===fontOverride);
+  btn.textContent=cur?cur.name:'—';btn.setAttribute('data-val',fontOverride);
+  highlightFontOpt(listEl,fontOverride);
+}
+function createFontDropdown(id,cls){
+  const wrap=document.createElement('div');wrap.className='fx-dd';wrap.id=id;
+  const btn=document.createElement('button');btn.className=cls+' fx-dd-btn';btn.type='button';btn.textContent='—';
+  btn.setAttribute('data-val','');
+  const list=document.createElement('div');list.className='fx-dd-list';
+  btn.onclick=(e)=>{e.stopPropagation();closeAllFxDd();list.classList.toggle('show');btn.classList.toggle('open');
+    const cur=btn.getAttribute('data-val');if(cur){const el=list.querySelector(`[data-val="${cur}"]`);if(el)el.scrollIntoView({block:'center'});}}
+  wrap.appendChild(btn);wrap.appendChild(list);
+  return wrap;
+}
+function highlightFontOpt(list,val){
+  list.querySelectorAll('.fx-dd-opt').forEach(o=>{o.classList.toggle('on',o.getAttribute('data-val')===val);});
+}
+async function loadSystemFonts(){
+  const btn=document.getElementById('fontLoadBtn');
+  if(!('queryLocalFonts' in window)){toast('浏览器不支持 Font Access API');return;}
+  const CN_MAP = {
+    'Microsoft YaHei': '微软雅黑', 'SimSun': '宋体', 'SimHei': '黑体', 'KaiTi': '楷体',
+    'FangSong': '仿宋', 'NSimSun': '新宋体', 'Microsoft JhengHei': '微軟正黑體',
+    'PingFang SC': '平方-简', 'PingFang TC': '平方-繁', 'PingFang HK': '平方-港',
+    'STHeiti': '华文黑体', 'STKaiti': '华文楷体', 'STSong': '华文宋体', 'STFangsong': '华文仿宋',
+    'YouYuan': '幼圆', 'LiSu': '隶书'
+  };
+  try{
+    btn.textContent='读取中…';btn.disabled=true;
+    const fonts=await window.queryLocalFonts();
+    const seen=new Set();const list=[{name:'— 主题默认 —',val:''}];
+    for(const f of fonts){
+      if(!seen.has(f.family)){
+        seen.add(f.family);
+        let displayName = f.family;
+        if(CN_MAP[f.family]) displayName = `${CN_MAP[f.family]} (${f.family})`;
+        list.push({name:displayName, val:f.family});
+      }
+    }
+    list.sort((a,b)=>a.name.localeCompare(b.name, 'zh'));
+    updateFontOptions(list);
+    btn.textContent='已加载 '+(list.length-1);btn.disabled=false;
+    toast('已加载 '+(list.length-1)+' 个系统字体');
+  }catch(e){btn.textContent='读取本机字体';btn.disabled=false;toast('字体读取失败：'+e.message);}
+}
+function applyFont(val){fontOverride=val;uc();}
+function resetFontSel(){fontOverride='';const dd=document.getElementById('fontSel');if(dd){const btn=dd.querySelector('.fx-dd-btn');btn.setAttribute('data-val','');btn.textContent='— 主题默认 —';highlightFontOpt(dd.querySelector('.fx-dd-list'),'');}}
+
 // === Init ===
-function init(){initEoGrid();syncEoValues();syncEoDefaults();renderPills();renderOrder();renderLoControls();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
+function init(){initEoGrid();syncEoValues();syncEoDefaults();initFontSel();renderPills();renderOrder();renderLoControls();renderSceneTabs();renderEditor();syncTim();uc();startPv();}
 
 // === Theme pills ===
 function renderPills(){
@@ -618,9 +798,10 @@ function buildCfg(){
   const st={};
   const bg=document.getElementById('bgT').value.trim(),fg=document.getElementById('fgT').value.trim(),ac=document.getElementById('acT').value.trim();
   if(bg)st.background=bg;if(fg)st.color=fg;if(ac)st.accent=ac;
+  if(fontOverride)st.fontFamily=fontOverride;
   if(Object.keys(st).length)cfg.style=st;
   const eff={};
-  for(const r of ORD){const i=+document.getElementById(`eo-${r}-in`).value,o=+document.getElementById(`eo-${r}-out`).value;const th=TH[S.theme].effects[r];if(i!==th.i||o!==th.o)eff[r]={inEffectId:i,outEffectId:o};}
+  for(const r of ORD){const i=getFxDdVal(`eo-${r}-in`),o=getFxDdVal(`eo-${r}-out`);const th=TH[S.theme].effects[r];if(i!==th.i||o!==th.o)eff[r]={inEffectId:i,outEffectId:o};}
   if(Object.keys(eff).length)cfg.effects=eff;
   const ss={};
   for(const r of ORD){if(sceneStyles[r]&&Object.keys(sceneStyles[r]).length)ss[r]={...sceneStyles[r]};}
@@ -1113,7 +1294,7 @@ function copyJson(){
   else{navigator.clipboard.writeText(JSON.stringify(buildCfg(),null,2));toast('JSON 已复制');}
 }
 function copyRenderCmd(){const j=JSON.stringify(buildCfg(),null,2);navigator.clipboard.writeText(`npx remotion render src/index.ts SceneTheme out.mp4 --props='${j.trim()}'`);toast('命令已复制');}
-function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;sceneOrder=[...ORD];renderPills();renderOrder();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');syncEoValues();syncEoDefaults();uc();toast('已重置');}
+function resetConfig(){S={theme:'glitch',content:structuredClone(DEMO)};timOv=false;sceneOrder=[...ORD];renderPills();renderOrder();renderSceneTabs();renderEditor();syncTim();['bgT','fgT','acT'].forEach(id=>document.getElementById(id).value='');syncEoValues();syncEoDefaults();resetFontSel();uc();toast('已重置');}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 

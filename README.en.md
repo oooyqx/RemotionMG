@@ -34,9 +34,11 @@ Open [`docs/configurator.html`](docs/configurator.html) (pure static HTML, works
 
 1. **Pick a theme** — 5 presets (Glitch / Soft / Bouncy / Minimal / Elegant), one click to switch colors, fonts, and motion style
 2. **Edit content** — Fill in text by scene role (Hero / List / LowerThird / Caption / Emphasis)
-3. **Tune parameters** — Timing sliders (in/hold/out frames), color overrides, per-scene effectId overrides
-4. **Live preview** — Right-side canvas plays the animation in real time
-5. **Export ZIP** — One button to get a **self-contained Remotion project**
+3. **Tune parameters** — Timing sliders (in/hold/out frames), color overrides, per-scene effect overrides
+4. **Hover-preview effects** — Hovering over an effect dropdown option instantly applies that effect in the preview and replays the animation; moving away restores the original value, clicking applies permanently
+5. **Font picker** — 13 built-in fonts + a “Load system fonts” button (Font Access API) to enumerate all local font families
+6. **Live preview** — Right-side canvas plays the animation in real time
+7. **Export ZIP** — One button to get a **self-contained Remotion project**
 
 ### Self-contained ZIP export
 
